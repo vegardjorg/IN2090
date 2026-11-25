@@ -44,3 +44,5 @@ node_modules/
 !/assets/
 /assets/**/*.pdf
 /assets/**/*_files/
+# Unntak: eierens egne eksamensnotater (ikke UiO-materiale), lenket fra forsiden
+!/assets/eksamensnotater.pdf

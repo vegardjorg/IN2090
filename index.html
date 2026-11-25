@@ -7,7 +7,7 @@
   <title>IN2090 – interaktiv eksamensguide</title>
   <meta name="description" content="Interaktiv eksamensguide for IN2090 Databaser og datamodellering. Slik ser eksamen ut, og alle eksamensoppgavene fra H2019 til H2025.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261125l">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125m">
   <style>
     /* Fargene på eksamensdelene i IN2090 (styles.css har 2010-delene) */
     .a4-er   { --a4-c: var(--c-sorted); }
@@ -18,6 +18,11 @@
     /* Oppgavenumrene i IN2090 er lengre (1.1, M4, S6) */
     .a4-year .a4-nr { width: 1.7rem; }
     .a4-year .a4-auto { flex: none; font-size: 10px; padding: 0 5px; }
+    /* Huskelapp-kortet */
+    .a4-notat-row { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; align-items: center; }
+    .a4-notat-row p { flex: 1 1 22rem; margin: 0; font-size: 13px; }
+    .a4-dl { flex: none; text-decoration: none; font-weight: 700; }
+    .a4-dl-meta { font-weight: 400; color: var(--a4-soft); font-size: 12px; margin-left: .35rem; }
   </style>
 </head>
 <body data-page="index">
@@ -43,6 +48,18 @@
           <dt>Oppbygning</dt><dd>lik siden 2023</dd>
         </dl>
       </header>
+
+      <section class="a4-notat" aria-labelledby="a4-notat-h">
+        <div class="a4-sechead">
+          <h2 id="a4-notat-h">Huskelapp til eksamen</h2>
+          <p>Alle trykte og skrevne hjelpemidler er tillatt. Skriv den ut og ta den med.</p>
+        </div>
+        <div class="a4-notat-row">
+          <p>Notatene har én del per eksamensdel (modellering, SQL og relasjonsmodellen), med oppgavetypene i samme rekkefølge som på eksamen.
+            Hver oppgavetype har en oppskrift, et løst eksempel fra en tidligere eksamen og hva sensor trekker for. Forsiden viser alle oppgavetypene med sidetall, og til slutt kommer en sjekkliste før innlevering.</p>
+          <a class="btn a4-dl" href="assets/eksamensnotater.pdf" download="eksamensnotater.pdf">Last ned eksamensnotater.pdf <span class="a4-dl-meta">PDF, 21 sider</span></a>
+        </div>
+      </section>
 
       <section class="a4-exam" aria-labelledby="eo-h">
         <h2 id="eo-h">Slik ser eksamen ut</h2>
@@ -111,8 +128,8 @@
     IN2090-guide · laget for eksamensøving · fungerer frakoblet (file://) og på GitHub Pages.
   </footer>
 
-  <script src="assets/js/core.js?v=20261125l"></script>
-  <script src="assets/js/symboler.js?v=20261125l"></script>
+  <script src="assets/js/core.js?v=20261125m"></script>
+  <script src="assets/js/symboler.js?v=20261125m"></script>
   <script>
   (function () {
     var IN = window.IN, el = IN.el;
