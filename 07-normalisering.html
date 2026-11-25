@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 7 · Normalisering · IN2090</title>
+  <meta name="description" content="Normalisering i IN2090: anomalier, normalformene 1NF–BCNF, kursets tre spørsmål per FD, hele relasjonens normalform, BCNF-dekomposisjon med S₁(Y⁺) og S₂(Y ∪ (X − Y⁺)), tapsfrihet og Fagins teorem, og svarmalen sensor vil se – med stegspillere, øving og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261125c">
+</head>
+<body data-page="normalisering">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 7 · Normalisering</h1>
+      <p class="lead">Del 3 av eksamen har nesten alltid samme oppbygning: korte nøkkel- og FD-oppgaver, én normalformoppgave og én dekomposisjon til BCNF med forklaring. Her lærer du de tre spørsmålene per FD, kursets BCNF-algoritme, hvorfor den er tapsfri, og malen sensor gir poeng for. Tillukning og kandidatnøkler fra <a href="06-fd.html">blokk 6</a> brukes hele veien.</p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_3"><b>H2025</b> · Første BCNF-steg og tapsfrihet · <span class="pts">6p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_4"><b>H2025</b> · Legg til FD-er til BCNF · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-3_2"><b>H2024</b> · NF for hver FD alene · <span class="pts">8p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-3_3"><b>H2024</b> · BCNF-dekomposisjon · <span class="pts">13p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-3_3"><b>H2023</b> · BCNF-dekomposisjon · <span class="pts">10p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2020-R2"><b>H2020</b> · Normalform med forklaring · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2020-R3"><b>H2020</b> · Student til BCNF · <span class="pts">10p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2019-3_2"><b>H2019</b> · NF per FD · <span class="pts">4p</span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Normalisering">
+      <button data-tab="normalformer">Normalformer</button>
+      <button data-tab="nf-per-fd">NF per FD</button>
+      <button data-tab="nf-relasjon">Hele relasjonen</button>
+      <button data-tab="bcnf-dekomp">BCNF-dekomposisjon</button>
+      <button data-tab="tapsfri">Tapsfri</button>
+      <button data-tab="svarform">Svarform</button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · NORMALFORMER ===================== -->
+    <section data-panel="normalformer">
+      <h3>Anomalier og normalformene 1NF–BCNF</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Når fakta som ikke hører sammen, ligger i samme tabell, lagres det samme faktumet mange ganger. Det gir <b>anomalier</b>:
+        ved oppdatering (alle kopiene må endres), ved innsetting (du får ikke lagt inn et faktum uten et annet) og ved sletting (du mister et faktum når du sletter et annet).
+        Normalformene stiller krav til hver ikke-triviell FD <span class="mono">X → A</span> (med ett attributt på høyresiden):</div>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>NF</th><th>Kravet til hver <span class="mono">X → A</span></th><th>Huskeord</th></tr></thead>
+        <tbody>
+          <tr><td><b>1NF</b></td><td>Alle verdier er atomære (ingen lister eller flere verdier i én celle). Kurset antar at dette alltid holder.</td><td>én verdi per celle</td></tr>
+          <tr><td><b>2NF</b></td><td>Hvis A er et ikke-nøkkelattributt, er X ikke en <i>ekte delmengde</i> av en KN.</td><td>ingen partiell avhengighet</td></tr>
+          <tr><td><b>3NF</b></td><td>X er en SN, <b>eller</b> A er et nøkkelattributt.</td><td>ingen transitiv avhengighet til ikke-nøkkel</td></tr>
+          <tr><td><b>BCNF</b></td><td>X er en SN.</td><td>bare nøkkelen bestemmer</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Hierarkiet: <span class="mono">BCNF ⊆ 3NF ⊆ 2NF ⊆ 1NF</span>. En relasjon på BCNF er også på 3NF, og så videre.</p>
+      <div id="ex-normalformer"></div>
+
+      <h4>Eksempel: Billett</h4>
+      <div class="callout eksempel"><span class="lbl">Skjema fra blokk 6</span>
+        <p class="mono">Billett(billettnr, konsert, sete, kjøper, epost, artist, scene, dato)</p>
+        <p class="mono small">FD1 billettnr → konsert, sete, kjøper · FD2 konsert → artist, scene, dato · FD3 scene, dato → konsert · FD4 konsert, sete → billettnr · FD5 kjøper → epost</p>
+        KN: <span class="mono">{billettnr}</span>, <span class="mono">{konsert, sete}</span>, <span class="mono">{scene, dato, sete}</span>.
+        Nøkkelattributter: billettnr, konsert, sete, scene, dato. Ikke-nøkkel: artist, kjøper, epost.</div>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>FD (splittet)</th><th>2NF?</th><th>3NF?</th><th>BCNF?</th><th>Hvorfor</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">billettnr → kjøper</td><td>ja</td><td>ja</td><td>ja</td><td>billettnr er en SN.</td></tr>
+          <tr><td class="mono">konsert → artist</td><td><b>nei</b></td><td>nei</td><td>nei</td><td>artist er ikke-nøkkel, og <span class="mono">{konsert}</span> er en ekte delmengde av KN-en <span class="mono">{konsert, sete}</span>.</td></tr>
+          <tr><td class="mono">konsert → scene</td><td>ja</td><td>ja</td><td><b>nei</b></td><td>konsert er ikke SN, men scene er et nøkkelattributt (med i <span class="mono">{scene, dato, sete}</span>).</td></tr>
+          <tr><td class="mono">kjøper → epost</td><td>ja</td><td><b>nei</b></td><td>nei</td><td>kjøper er ikke SN, epost er ikke-nøkkel, og <span class="mono">{kjøper}</span> er ikke del av noen KN.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout eksempel"><span class="lbl">Anomalier i Billett</span>
+        <ul>
+          <li><b>Oppdatering:</b> artisten til en konsert står én gang per solgte billett.</li>
+          <li><b>Innsetting:</b> en konsert uten solgte billetter kan ikke registreres.</li>
+          <li><b>Sletting:</b> sletter du den siste billetten til en kjøper, forsvinner e-postadressen.</li>
+        </ul>
+        Et 1NF-brudd ser slik ut: <span class="mono">Kjøper(kjøper, telefoner)</span> med verdien <span class="mono">"91234567, 98765432"</span>. Løsningen er en egen tabell <span class="mono">Telefon(kjøper, telefon)</span>.</div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor bryter ikke <span class="mono">konsert → scene</span> 3NF når konsert ikke er en nøkkel?</summary>
+          <p>scene er et nøkkelattributt (med i <span class="mono">{scene, dato, sete}</span>), og 3NF har unntak for nøkkelattributter på høyresiden.</p></details>
+        <details class="grense"><summary>Hvorfor bryter <span class="mono">kjøper → epost</span> 3NF, men ikke 2NF?</summary>
+          <p>2NF gjelder bare venstresider som er en ekte del av en KN. kjøper er ikke med i noen KN, så FD-en er en transitiv avhengighet (<span class="mono">billettnr → kjøper → epost</span>). Den fanges først av 3NF.</p></details>
+        <details class="grense"><summary>Hvorfor «ekte delmengde» i 2NF?</summary>
+          <p>Er X en hel KN, er X en SN, og da er FD-en i orden. Noen lysark sier bare «delmengde», men den presise formen er «ekte delmengde». Bruk den.</p></details>
+        <details class="grense"><summary>Kan en FD med et nøkkelattributt på høyresiden bryte 2NF?</summary>
+          <p>Nei. 2NF handler bare om ikke-nøkkelattributter. En slik FD er alltid minst 3NF.</p></details>
+        <ul>
+          <li><b>1NF i analysen.</b> Kurset antar at 1NF alltid holder og normaliserer bare ut fra FD-er. «1NF» blir dermed svaret når 2NF er brutt.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Definisjonene spørres sjelden direkte, men de ligger under alle normalformoppgavene (H2019 3.2, H2020 R2, H2024 3.2, H2025 3.2b).
+        Spør oppgaven «hvorfor bryter denne 2NF?», skal svaret nevne FD-en, at A er ikke-nøkkel, og at X er en ekte del av en KN.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-normalformer"></div>
+    </section>
+
+    <!-- ===================== 2 · NF PER FD ===================== -->
+    <section data-panel="nf-per-fd">
+      <h3>Normalform per FD</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <b>Forberedelse:</b> splitt høyresidene (<span class="mono">X → A, B</span> blir <span class="mono">X → A</span> og <span class="mono">X → B</span>), fjern overflødige FD-er, og finn <b>alle</b> kandidatnøkler (<a href="06-fd.html#fane=finn-kn">blokk 6</a>) og dermed alle nøkkelattributter.
+        <p><b>For hver FD <span class="mono">X → A</span>:</b></p>
+        <ol>
+          <li>Er X en supernøkkel (<span class="mono">X⁺ = R</span>)? <b>Ja:</b> BCNF. <b>Nei:</b> BCNF er brutt, gå til 2.</li>
+          <li>Er A et nøkkelattributt? <b>Ja:</b> 3NF. <b>Nei:</b> 3NF er brutt, gå til 3.</li>
+          <li>Er X en ekte del av en kandidatnøkkel? <b>Nei:</b> 2NF. <b>Ja:</b> 2NF er brutt, og FD-en gir 1NF.</li>
+        </ol></div>
+      <div id="ex-nf-per-fd"></div>
+
+      <h4>De tre spørsmålene steg for steg</h4>
+      <p class="small muted">Tabellen fylles ut én FD og ett spørsmål om gangen. «KN gitt» og H2024 3.2 følger eksamensformatet der KN er oppgitt og du vurderer hver FD alene. Egen input: <span class="mono">ABCDE; AB->C, C->D</span>, eventuelt med <span class="mono">; KN=AB</span>.</p>
+      <div id="sp-nf"></div>
+      <div id="pc-nf" class="pc-host"></div>
+
+      <div class="callout eksempel"><span class="lbl">Bokstaver, alle fire nivåer</span>
+        <span class="mono">R(A, B, C, D, E, F)</span> med <span class="mono">AB → C, C → D, D → B, A → E, E → F</span>. KN = <span class="mono">{A, B}</span>, <span class="mono">{A, C}</span>, <span class="mono">{A, D}</span>.
+        <span class="mono">AB → C</span> gir BCNF, <span class="mono">C → D</span> og <span class="mono">D → B</span> gir 3NF, <span class="mono">A → E</span> gir 1NF (A ⊂ AB), og <span class="mono">E → F</span> gir 2NF (E er ikke i noen KN). Relasjonen er på 1NF.</div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor 3NF og ikke BCNF for <span class="mono">C → D</span>?</summary>
+          <p>C er ikke en SN, men D er et nøkkelattributt (med i <span class="mono">{A, D}</span>). 3NF-unntaket slår inn.</p></details>
+        <details class="grense"><summary>Hvorfor 2NF og ikke 1NF for <span class="mono">B, C → D</span> når KN er <span class="mono">{A, B}</span>?</summary>
+          <p>B er riktignok med i KN-en, men <span class="mono">{B, C}</span> er ikke en delmengde av noen KN. Spørsmål 3 gjelder hele venstresiden.</p></details>
+        <details class="grense"><summary>Hvorfor stopper jeg ikke på spørsmål 1 når svaret er nei?</summary>
+          <p>Første nei sier bare at BCNF er brutt. Du må videre for å vite om FD-en gir 3NF, 2NF eller 1NF.</p></details>
+        <details class="grense"><summary>Hvorfor må FD-ene splittes først?</summary>
+          <p><span class="mono">konsert → artist, scene, dato</span> inneholder både en 1NF-FD (artist) og to 3NF-FD-er (scene, dato). Uten splitt ser du ikke forskjellen.</p></details>
+        <details class="grense"><summary>Hvorfor må du ha alle KN-ene?</summary>
+          <p>Med bare <span class="mono">{billettnr}</span> ville scene sett ut som et ikke-nøkkelattributt, og <span class="mono">konsert → scene</span> ville fått feil nivå.</p></details>
+        <ul>
+          <li><b>Skriv alle tre spørsmålene.</b> H2020 R2 ga 4 av 5 poeng for riktig bruk av algoritmen per FD og trakk 2 for manglende forklaring.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2024 3.2 (8 p, +2/−0,5): KN oppgitt, kryss av hvilken NF hver FD alene tilsier.</li>
+          <li>H2019 3.2 (4 p, ±1): NF per FD i avkrysningsrutenett.</li>
+          <li>H2020 R2 (5 p): normalform med forklaring per FD. Oppgaveteksten hadde en feil, og begge tolkningene ble godtatt. Demoen bruker FD-ene slik de står.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-nf-per-fd"></div>
+    </section>
+
+    <!-- ===================== 3 · HELE RELASJONEN ===================== -->
+    <section data-panel="nf-relasjon">
+      <h3>Hele relasjonens normalform</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En relasjon er på den <b>laveste</b> normalformen som noen av FD-ene gir. Et skjema med flere tabeller er på den laveste normalformen blant tabellene.
+        «Høyeste normalform relasjonen oppfyller» (H2025 3.2b) er det samme svaret sett fra den andre siden: den svakeste FD-en bestemmer.</div>
+      <div id="ex-nf-relasjon"></div>
+
+      <h4>Eksempler</h4>
+      <div class="callout eksempel"><span class="lbl">Tre FD-er, tre nivåer</span>
+        <span class="mono">R(A, B, C, D)</span> med <span class="mono">AB → C</span>, <span class="mono">C → A</span> og <span class="mono">B → D</span>. KN = <span class="mono">{A, B}</span> og <span class="mono">{B, C}</span>.
+        <span class="mono">AB → C</span> gir BCNF, <span class="mono">C → A</span> gir 3NF, og <span class="mono">B → D</span> gir 1NF. Relasjonen er på <b>1NF</b>.</div>
+      <div class="callout eksempel"><span class="lbl">Gjør R til BCNF ved å legge til FD-er (H2025 3.4-typen)</span>
+        <span class="mono">R(A, B, C, D)</span> med <span class="mono">AB → C</span> og <span class="mono">C → D</span>. KN = <span class="mono">{A, B}</span>, og <span class="mono">C → D</span> gir 2NF.
+        Problemet er at C ikke er en SN. Legg til <span class="mono">C → A</span> og <span class="mono">C → B</span>. Da er <span class="mono">C⁺ = {A, B, C, D}</span>, alle venstresidene er SN, og R er på BCNF med KN <span class="mono">{A, B}</span> og <span class="mono">{C}</span>.
+        Sammenlign «Før» og «Etter» i spilleren.</div>
+      <div id="sp-nfrel"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor laveste og ikke høyeste?</summary>
+          <p>Normalformen er et krav til <i>alle</i> FD-ene. Én FD som bryter 2NF, gjør at relasjonen ikke er på 2NF.</p></details>
+        <details class="grense"><summary>Hvorfor er <span class="mono">R(A, B, C)</span> med <span class="mono">AB → C</span> og <span class="mono">C → A</span> på 3NF og ikke BCNF?</summary>
+          <p><span class="mono">C → A</span> har en venstreside som ikke er SN, men A er et nøkkelattributt (KN = <span class="mono">{A, B}</span>, <span class="mono">{B, C}</span>). Det er kursets standardeksempel på 3NF uten BCNF. Trening i spilleren har samme form.</p></details>
+        <details class="grense"><summary>Hvorfor holder det ikke å vise én god FD?</summary>
+          <p>Svaret må begrunnes med den FD-en som gir lavest nivå. H2025 3.2b ga poeng for å peke på den partielle avhengigheten.</p></details>
+        <ul>
+          <li><b>Legge til FD-er:</b> det holder ikke å gjøre én venstreside til SN. <i>Hver</i> venstreside må bli SN, og det må vises med tillukninger. De nye FD-ene må også være noe du kan forsvare som en påstand om virkeligheten.</li>
+          <li><b>Skjema med flere tabeller:</b> svaret er den laveste tabellen, ikke «den vanligste».</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2025 3.2b: «høyeste normalform R er i, begrunn kort».</li>
+          <li>H2020 R2: hele relasjonens NF med forklaring per FD (1 p for riktig sluttsvar).</li>
+          <li>H2025 3.4 (5 p): foreslå nye FD-er som gjør R til BCNF, og vis at alle venstresidene blir SN.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-nf-relasjon"></div>
+    </section>
+
+    <!-- ===================== 4 · BCNF-DEKOMPOSISJON ===================== -->
+    <section data-panel="bcnf-dekomp">
+      <h3>BCNF-dekomposisjon steg for steg</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Kursets algoritme for <span class="mono">R(X)</span> med FD-ene F:
+        <ol>
+          <li>Finn KN-ene til R, og splitt FD-ene slik at hver har ett attributt på høyresiden.</li>
+          <li>Er R på BCNF? Da stopper du og returnerer R.</li>
+          <li>Ellers: velg én FD <span class="mono">Y → A</span> som bryter BCNF, regn ut <span class="mono">Y⁺</span>, og dekomponer R til
+            <b class="mono">S₁(Y⁺)</b> og <b class="mono">S₂(Y ∪ (X − Y⁺))</b>. Karlsen skriver det siste som <span class="mono">S₂(Y, X/Y⁺)</span>.</li>
+          <li>Finn FD-ene for hver delrelasjon (de oppgitte FD-ene der alle attributtene er med) og KN-ene, og fortsett med begge.</li>
+          <li>Stopp når alle relasjonene er på BCNF.</li>
+        </ol></div>
+      <div id="ex-bcnf-dekomp"></div>
+
+      <h4>Algoritmen som tre</h4>
+      <p class="small muted">Hver boks er en relasjon med FD-er og KN. En boks som bryter BCNF, får to barn: S₁ = Y⁺ og S₂ = Y pluss resten. Egen input: <span class="mono">ABCDEF; A->B, B->C, D->E, AD->F</span>, eventuelt med <span class="mono">; velg=D->E</span> for å bestemme første splitt.</p>
+      <div id="sp-bcnf"></div>
+      <div id="pc-bcnf" class="pc-host"></div>
+
+      <div class="callout eksempel"><span class="lbl">Trening: 3NF, men ikke BCNF</span>
+        <span class="mono">Trening(utøver, øvelse, trener)</span>: hver utøver har én trener per øvelse, og hver trener trener bare én øvelse.
+        FD-er: <span class="mono">utøver, øvelse → trener</span> og <span class="mono">trener → øvelse</span>. KN = <span class="mono">{utøver, øvelse}</span> og <span class="mono">{utøver, trener}</span>.
+        Alle attributtene er nøkkelattributter, så relasjonen er på 3NF, men <span class="mono">trener → øvelse</span> bryter BCNF.
+        Dekomposisjonen gir <span class="mono">S1(øvelse, trener)</span> og <span class="mono">S2(utøver, trener)</span>, begge på BCNF.
+        Legg merke til at <span class="mono">utøver, øvelse → trener</span> nå ikke ligger i noen av tabellene. Ingen enkelt tabell kan lenger sikre at en utøver bare har én trener per øvelse.</div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor <span class="mono">S₁(Y⁺)</span> og ikke <span class="mono">S₁(Y, A)</span>?</summary>
+          <p>Algoritmen tar med hele tillukningen. I H2025 3.3 er løsningsforslaget og sensorveiledningen uenige (<span class="mono">R1(A, B, C)</span> mot <span class="mono">R1(A, B)</span>). Følg algoritmen: <span class="mono">S₁(Y⁺)</span>. Skiller du ut bare <span class="mono">(Y, A)</span>, trengs flere steg for å nå samme mål.</p></details>
+        <details class="grense"><summary>Hvorfor er Y med i begge tabellene?</summary>
+          <p>Fellesattributtet gjør det mulig å joine tilbake tapsfritt. Uten Y i S₂ mister du koblingen.</p></details>
+        <details class="grense"><summary>Hvorfor forsvinner <span class="mono">A → B</span> fra S₂ i eksempelet med bokstaver?</summary>
+          <p>B er ikke i S₂. Bare FD-er der <i>alle</i> attributtene ligger i delrelasjonen, tas med.</p></details>
+        <details class="grense"><summary>Hvorfor må jeg finne KN på nytt?</summary>
+          <p>Nøklene endrer seg når attributter forsvinner. I <span class="mono">S1(A, B, C)</span> er A en KN, selv om den ikke var det i R. Feil eller manglende KN gir −1 per relasjon.</p></details>
+        <details class="grense"><summary>Hvorfor er en tabell med to attributter alltid på BCNF?</summary>
+          <p>Den eneste mulige ikke-trivielle FD-en har ett attributt på hver side, og da er venstresiden en SN.</p></details>
+        <ul>
+          <li><b>Feil i H2023-løsningsforslaget (3.3):</b> <span class="mono">S12(E, B)</span> oppgis med KN E, men FD-en i den tabellen er <span class="mono">B → E</span>, så KN er <span class="mono">{B}</span>. Demoen viser det riktige.</li>
+          <li><b>H2025 3.3</b> spør bare om første steg (R1 og R2). Demoen fortsetter helt til BCNF.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Hvert år er det én dekomposisjon til BCNF (6–13 p):
+        <ul>
+          <li>H2020 R3 (10 p), H2023 3.3 (10 p: 5 + 2,5 + 2,5), H2024 3.3 (13 p: 7 + 3 + 3). Alle ligger i spilleren.</li>
+          <li>Trekk: −1 per manglende eller feil FD på en relasjon, −1 for feil tillukning, −1 for feil eller manglende KN, −3 når forklaringene mangler.</li>
+          <li>H2025 3.3 (6 p): bare første steg, med brudd-FD, R1/R2 og «er det tapsfritt?».</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-bcnf-dekomp"></div>
+    </section>
+
+    <!-- ===================== 5 · TAPSFRI ===================== -->
+    <section data-panel="tapsfri">
+      <h3>Tapsfri dekomposisjon</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>dekomposisjon</b> av <span class="mono">R(X)</span> er relasjoner <span class="mono">S₁(Y₁), …, Sₙ(Yₙ)</span> der hver <span class="mono">Yᵢ ⊆ X</span> og <span class="mono">Y₁ ∪ ⋯ ∪ Yₙ = X</span>.
+        Den er <b>tapsfri</b> hvis du for hver lovlige instans kan projisere ned på delene, joine dem (naturlig join) og få nøyaktig R tilbake.
+        <p><b>Fagins teorem:</b> <span class="mono">R(X, Y, Z) ⟶ {S₁(X, Y), S₂(X, Z)}</span> er tapsfri hvis <span class="mono">X → Y</span> eller <span class="mono">X → Z</span>. Fellesattributtene bestemmer altså resten av minst én av delene.</p>
+        Hvert steg i BCNF-algoritmen er tapsfritt per konstruksjon: fellesattributtene er Y, og <span class="mono">Y → Y⁺</span>, altså hele S₁.</div>
+      <div id="ex-tapsfri"></div>
+
+      <h4>Med og uten tap</h4>
+      <p class="small muted"><span class="mono">Vakt(ansatt, avdeling, etasje)</span> med <span class="mono">ansatt → avdeling</span> og <span class="mono">avdeling → etasje</span>, delt på to måter.</p>
+      <div id="sp-tapsfri"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor heter det «tap» når joinen gir <i>flere</i> rader?</summary>
+          <p>Informasjonen om hvilke kombinasjoner som er ekte, er tapt. Flere rader betyr mindre kunnskap.</p></details>
+        <details class="grense"><summary>Hvorfor holder det ikke at alle attributtene er med?</summary>
+          <p>Det er bare kravet til en dekomposisjon. Deler du en tabell i to uten felles attributt, er alle attributtene med, men koblingen mellom dem er borte.</p></details>
+        <details class="grense"><summary>Hvorfor kan ikke én instans bevise tapsfrihet?</summary>
+          <p>Som med FD-er: én instans uten falske rader viser bare at akkurat de dataene gikk bra.</p></details>
+        <ul>
+          <li><b>Kort begrunnelse som gir poeng:</b> «Fellesattributtet Y er en nøkkel i S₁ (<span class="mono">Y → Y⁺</span>), så etter Fagins teorem er dekomposisjonen tapsfri.» Det var svaret som ga 2 p i H2025 3.3c.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2025 3.3c (2 p): «Er denne dekomposisjonen tapsfri? Begrunn kort.»</li>
+          <li>Alle dekomposisjonsoppgavene sier «dekomponer tapsfritt». Algoritmen gir tapsfrihet, men det gir pluss å nevne Fagin i forklaringen.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-tapsfri"></div>
+    </section>
+
+    <!-- ===================== 6 · SVARFORM ===================== -->
+    <section data-panel="svarform">
+      <h3>Slik skriver du svaret på eksamen</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Sensor gir poeng for at algoritmen er brukt riktig, og for at hvert steg er forklart. Svaret skal vise tillukningen du bruker, FD-ene og KN-ene for hver ny relasjon,
+        og hvorfor hver relasjon er eller ikke er på BCNF. Uten forklaring trekkes det 3 poeng (H2020, H2023, H2024) eller 2 poeng (H2020 R2).</div>
+      <div id="ex-svarform"></div>
+
+      <h4>Lag svaret</h4>
+      <p class="small muted">Velg et eksempel, eller skriv inn din egen relasjon. Generatoren skriver svaret etter malen under, med tillukninger, FD-er og KN for hver relasjon.</p>
+      <div id="svar-gen"></div>
+
+      <h4>Malene</h4>
+      <div class="callout eksempel"><span class="lbl">Mal: normalform</span>
+        <pre class="fdv-pre">KN: … (vis tillukningene eller grupperingen «alltid / aldri / kanskje med»)
+Nøkkelattributter: …   Ikke-nøkkelattributter: …
+
+FD X → A:
+  X er (ikke) SN fordi X⁺ = …        → (ikke) brudd på BCNF
+  A er (ikke) nøkkelattributt        → (ikke) brudd på 3NF
+  X er (ikke) en ekte del av KN …    → (ikke) brudd på 2NF
+  ⇒ FD-en gir …NF
+…
+R er på den laveste av disse: …NF.</pre></div>
+      <div class="callout eksempel"><span class="lbl">Mal: BCNF-dekomposisjon</span>
+        For hvert steg: brudd-FD med begrunnelse, tillukningen, de to nye relasjonene med FD-er og KN, og om hver er på BCNF. Til slutt hele resultatet på én linje og én setning om tapsfrihet. Generatoren over viser malen utfylt.</div>
+      <div class="callout eksempel"><span class="lbl">Etter dekomposisjonen</span>
+        <ul>
+          <li>Algoritmen gir strukturen. Etterpå gir du tabellene meningsfulle navn og skranker (PN, FN). Data flyttes med <span class="mono">INSERT INTO Sᵢ SELECT DISTINCT Yᵢ FROM R;</span> for hver ny tabell.</li>
+          <li>Et BCNF-skjema kan likevel være dårlig. Splitter du for mye, er det fortsatt BCNF og tapsfritt, men tungvint. Med <span class="mono">S₁(Y⁺)</span> unngår du dette.</li>
+          <li>ER-realisering gir som regel BCNF, men garanterer bare 1NF, fordi ER ikke kan uttrykke alle FD-er.</li>
+        </ul></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor −3 når svaret er riktig?</summary>
+          <p>Sensor trekker for manglende forklaring selv om tabellene stemmer. Skriv alltid hvorfor FD-en bryter BCNF, og hvorfor hver delrelasjon er eller ikke er på BCNF.</p></details>
+        <details class="grense"><summary>Hvorfor liste FD-ene for S2 når de er «de samme som før»?</summary>
+          <p>Hver delrelasjon skal ha sin egen FD-liste. Glemte eller feil FD-er gir −1 per relasjon.</p></details>
+        <details class="grense"><summary>Hvorfor oppgi KN for en tabell med én FD?</summary>
+          <p>Det kreves for hver relasjon underveis, også de enkle.</p></details>
+        <ul>
+          <li><b>Annen rekkefølge enn løsningsforslaget?</b> Gir samme poeng hvis hvert steg er riktig.</li>
+          <li><b>Avkrysning med minuspoeng:</b> ved ±1 lønner det seg ikke å gjette. Ved +2/−0,5 (H2024 3.2) lønner det seg å gjette når du kan utelukke noe.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Del 3 av eksamen (10–27 p) har nesten alltid denne oppbygningen: korte nøkkel- eller FD-oppgaver (avkrysning), én normalformoppgave og én dekomposisjon med forklaring. Malene dekker alle formene fra H2019 til H2025.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-svarform"></div>
+    </section>
+
+    <!-- ===================== EKSAMEN ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver</h3>
+      <p class="muted small">Normalform- og dekomposisjonsdelen av oppgave 3. Tillukning, nøkler og instanser ligger i <a href="06-fd.html#fane=eksamen">blokk 6</a>.</p>
+      <div id="bank-norm"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Merket viser hvilken fane påstanden hører til.</p>
+      <div id="tf-norm"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 7 · Normalisering · <a href="06-fd.html">Forrige: blokk 6, funksjonelle avhengigheter</a></footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script src="assets/js/sql-lang.js?v=20261125c"></script>
+  <script src="assets/js/pseudocode.js?v=20261125c"></script>
+  <script src="assets/js/stepplayer.js?v=20261125c"></script>
+  <script src="assets/js/varline.js?v=20261125c"></script>
+  <script src="assets/js/viz-relation.js?v=20261125c"></script>
+  <script src="assets/js/viz-er.js?v=20261125c"></script>
+  <script src="assets/js/data-fd.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
+  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.dataNorm, Demo = IN.fdDemo;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[07-normalisering] " + navn, e); } }
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-normalformer": {
+        eli5: "<p>Tenk på et kartotek der hvert kort skal handle om én ting. 2NF betyr at ingen opplysning bare hører til en del av det som identifiserer kortet. 3NF betyr at ingen opplysning hører til en annen opplysning på kortet i stedet for til kortet selv. BCNF betyr at det eneste som får bestemme noe på kortet, er det som identifiserer kortet.</p>",
+        normal: "<p>Hvert normalformnivå forbyr en ny type «feilplassert» FD. 2NF forbyr at et ikke-nøkkelattributt avhenger av bare <i>en del</i> av en sammensatt nøkkel (<span class=\"mono\">konsert → artist</span>, der konsert bare er en del av KN-en <span class=\"mono\">{konsert, sete}</span>). 3NF forbyr i tillegg at et ikke-nøkkelattributt avhenger av noe som ikke er en nøkkel (<span class=\"mono\">kjøper → epost</span>). BCNF fjerner unntaket for nøkkelattributter, slik at <i>alle</i> venstresider må være supernøkler.</p>",
+        teknisk: "<p>Definisjonene gjelder for hver ikke-triviell <span class=\"mono\">X → A</span> med ett attributt på høyresiden. Er X en SN, er FD-en uproblematisk på alle nivåer. 3NF tillater i tillegg at A er et nøkkelattributt. 2NF krever bare at et ikke-nøkkelattributt ikke avhenger av en ekte delmengde av en KN.</p><p>En FD fra en ikke-nøkkel (eller fra en blanding av nøkkel- og ikke-nøkkelattributter) til et ikke-nøkkelattributt bryter derfor 3NF, men ikke 2NF. En relasjon er på en normalform når alle FD-ene oppfyller den.</p>"
+      },
+      "ex-nf-per-fd": {
+        eli5: "<p>Tre ja/nei-spørsmål til hver regel, som en sjekkliste hos legen. Første «nei» sier hvor sunn regelen <i>ikke</i> er, og neste spørsmål avgjør hvor ille det er.</p>",
+        normal: "<p>Spørsmålene kommer i fast rekkefølge, fra strengeste til svakeste krav. Hver FD får nivået der den stoppet: BCNF (ja på 1), 3NF (nei på 1, ja på 2), 2NF (nei på 1, 2 og 3) eller 1NF (nei på 1 og 2, ja på 3). Du må ha alle KN-ene først, ellers kan du ikke svare på spørsmål 2 og 3.</p>",
+        teknisk: "<p>Spørsmål 1 er SN-testen med tillukning. Spørsmål 2 bruker unionen av alle KN-er. Spørsmål 3 spør om <span class=\"mono\">X ⊂ K</span> for en KN K. X kan ikke være lik K, for da hadde X vært en SN.</p><p>Er X en blanding av nøkkelattributter og ikke-nøkkelattributter, er den ikke en delmengde av noen KN, og 2NF holder. FD-ene må være splittet og uten overflødige deler, ellers kan algoritmen gi feil nivå. Er KN oppgitt (H2024-formatet), er X en SN nøyaktig når X inneholder en av dem.</p>"
+      },
+      "ex-nf-relasjon": {
+        eli5: "<p>En kjetting er ikke sterkere enn det svakeste leddet. Én dårlig regel drar hele tabellen ned.</p>",
+        normal: "<p>Gå gjennom alle FD-ene med de tre spørsmålene og noter nivået til hver. Svaret er det laveste du fikk. Finner du en FD som gir 1NF, kan du stoppe, for lavere går det ikke.</p>",
+        teknisk: "<p>Normalformene er krav til <i>alle</i> ikke-trivielle FD-er. Relasjonen oppfyller derfor NF k nøyaktig når hver FD oppfyller NF k, og høyeste oppfylte NF er minimum over FD-ene.</p><p>Det omvendte spørsmålet (H2025 3.4) er å <i>legge til</i> FD-er slik at hver venstreside blir en SN. Da blir relasjonen BCNF uten dekomposisjon. Det endrer påstanden om virkeligheten, så de nye FD-ene må være noe du kan forsvare.</p>"
+      },
+      "ex-bcnf-dekomp": {
+        eli5: "<p>Finn én regel som er på feil sted. Klipp ut alt den regelen styrer, og legg det i en egen boks. La «limet» (venstresiden) ligge igjen i den gamle boksen, så du kan sette sammen boksene igjen. Gjenta til ingen regel er på feil sted.</p>",
+        normal: "<p>Hvert steg tar en FD som bryter BCNF og skiller ut venstresiden sammen med alt den bestemmer (<span class=\"mono\">Y⁺</span>). Venstresiden blir værende i resten også, slik at tabellene kan joines tilbake. I den nye tabellen S₁ blir Y en nøkkel, så FD-en som skapte problemet, er i orden der. Etter hvert steg finner du FD-er og KN-er for begge de nye tabellene og sjekker dem på nytt.</p>",
+        teknisk: "<p>S₁ = <span class=\"mono\">Y⁺</span> og S₂ = <span class=\"mono\">Y ∪ (X − Y⁺)</span> har snittet Y, og <span class=\"mono\">Y → Y⁺</span> gjelder. Etter Fagins teorem er hvert steg dermed tapsfritt. I S₁ er Y en SN per konstruksjon. Algoritmen stopper, fordi hver splitt gir to ekte mindre relasjoner (Y er ikke SN, så Y⁺ ≠ X, og A ∈ Y⁺ − Y, så S₂ mangler A).</p><p>Valget av FD kan gi ulike, like riktige sluttresultater. Kurset tar bare med de oppgitte FD-ene som ligger helt inne i hver delrelasjon. I alle eksemplene her gir det de samme nøklene som en full projeksjon av FD-ene (kontrollert av motoren).</p>"
+      },
+      "ex-tapsfri": {
+        eli5: "<p>Du klipper et bilde i to og vil kunne teipe det sammen igjen. Har bitene en tydelig felles kant som bare passer på én måte, går det fint. Er kanten for vag, kan bitene settes sammen på flere måter, og du får bilder som aldri fantes.</p>",
+        normal: "<p>«Tap» betyr ikke at rader forsvinner. Det betyr at joinen gir <i>falske rader</i> som ikke var der før, slik at du ikke lenger vet hvilke som er ekte. Det skjer når fellesattributtet ikke bestemmer noen av delene. Bestemmer fellesattributtet hele den ene delen, finnes det bare én mulig match per rad, og joinen gir originalen.</p>",
+        teknisk: "<p>Joinen av projeksjonene inneholder alltid R. Spørsmålet er om den inneholder <i>mer</i>. Hvis <span class=\"mono\">X → Y</span>, har hver X-verdi bare én Y-verdi i π<sub>XY</sub>(R). Hver rad i π<sub>XZ</sub>(R) matcher dermed nøyaktig én Y-verdi, nemlig den den hadde i R, og ingen falske kombinasjoner oppstår.</p><p>Tapsfrihet er en egenskap ved <i>skjemaet</i> (alle lovlige instanser). Ett eksempel med falske rader motbeviser den, men ett eksempel uten falske rader beviser den ikke.</p>"
+      },
+      "ex-svarform": {
+        eli5: "<p>Vis regnestykket, ikke bare svaret. Sensor må kunne følge hvert steg.</p>",
+        normal: "<p>Bruk den samme malen hver gang: brudd-FD med begrunnelse, så tillukningen, så de to nye relasjonene med FD-er og KN-er, så om hver er på BCNF. Til slutt skriver du hele resultatet på én linje. For normalform skriver du de tre spørsmålene for hver FD.</p>",
+        teknisk: "<p>Poengene fordeles per splitt (første splitt 5–7 p, hver videre splitt 2,5–4 p), med −1 per feil FD, tillukning eller KN. Tydelig navngivning (S1, S2, S21, S22 …) gjør det lett for sensor å gi delpoeng. Sensorveiledningene trekker per feil, ikke for hele steget, så et vist mellomresultat med én feil gir fortsatt de fleste poengene.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Demoer ---------- */
+    safe("sp-nf", function () { Demo.nf("#sp-nf", "#pc-nf"); });
+    safe("sp-nfrel", function () { Demo.nfRelasjon("#sp-nfrel"); });
+    safe("sp-bcnf", function () { Demo.bcnf("#sp-bcnf", "#pc-bcnf"); });
+    safe("sp-tapsfri", function () { Demo.tapsfri("#sp-tapsfri"); });
+    safe("svar-gen", function () { Demo.svar("#svar-gen"); });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "norm-" + fane }); });
+    });
+
+    /* ---------- Sant/usant for hele blokken ---------- */
+    safe("tf-norm", function () {
+      IN.tfTest("#tf-norm", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: D.faner[it.fane] || it.fane, kilde: false };
+      }), { id: "norm-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-norm", function () { IN.examBank("#bank-norm", { block: "normalisering" }); });
+  })();
+  </script>
+</body>
+</html>

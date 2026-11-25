@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 4 · SQL · IN2090</title>
+  <meta name="description" content="SQL grunnleggende i IN2090: spørringens anatomi, join (kryssprodukt, indre, selvjoin, NATURAL JOIN-fellen), DISTINCT, ORDER BY og LIMIT, CREATE TABLE og skranker, INSERT, UPDATE og DELETE, med stegvise demoer på en liten biblioteksdatabase og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261125c">
+</head>
+<body data-page="sql">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 4 · SQL</h1>
+      <p class="lead">SQL-delen gir mest poeng på eksamen, og alt bygger på det som står her: hvordan en spørring leses steg for steg, hvordan tabeller kobles, hvordan svaret sorteres og kuttes, og hvilke regler databasen håndhever når du endrer data. Alle eksemplene bruker den samme lille biblioteksdatabasen. Når grunnlaget sitter, går du videre til <a href="05-sql-videre.html">blokk 5 · SQL videregående</a> (aggregering, ytre join, NULL og «for alle»).</p>
+      <div class="badges" id="badges-sql"></div>
+    </div>
+
+    <div id="skjema"></div>
+
+    <div class="tabs" role="tablist" aria-label="SQL">
+      <button data-tab="anatomi">Spørringens anatomi</button>
+      <button data-tab="join">Join</button>
+      <button data-tab="distinct">DISTINCT og ORDER BY</button>
+      <button data-tab="skranker">CREATE TABLE og skranker</button>
+      <button data-tab="endring">INSERT, UPDATE, DELETE</button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · ANATOMI ===================== -->
+    <section data-panel="anatomi">
+      <h3>Spørringens anatomi</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En SELECT-spørring beskriver <i>hva</i> svaret skal inneholde, ikke <i>hvordan</i> databasen skal finne det. SQL er altså deklarativt.
+        <span class="mono">FROM</span> sier hvilke tabeller som brukes, <span class="mono">WHERE</span> hvilke rader som beholdes, og <span class="mono">SELECT</span> hvilke kolonner som vises. Svaret er alltid en ny tabell.</div>
+      <div id="ex-anatomi"></div>
+
+      <h4>Den logiske rekkefølgen</h4>
+      <div class="callout snarvei"><span class="lbl">Kjernen</span>
+        <ol>
+          <li><span class="mono">FROM</span> (med alle join-er): bygg tabellen det skal velges fra.</li>
+          <li><span class="mono">WHERE</span>: behold radene der betingelsen er TRUE.</li>
+          <li><span class="mono">GROUP BY</span> og så <span class="mono">HAVING</span> (<a href="05-sql-videre.html#fane=aggregering">blokk 5</a>).</li>
+          <li><span class="mono">SELECT</span>: regn ut uttrykkene og gi kolonnene navn (<span class="mono">AS</span>).</li>
+          <li><span class="mono">DISTINCT</span>: fjern like rader.</li>
+          <li><span class="mono">ORDER BY</span>: sorter.</li>
+          <li><span class="mono">LIMIT</span> og <span class="mono">OFFSET</span>: kutt.</li>
+        </ol>
+        Skriverekkefølgen er fast: <span class="mono">WITH, SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET</span>.
+        <span class="small muted">Lysarkene viser skriverekkefølgen og navnereglene. Lista med evalueringsrekkefølgen er vår oppsummering.</span></div>
+
+      <h4 class="demo-h">Steg for steg: grunnformen, og NULL i WHERE</h4>
+      <p>Tittel og år på bøker fra før 1900 med mer enn 100 sider. Se hva som skjer med Folkeeventyr, som mangler sidetall.</p>
+      <div id="steg-wherenull"></div>
+
+      <h4 class="demo-h">Steg for steg: hele løpet</h4>
+      <p>De to siste lånene som ikke er levert. Her ser du FROM, WHERE, SELECT, ORDER BY og LIMIT etter tur.</p>
+      <div id="steg-anatomi"></div>
+
+      <h4>LIKE skiller mellom store og små bokstaver</h4>
+      <div id="eks-an2"></div>
+      <p class="small muted">SQLite sin LIKE skiller ikke mellom store og små bokstaver, så tallene over er regnet etter PostgreSQL-regelen.</p>
+
+      <h4>SELECT-navn finnes ikke i WHERE</h4>
+      <div id="eks-an4"></div>
+      <p>Skriv uttrykket på nytt i WHERE (<span class="mono">WHERE sider / 100 &gt;= 2</span>). I <span class="mono">ORDER BY hundrer</span> hadde navnet vært lov. Merk også at <span class="mono">sider / 100</span> er heltallsdivisjon: 250 / 100 = 2.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor LIKE '%Gynt%' og ikke = '%Gynt%'?</summary>
+          <p>Med <span class="mono">=</span> sammenlignes strengen tegn for tegn, også prosenttegnene, så ingen rad matcher. <span class="mono">%</span> er bare jokertegn inne i LIKE. Sensor har trukket for = der det skulle vært LIKE, og mer for å glemme % (H19).</p></details>
+        <details class="grense"><summary>Hvorfor OR og ikke AND?</summary>
+          <p>«Bøker av Ibsen eller fra før 1850» betyr at <i>én</i> av betingelsene holder. AND krever begge. Å bytte dem har gitt −2 (H19).</p></details>
+        <details class="grense"><summary>Hvorfor parenteser rundt OR?</summary>
+          <p>AND binder sterkere enn OR. <span class="mono">a OR b AND c</span> leses som <span class="mono">a OR (b AND c)</span>.</p></details>
+        <details class="grense"><summary>Hvorfor IS NULL og ikke = NULL?</summary>
+          <p><span class="mono">sted = NULL</span> blir NULL for alle rader, så du får 0 rader. Mer om dette i <a href="05-sql-videre.html#fane=null">blokk 5, fanen NULL</a>.</p></details>
+        <details class="grense"><summary>Hvorfor slår ikke WHERE sted != 'Oslo' til for Dina?</summary>
+          <p>Dina har <span class="mono">sted</span> lik NULL, og <span class="mono">NULL != 'Oslo'</span> blir NULL, ikke TRUE. Svaret blir Bo og Ibsen.</p></details>
+        <details class="grense"><summary>Hvorfor kan jeg ikke bruke et SELECT-alias i WHERE?</summary>
+          <p>WHERE evalueres før SELECT, så navnet finnes ikke ennå. Se eksemplet over.</p></details>
+        <details class="grense"><summary>Hvorfor 'Oslo' med fnutter?</summary>
+          <p>Tekst- og datoverdier skrives i enkle fnutter. Uten fnutter tolkes ordet som et kolonnenavn. Sensor har ikke trukket for datoformat (H19, H23, H25).</p></details>
+        <ul>
+          <li><b>Hardkodede ID-er.</b> Spør oppgaven etter «bøker av Ibsen», skal du joine mot <span class="mono">forfatter</span> og filtrere på <span class="mono">navn = 'Ibsen'</span>, ikke skrive <span class="mono">fid = 1</span> fordi du ser det i eksempeldataene. Sensor har trukket 1–2 poeng for dette (H19, H20).</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>Korte spørringer på 5 poeng med WHERE, LIKE, AND/OR og join: H19 2.2 (LIKE og OR), H24 2.2 (join og aritmetikk), H25 2.2 (join og <span class="mono">current_date</span>).</li>
+          <li>Radantall-flervalg på arkets eksempeldata, med minuspoeng: H23 2.1, H25 2.1. <span class="mono">LIKE '%i%'</span> og <span class="mono">navn != navn</span> har vært med. Øv i <a href="05-sql-videre.html#fane=radantall">blokk 5, «Hvor mange rader?»</a>.</li>
+          <li>Sensors faste liste: −0,5 for manglende kolonner i SELECT, −1 for manglende begrensning i WHERE, ingen trekk for enkle syntaksfeil eller datoformat.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-anatomi"></div>
+    </section>
+
+    <!-- ===================== 2 · JOIN ===================== -->
+    <section data-panel="join">
+      <h3>Join</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Står flere tabeller i FROM, får du <b>kryssproduktet</b> (kartesisk produkt): alle kombinasjoner av rader.
+        En <b>join</b> er et kryssprodukt der en betingelse velger ut kombinasjonene som hører sammen, oftest fremmednøkkel = primærnøkkel.
+        <b>Indre join</b> (<span class="mono">INNER JOIN … ON</span>) beholder bare rader som har en partner. <b>Selvjoin</b> bruker samme tabell to ganger med ulike navn.
+        <b>Naturlig join</b> (<span class="mono">NATURAL JOIN</span>) joiner automatisk på <i>alle</i> kolonner med likt navn.</div>
+      <div id="ex-join"></div>
+
+      <h4 class="demo-h">Steg for steg: fra kryssprodukt til indre join</h4>
+      <div id="steg-innerjoin"></div>
+
+      <h4>Fire tabeller</h4>
+      <p>Hvem har lånt hvilken bok, og hvem skrev den?</p>
+      <div id="eks-j2"></div>
+      <p>6 rader, én per utlån. Begge <span class="mono">navn</span>-kolonnene får hvert sitt alias. Ellers får svaret to kolonner med samme navn.</p>
+
+      <h4 class="demo-h">Steg for steg: NATURAL JOIN-fellen</h4>
+      <p>Samme spørsmål, skrevet «kort». Svaret blir 0 rader, uten feilmelding.</p>
+      <div id="steg-natural"></div>
+
+      <h4 class="demo-h">Steg for steg: selvjoin</h4>
+      <p>Par av lånere som bor på samme sted:</p>
+      <div id="steg-selvjoin"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor INNER JOIN … ON og ikke NATURAL JOIN?</summary>
+          <p>NATURAL JOIN joiner på alle like kolonnenavn, også de du ikke tenkte på (<span class="mono">navn</span>). Sensor trakk −1 i H20 og −2 i H19 for NATURAL JOIN der tabellene delte <span class="mono">navn</span>. Bruk ON eller <span class="mono">USING (kol)</span> og vær eksplisitt.</p></details>
+        <details class="grense"><summary>Hvorfor gir låner NATURAL JOIN låner AS l2 4 rader og ikke 5?</summary>
+          <p>En tabell joinet naturlig med seg selv gir tabellen tilbake (H25 2.1), <i>men bare</i> radene uten NULL. Dina har NULL i <span class="mono">sted</span>, og NULL er ikke lik seg selv.</p></details>
+        <details class="grense"><summary>Hvorfor l1.lid &lt; l2.lid og ikke !=?</summary>
+          <p><span class="mono">!=</span> gir hvert par to ganger (Ada–Cato og Cato–Ada). Spør oppgaven etter unike par, bruk <span class="mono">&lt;</span>, eller DISTINCT hvis oppgaven godtar begge rekkefølger.</p></details>
+        <details class="grense"><summary>Hvorfor ikke bare FROM bok, forfatter?</summary>
+          <p>Uten join-betingelse får du kryssproduktet (30 rader). Sensor trekker −1 for manglende eller feil tabeller i join (H20, H23, H25) og −2 for kryssprodukt med OR der det skulle vært join (H19 2.4).</p></details>
+        <details class="grense"><summary>Hvorfor alias på begge navn-kolonnene?</summary>
+          <p>To kolonner som heter <span class="mono">navn</span> i svaret er uklart og gir problemer i et VIEW. H19 2.7 trakk −0,5 for ikke å gi kolonnene egne navn.</p></details>
+        <details class="grense"><summary>Hvorfor forsvinner Ferrante og Folkeeventyr?</summary>
+          <p>Indre join beholder bare rader med partner. Skal de være med, trenger du ytre join (<a href="05-sql-videre.html#fane=ytre-join">blokk 5</a>).</p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>Nesten alle SQL-oppgaver krever join over 2–4 tabeller, ofte fra en hendelsestabell (her <span class="mono">utlån</span>) via fremmednøklene.</li>
+          <li>NATURAL JOIN i radantall-oppgaver: H24 2.1 og H25 2.1 (naturlig selvjoin). INNER JOIN og LIKE i H20 S1.</li>
+          <li>Kurset viser ofte to likeverdige løsninger (implisitt og eksplisitt join, ON og USING). Begge gir full uttelling.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-join"></div>
+    </section>
+
+    <!-- ===================== 3 · DISTINCT OG ORDER BY ===================== -->
+    <section data-panel="distinct">
+      <h3>DISTINCT, ORDER BY og LIMIT</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        SQL-tabeller er <b>multimengder</b>: samme rad kan forekomme flere ganger. <span class="mono">SELECT DISTINCT</span> fjerner like rader fra svaret.
+        <span class="mono">ORDER BY</span> sorterer svaret, <span class="mono">DESC</span> snur rekkefølgen, <span class="mono">LIMIT n</span> tar bare de n første radene og <span class="mono">OFFSET m</span> hopper over de m første.</div>
+      <div id="ex-distinct"></div>
+
+      <h4>Multimengde mot mengde</h4>
+      <div class="grid cols-2 sql-pair">
+        <div id="eks-d1a"></div>
+        <div id="eks-d1b"></div>
+      </div>
+      <p>Rekkefølgen er ikke garantert. <span class="mono">SELECT bid FROM utlån</span> gir 6 rader, men <span class="mono">SELECT DISTINCT bid FROM utlån</span> gir 5, fordi Et dukkehjem (10) er lånt to ganger.</p>
+
+      <h4>Sortering på flere kolonner</h4>
+      <div id="eks-d2"></div>
+      <p>Ada og Cato har samme sted og sorteres derfor på navn. Dina står sist fordi PostgreSQL legger NULL sist ved stigende sortering.</p>
+
+      <h4 class="demo-h">Prøv selv: LIMIT og OFFSET</h4>
+      <p>Endre tallene og se hvilke rader som blir med. Grønt er med i svaret, rødt er kuttet.</p>
+      <div id="lo-demo"></div>
+
+      <h4>NULL først ved DESC (PostgreSQL) <span class="tag">Tilleggsfelle</span></h4>
+      <p>«De tre tykkeste bøkene»:</p>
+      <div id="eks-d4"></div>
+      <p>Med <span class="mono">WHERE sider IS NOT NULL</span> før sorteringen blir svaret Kristin Lavransdatter (1000), Peer Gynt (250) og Brødrene Løvehjerte (230). SQLite sorterer NULL motsatt vei, så svaret over følger PostgreSQL-regelen.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor DESC og ikke bare ORDER BY?</summary>
+          <p>Standard er stigende. «Nyeste først» og «flest først» krever DESC. Manglende DESC ga −1 i H19 2.7, og manglende ORDER BY gir −2 (H20, H23, H25).</p></details>
+        <details class="grense"><summary>Hvorfor ORDER BY før LIMIT?</summary>
+          <p>Uten sortering er det tilfeldig hvilke rader LIMIT gir deg. «De fem dyreste» krever <span class="mono">ORDER BY pris DESC LIMIT 5</span>.</p></details>
+        <details class="grense"><summary>Hvorfor DISTINCT her?</summary>
+          <p>Når en join kan gi samme svar flere ganger (en låner som har lånt flere Ibsen-bøker), og oppgaven sier «unike» eller «hvilke», trenger du DISTINCT. Ikke legg den til overalt: den endrer ikke svaret der radene allerede er unike, og den kan skjule en feil join.</p></details>
+        <details class="grense"><summary>Hvorfor gir DISTINCT én NULL-rad når NULL = NULL ikke er TRUE?</summary>
+          <p>DISTINCT (og GROUP BY) bruker en egen likhetsregel der to NULL-er regnes som like. WHERE gjør det ikke. Dette er en kjent inkonsekvens i SQL.</p></details>
+        <details class="grense"><summary>Hvorfor står NULL øverst i «topp n»? <span class="tag">Tilleggsfelle</span></summary>
+          <p>I PostgreSQL kommer NULL øverst med DESC. Filtrer med <span class="mono">IS NOT NULL</span> når kolonnen kan være NULL. Dette står ikke i lysarkene.</p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>Sortering og «topp n»: H20 S2 (sortert værmelding), H23 2.2 (kronologisk sortert), H19 2.7 (ti nyeste album i et VIEW).</li>
+          <li>DISTINCT og LIMIT/OFFSET i radantall-oppgaver: H23 2.1 (DISTINCT, <span class="mono">LIMIT 4</span>), H25 2.1 (<span class="mono">LIMIT 1 OFFSET 5</span>, svaret var 0), H24 2.1 (GROUP BY med OFFSET).</li>
+          <li>H24 2.4: skriv om en UNION-spørring uten UNION (svaret bruker OR og DISTINCT).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-distinct"></div>
+    </section>
+
+    <!-- ===================== 4 · SKRANKER ===================== -->
+    <section data-panel="skranker">
+      <h3>CREATE TABLE og skranker</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <span class="mono">CREATE TABLE</span> lager en tabell der hver kolonne har et navn, en type og eventuelt skranker. En <b>skranke</b> (constraint) er en regel databasen håndhever ved hver endring:
+        <span class="mono">NOT NULL</span> (verdien må finnes), <span class="mono">UNIQUE</span> (ingen like verdier), <span class="mono">PRIMARY KEY</span> (= UNIQUE NOT NULL, bare én per tabell),
+        <span class="mono">REFERENCES</span> (fremmednøkkel: verdien må finnes i den andre tabellen) og <span class="mono">CHECK</span> (et vilkårlig vilkår).</div>
+      <div id="ex-skranker"></div>
+
+      <h4>Biblioteket som CREATE TABLE</h4>
+      <div id="eks-create"></div>
+
+      <h4 class="demo-h">Går denne gjennom?</h4>
+      <p>Hver kommando prøves fra de opprinnelige dataene, ikke etter hverandre. Avgjør om databasen godtar eller avviser den. Forklaringen nevner skranken som avgjør.</p>
+      <div id="tf-skranker"></div>
+
+      <h4>En tabell med de fleste skrankene</h4>
+      <p>En tabell for reservasjoner:</p>
+      <div id="eks-reserv"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor UNIQUE NOT NULL og ikke en PRIMARY KEY til?</summary>
+          <p>En tabell kan bare ha én primærnøkkel. Ekstra kandidatnøkler markeres med UNIQUE NOT NULL.</p></details>
+        <details class="grense"><summary>Hvorfor CHECK (sider &gt; 0) og NOT NULL?</summary>
+          <p>CHECK alene slipper gjennom NULL. Skal kolonnen alltid ha en gyldig verdi, trengs begge.</p></details>
+        <details class="grense"><summary>Hvorfor PRIMARY KEY (bid, lid, dato) og ikke PRIMARY KEY på hver kolonne?</summary>
+          <p>Tre separate PRIMARY KEY er ikke lov, og tre separate UNIQUE ville betydd at en bok bare kan lånes én gang totalt. Den sammensatte nøkkelen sier at <i>kombinasjonen</i> er unik.</p></details>
+        <details class="grense"><summary>Hvorfor REFERENCES bok(bid) og ikke bare bid int?</summary>
+          <p>Uten REFERENCES håndheves ikke fremmednøkkelen, og du kan låne ut bøker som ikke finnes. På eksamen gir manglende fremmednøkkel trekk.</p></details>
+        <details class="grense"><summary>Hvorfor lykkes DELETE FROM forfatter WHERE fid = 5, men ikke fid = 1?</summary>
+          <p>Fremmednøkler beskytter begge veier: du kan ikke sette inn en peker til noe som ikke finnes, og du kan ikke slette noe det pekes på (med mindre fremmednøkkelen er laget med <span class="mono">ON DELETE CASCADE</span>).</p></details>
+        <ul>
+          <li><b>DROP mot DELETE.</b> <span class="mono">DROP TABLE</span> sletter hele tabellen, <span class="mono">DELETE FROM</span> sletter rader. H19 2.6 trakk −1 for DROP der det skulle vært DELETE.</li>
+          <li><b>DROP TABLE … CASCADE</b> fjerner i PostgreSQL skranker og views som avhenger av tabellen, ikke de andre tabellene selv. En fremmednøkkel i en annen tabell forsvinner, men tabellen blir stående (relevant for H19 2.1).</li>
+          <li><b>CREATE TABLE … AS SELECT mister skrankene.</b> Lag heller tabellen med skranker først og bruk <span class="mono">INSERT INTO … SELECT</span>.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>Skriv CREATE TABLE med alle skranker fra en tekst: H25 2.3 (ny tabell med <span class="mono">CHECK (length(ord) &gt;= 3)</span> og fremmednøkkel, sammen med INSERT i én transaksjon, 7 p).</li>
+          <li>Lovlig eller ulovlig: H19 2.1 (10 p). Kommandoene testet PK, FK (også mot samme tabell), UNIQUE med NULL, CHECK og <span class="mono">DROP TABLE … CASCADE</span>.</li>
+          <li>Realiseringsoppgavene i del 1 bruker de samme begrepene (KN, PN, FN), men skrives uten SQL.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-skranker"></div>
+    </section>
+
+    <!-- ===================== 5 · ENDRING ===================== -->
+    <section data-panel="endring">
+      <h3>INSERT, UPDATE og DELETE</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <b>INSERT</b> setter inn nye rader, enten med <span class="mono">VALUES</span> eller fra resultatet av en SELECT. <b>UPDATE</b> endrer verdier i radene som oppfyller WHERE. <b>DELETE</b> fjerner radene som oppfyller WHERE.
+        Uten WHERE gjelder UPDATE og DELETE <i>alle</i> rader. En <b>transaksjon</b> (<span class="mono">BEGIN; … COMMIT;</span>) gjør flere kommandoer til én enhet: enten lykkes alle, eller ingen.</div>
+      <div id="ex-endring"></div>
+
+      <p class="small muted">Hvert eksempel starter fra de opprinnelige dataene.</p>
+      <h4 class="demo-h">Steg for steg: UPDATE med NULL-test</h4>
+      <p>Sett ny frist for lån som ikke er levert:</p>
+      <div id="steg-update"></div>
+
+      <h4>UPDATE uten WHERE og NULL i aritmetikk</h4>
+      <div id="eks-e2"></div>
+      <p>Alle 6 rader berøres. Fem bøker får 10 sider mer (130, 260, 1010, 210, 240), mens Folkeeventyr fortsatt har NULL, fordi <span class="mono">NULL + 10</span> er NULL.</p>
+
+      <h4 class="demo-h">Steg for steg: DELETE</h4>
+      <div id="steg-delete"></div>
+
+      <h4>DELETE med delspørring</h4>
+      <p>Slett bøker som aldri er lånt ut:</p>
+      <div id="eks-e4"></div>
+      <p>1 rad slettes: Folkeeventyr (15). Det er lovlig fordi ingen utlån peker på den. <span class="mono">bid</span> i <span class="mono">utlån</span> er del av primærnøkkelen og kan ikke være NULL, så NOT IN er trygg her (se <a href="05-sql-videre.html#fane=null">NULL-fellen i blokk 5</a>).</p>
+
+      <h4>INSERT … SELECT</h4>
+      <p>Lag en purreliste:</p>
+      <div id="eks-e5"></div>
+
+      <h4>Transaksjon</h4>
+      <p>Ny tabell og data som én enhet, samme mønster som H25 2.3:</p>
+      <div id="eks-e6"></div>
+      <p>Hadde den siste raden vært <span class="mono">(14, 'ok')</span>, ville CHECK feilet, INSERT feilet, og hele transaksjonen blitt rullet tilbake. Da finnes heller ikke tabellen <span class="mono">emneord</span> etterpå.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor WHERE i UPDATE og DELETE?</summary>
+          <p>Uten WHERE endres eller slettes <i>alle</i> rader. Dobbeltsjekk alltid.</p></details>
+        <details class="grense"><summary>Hvorfor DELETE FROM bok WHERE … og ikke DELETE FROM bok JOIN …?</summary>
+          <p>DELETE tar én tabell. Bruk en delspørring i WHERE (NOT IN, NOT EXISTS) for å se på andre tabeller. H19 2.6 trakk −2 for join-er i FROM i en DELETE.</p></details>
+        <details class="grense"><summary>Hvorfor feiler DELETE FROM låner WHERE lid = 1?</summary>
+          <p>Fremmednøkkelen fra <span class="mono">utlån</span> hindrer det. Slett lånene først, eller la være.</p></details>
+        <details class="grense"><summary>Hvorfor IS NULL i UPDATE?</summary>
+          <p>Samme regel som i SELECT: <span class="mono">= NULL</span> treffer ingenting.</p></details>
+        <details class="grense"><summary>Hvorfor liste kolonnene i INSERT?</summary>
+          <p>Uten liste må verdiene komme i nøyaktig samme rekkefølge og antall som i CREATE TABLE. Med liste er det tydelig, og utelatte kolonner får NULL eller DEFAULT.</p></details>
+        <details class="grense"><summary>Hvorfor BEGIN og COMMIT?</summary>
+          <p>Oppgaven sier «hvis én feiler, så feiler begge». Uten transaksjon kan tabellen bli laget selv om innsettingen feiler.</p></details>
+        <details class="grense"><summary>Hvorfor slå opp ID med SELECT i INSERT?</summary>
+          <p>Kjenner du bare navnet («legg inn et lån av Peer Gynt for Bo»), slår du opp ID-ene med delspørringer: <span class="mono">INSERT INTO utlån VALUES ((SELECT bid FROM bok WHERE tittel = 'Peer Gynt'), (SELECT lid FROM låner WHERE navn = 'Bo'), current_date, NULL);</span></p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>UPDATE med korrelert delspørring: H25 2.4 (5 p, <a href="05-sql-videre.html#fane=delsporringer">blokk 5</a>).</li>
+          <li>INSERT … SELECT: H24 2.6 (fyll en tabell fra en aggregatspørring, 10 p).</li>
+          <li>DELETE med NOT IN: H19 2.6. Transaksjon: H25 2.3 (inne i en DDL-oppgave). Transaksjoner og script ligger ellers i blokk 8.</li>
+        </ul></div>
+    </section>
+
+    <!-- ===================== EKSAMENSOPPGAVER ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver i SQL</h3>
+      <p class="muted small">Alle oppgavene fra eksamenene i banken som hører til denne blokken, nyeste først, med skjema, løsningsforslag og sensorveiledning. Oppgavene med aggregering, ytre join og VIEW ligger i <a href="05-sql-videre.html#fane=eksamen">blokk 5</a>.</p>
+      <div id="bank-sql"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Etiketten viser hvilken fane påstanden hører til.</p>
+      <div id="tf-sql"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 4 · SQL</footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script src="assets/js/sql-lang.js?v=20261125c"></script>
+  <script src="assets/js/pseudocode.js?v=20261125c"></script>
+  <script src="assets/js/stepplayer.js?v=20261125c"></script>
+  <script src="assets/js/varline.js?v=20261125c"></script>
+  <script src="assets/js/viz-relation.js?v=20261125c"></script>
+  <script src="assets/js/viz-er.js?v=20261125c"></script>
+  <script src="assets/js/data-sql.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
+  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.dataSql;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[04-sql] " + navn, e); } }
+    function L() { return [].slice.call(arguments).join("\n"); }
+
+    /* ---------- Skjema og merker ---------- */
+    safe("skjema", function () { IN.schema("#skjema", D.skjema, { open: false, pin: true }); });
+    safe("badges", function () { D.badges("#badges-sql", "sql"); });
+
+    /* ---------- Forklaringer ---------- */
+    Object.keys(D.explain4).forEach(function (k) {
+      safe("ex-" + k, function () { IN.explain("#ex-" + k, D.explain4[k], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Eksempler: SQL + resultat (resultatene er fra innholdsfila, kjørt i SQLite) ---------- */
+    function eks(id, sql, kolonner, rader, extra) {
+      safe(id, function () {
+        var h = document.getElementById(id); if (!h) return;
+        IN.sqlBlock(h, sql);
+        if (kolonner) {
+          var t = { navn: "resultat", kolonner: kolonner, rader: rader };
+          if (extra) for (var k in extra) t[k] = extra[k];
+          IN.vizTable(h, t);
+        }
+      });
+    }
+    eks("eks-an2", L("SELECT tittel FROM bok WHERE tittel LIKE 'E%';     -- 1 rad: Et dukkehjem",
+      "SELECT tittel FROM bok WHERE tittel LIKE 'e%';     -- 0 rader",
+      "SELECT tittel FROM bok WHERE tittel LIKE '%y';     -- 1 rad: Mrs Dalloway",
+      "SELECT tittel FROM bok WHERE tittel LIKE '%e%';    -- 5 rader (alle unntatt Mrs Dalloway)"));
+    eks("eks-an4", L("SELECT tittel, sider / 100 AS hundrer", "FROM bok", "WHERE hundrer >= 2;        -- FEIL: kolonnen «hundrer» finnes ikke her"));
+    eks("eks-j2", L("SELECT l.navn AS låner, b.tittel, f.navn AS forfatter", "FROM utlån AS u", "  INNER JOIN låner AS l ON (u.lid = l.lid)",
+      "  INNER JOIN bok AS b ON (u.bid = b.bid)", "  INNER JOIN forfatter AS f ON (b.fid = f.fid);"),
+      ["låner", "tittel", "forfatter"], [["Ada", "Et dukkehjem", "Ibsen"], ["Ada", "Peer Gynt", "Ibsen"], ["Bo", "Mrs Dalloway", "Woolf"],
+        ["Cato", "Et dukkehjem", "Ibsen"], ["Cato", "Brødrene Løvehjerte", "Lindgren"], ["Ibsen", "Kristin Lavransdatter", "Undset"]]);
+    eks("eks-d1a", "SELECT sted FROM låner;", ["sted"], [["Oslo"], ["Bergen"], ["Oslo"], [null], ["Skien"]], { navn: "uten DISTINCT" });
+    eks("eks-d1b", "SELECT DISTINCT sted FROM låner;", ["sted"], [["Oslo"], ["Bergen"], [null], ["Skien"]], { navn: "med DISTINCT" });
+    eks("eks-d2", L("SELECT navn, sted", "FROM låner", "ORDER BY sted, navn;"),
+      ["navn", "sted"], [["Bo", "Bergen"], ["Ada", "Oslo"], ["Cato", "Oslo"], ["Ibsen", "Skien"], ["Dina", null]]);
+    eks("eks-d4", L("SELECT tittel, sider", "FROM bok", "ORDER BY sider DESC", "LIMIT 3;"),
+      ["tittel", "sider"], [["Folkeeventyr", null], ["Kristin Lavransdatter", 1000], ["Peer Gynt", 250]],
+      { marks: { rader: { 0: "hit" } }, caption: "PostgreSQL legger NULL først ved DESC." });
+    eks("eks-create", D.createSql);
+    eks("eks-reserv", L("CREATE TABLE reservasjon (", "  rid SERIAL PRIMARY KEY,", "  bid int NOT NULL REFERENCES bok(bid),",
+      "  lid int NOT NULL REFERENCES låner(lid),", "  status text NOT NULL DEFAULT 'venter'",
+      "    CHECK (status = 'venter' OR status = 'klar' OR status = 'hentet'),", "  CONSTRAINT én_per_bok UNIQUE (bid, lid)", ");"));
+    eks("eks-e2", "UPDATE bok SET sider = sider + 10;");
+    eks("eks-e4", L("DELETE FROM bok", "WHERE bid NOT IN (SELECT bid FROM utlån);"));
+    eks("eks-e5", L("CREATE TABLE purring (", "  lid int REFERENCES låner(lid),", "  bid int REFERENCES bok(bid)", ");", "",
+      "INSERT INTO purring", "SELECT lid, bid", "FROM utlån", "WHERE levert IS NULL;"),
+      ["lid", "bid"], [[1, 11], [3, 10], [5, 12]], { navn: "purring etterpå" });
+    eks("eks-e6", L("BEGIN;", "", "CREATE TABLE emneord (", "  bid int REFERENCES bok(bid),", "  ord text CHECK (length(ord) >= 3)", ");", "",
+      "INSERT INTO emneord VALUES", "  (11, 'drama'),", "  (14, 'eventyr'),", "  (14, 'mot');", "", "COMMIT;"));
+
+    /* ---------- Stegvise demoer ---------- */
+    var STEG = { "steg-wherenull": "whereNull", "steg-anatomi": "anatomi", "steg-innerjoin": "innerJoin", "steg-natural": "naturalFelle",
+      "steg-selvjoin": "selvjoin", "steg-update": "update", "steg-delete": "delete" };
+    Object.keys(STEG).forEach(function (id) {
+      safe(id, function () { IN.sqlSteps("#" + id, D.steg[STEG[id]]); });
+    });
+
+    /* ---------- LIMIT/OFFSET ---------- */
+    safe("lo-demo", function () { D.limitOffset("#lo-demo"); });
+
+    /* ---------- Går denne gjennom? ---------- */
+    safe("tf-skranker", function () {
+      IN.tfTest("#tf-skranker", D.skranker.map(function (it, i) {
+        return { s: "Kommando " + (i + 1), answer: it.answer, explain: it.explain, kilde: false,
+          render: function (node) { IN.sqlBlock(node, it.sql); } };
+      }), {
+        id: "sql-skranker", labels: ["Godtas", "Avvises"], keepOrder: true, checkLabel: "Sjekk svarene",
+        result: function (c) {
+          return '<p class="del1-sum"><b>' + c.right + " av " + c.total + " riktig.</b> " + c.wrong + " galt, " + c.blank + " ubesvart.</p>";
+        }
+      });
+    });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz4).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.withSql(D.quiz4[fane]), { id: "sql-" + fane }); });
+    });
+
+    /* ---------- Sant/usant for hele blokken ---------- */
+    safe("tf-sql", function () {
+      IN.tfTest("#tf-sql", D.tf4.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: it.tema, kilde: false };
+      }), { id: "sql-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-sql", function () { IN.examBank("#bank-sql", { block: "sql" }); });
+  })();
+  </script>
+</body>
+</html>

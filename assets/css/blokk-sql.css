@@ -1,0 +1,54 @@
+/* IN2090 · blokk 4 og 5 (SQL): grensespørsmål, sannhetstabell, mengdeoperatorer, LIMIT/OFFSET */
+.callout details.grense { margin: .5rem 0 .2rem; }
+.callout details.grense > summary { cursor: pointer; font-weight: 600; }
+.callout details.grense > p { margin: .35rem 0 0 1.1rem; }
+.callout ul { margin: .35rem 0 .2rem 1.1rem; padding: 0; }
+.demo-h { margin-top: 1.4rem; }
+
+/* Stegvis SQL: scenen skal vokse med tabellene (kryssproduktet har 30 rader), teksten over tabellene */
+.sqlsteps .sp-stage { display: block; height: auto; min-height: 240px; overflow-y: visible; }
+.sqlsteps .sp-stage .rel-row { align-items: flex-start; }
+@media (min-width: 900px) { .sqlsteps.grid.cols-2 { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); } }
+.sql-pair { gap: 1rem; }
+.sql-pair > div > .lbl-sm { display: block; font-weight: 600; margin-bottom: .25rem; }
+
+/* Knapper som viser valgt tilstand */
+.tt .btn[aria-pressed="true"], .so .btn[aria-pressed="true"] {
+  background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary);
+}
+
+/* Sannhetstabell med NULL */
+.tt { padding: .9rem 1rem; }
+.tt-presets, .tt-pick, .so-row, .lo-ctl { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .6rem; }
+.tt-presets .lbl, .so-row .lbl { font-weight: 600; margin-right: .25rem; }
+.tt-group { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; margin-right: 1rem; }
+.tt-var { font-weight: 700; margin-right: .2rem; }
+.tt-out { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .5rem; margin: .4rem 0; }
+.tt-res { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; padding: .45rem .6rem; border: 1px solid var(--color-outline-variant); border-radius: 8px; }
+.tt-res.cur { border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }
+.tt-expr { font-weight: 600; }
+.tt-where { color: var(--color-on-surface-variant); flex-basis: 100%; }
+.tt-c { display: inline-block; padding: .05rem .45rem; border-radius: 6px; font-family: var(--font-mono, ui-monospace, monospace); font-size: .9em; font-weight: 600; }
+.tt-c.tt-TRUE { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+.tt-c.tt-FALSE { background: var(--color-tone-danger); color: var(--color-on-tone-danger); }
+.tt-c.tt-NULL { background: var(--color-tone-warn); color: var(--color-on-tone-warn); font-style: italic; }
+.tt-note { margin: .4rem 0 .6rem; }
+.tt-grids { display: flex; flex-wrap: wrap; gap: 1rem; }
+.tt-tab { border-collapse: collapse; font-size: .9rem; width: auto; flex: 0 0 auto; margin: 0; }
+.tt-tab caption { font-weight: 700; padding-bottom: .25rem; text-align: left; }
+.tt-tab th, .tt-tab td { border: 1px solid var(--color-outline-variant); padding: .25rem .45rem; text-align: center; }
+.tt-tab th { background: var(--color-surface-container); font-weight: 600; }
+.tt-tab td.tt-c { display: table-cell; border-radius: 0; }
+.tt-tab td.on { outline: 3px solid var(--color-primary); outline-offset: -3px; }
+.tt-tab.cur caption { color: var(--color-primary); }
+
+/* Mengdeoperatorer og LIMIT/OFFSET */
+.so, .lo { padding: .9rem 1rem; }
+.so-txt, .lo-sum { margin: .5rem 0 0; }
+.lo-step { display: inline-flex; gap: .35rem; align-items: center; margin-right: 1rem; }
+.lo-val { min-width: 1.6em; text-align: center; font-weight: 700; }
+
+@media (max-width: 520px) {
+  .tt-grids { flex-direction: column; }
+  .tt-out { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IN2090 – interaktiv eksamensguide</title>
+  <meta name="description" content="Interaktiv eksamensguide for IN2090 Databaser og datamodellering: ER, relasjonsmodellen, relasjonsalgebra, SQL, FD og normalisering.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme')||'light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level')||'normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+</head>
+<body data-page="index">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+
+  <main id="main" class="wrap a4-desk">
+    <article class="a4-sheet" aria-labelledby="a4-title">
+
+      <header class="a4-head">
+        <div>
+          <h1 id="a4-title">IN2090 – interaktiv eksamensguide</h1>
+          <p class="a4-lead">Databaser og datamodellering steg for steg, knyttet til tidligere eksamensoppgaver.
+            Velg forklaringsnivå øverst eller på hvert felt, fra <b>5-åring</b> til <b>Teknisk</b>.</p>
+        </div>
+        <!-- Fra plan/eksamensmonster.md § 2 (H2023–H2025). -->
+        <dl class="a4-facts">
+          <dt>Poeng</dt><dd>100</dd>
+          <dt>Hjelpemidler</dt><dd>alle trykte og skrevne</dd>
+          <dt>Oppbygning</dt><dd>modellering · SQL · normalisering</dd>
+        </dl>
+      </header>
+
+      <section class="a4-exam" aria-labelledby="eo-h">
+        <h2 id="eo-h">Slik ser eksamen ut</h2>
+        <p class="muted">Under arbeid. Her kommer delene av eksamen, poengene og hvilke blokker oppgavene hører til.</p>
+      </section>
+
+      <footer class="a4-foot">
+        <div class="a4-how">
+          <h2>Slik bruker du siden</h2>
+          <ol>
+            <li><b>Velg nivå.</b> Bryteren øverst gjelder hele siden; hver forklaring og demo har sin egen.</li>
+            <li><b>Spill demoene</b> med <span class="kbd">←</span> <span class="kbd">→</span> eller Spill av.</li>
+            <li><b>Øv</b> med quiz, sant/usant og eksamensoppgaver med «Perfekt svar».</li>
+          </ol>
+        </div>
+        <nav class="a4-blocks" aria-label="Blokkene">
+          <h2>Blokkene</h2>
+          <div id="block-cards"></div>
+        </nav>
+      </footer>
+
+    </article>
+  </main>
+
+  <footer class="footer">
+    IN2090-guide · laget for eksamensøving · fungerer frakoblet (file://) og på GitHub Pages.
+  </footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script>
+  (function () {
+    var IN = window.IN, el = IN.el;
+    var ready = {}, pageHref = {};
+    IN.PAGES.forEach(function (p) { ready[p.id] = p.ready; pageHref[p.id] = p.href; });
+
+    // Blokkene. tasks = antall eksamensoppgaver på siden (fylles når eksamensbanken bygges).
+    var BLOCKS = [
+      { page: "begreper",          n: "0",  title: "Begreper og relasjonsmodellen", desc: "Database og DBMS, relasjon, tuppel, attributt, domene og nøkler." },
+      { page: "er",                n: "1",  title: "ER-modellering",          desc: "Chen-notasjon: entiteter, relasjoner, attributter, kardinalitet, deltakelse, svake entiteter." },
+      { page: "realisering",       n: "2",  title: "Realisering",             desc: "Fra ER-diagram til relasjonsskjema med kandidat-, primær- og fremmednøkler." },
+      { page: "relasjonsalgebra",  n: "3",  title: "Relasjonsalgebra",        desc: "Projeksjon, seleksjon, omdøping, join og mengdeoperatorer." },
+      { page: "sql",               n: "4",  title: "SQL",                     desc: "SELECT–FROM–WHERE, join, CREATE TABLE og skranker, INSERT, UPDATE, DELETE." },
+      { page: "sql-videre",        n: "5",  title: "SQL videregående",        desc: "Gruppering og aggregat, delspørringer, WITH, ytre join, mengdeoperatorer og NULL." },
+      { page: "fd",                n: "6",  title: "Funksjonelle avhengigheter", desc: "FD-er, tillukning og kandidatnøkler." },
+      { page: "normalisering",     n: "7",  title: "Normalisering",           desc: "Normalform per FD og tapsfri BCNF-dekomposisjon." },
+      { page: "sql-programmering", n: "8",  title: "Views & programmering",   desc: "Views, transaksjoner og SQL fra et program." },
+      { page: "sikkerhet",         n: "9",  title: "Sikkerhet",               desc: "Roller og tilgang (GRANT/REVOKE) og SQL-injection." },
+      { page: "indekser",          n: "10", title: "Indekser",                desc: "Indekser og spørreprosessering på oversiktsnivå." }
+    ];
+    var blockHost = IN.qs("#block-cards");
+    BLOCKS.forEach(function (b) {
+      var kids = [el("span", { class: "a4-bn", text: b.n }), el("span", { text: b.title })];
+      if (b.tasks > 0) kids.push(el("span", { class: "a4-bt", text: b.tasks + " oppg." }));
+      if (!ready[b.page]) kids.push(el("span", { class: "tag", text: "snart" }));
+      blockHost.appendChild(ready[b.page]
+        ? el("a", { class: "a4-block", href: pageHref[b.page], title: b.desc }, kids)
+        : el("span", { class: "a4-block a4-off", title: b.desc }, kids));
+    });
+  })();
+  </script>
+</body>
+</html>

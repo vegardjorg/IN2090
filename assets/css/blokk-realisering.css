@@ -1,0 +1,65 @@
+/* IN2090 guide · blokk-realisering.css – bare for 02-realisering.html (lastes etter viz.css) */
+
+/* Samme som blokk-er.css (ikke i styles.css) */
+.callout details.grense { margin: .5rem 0 .2rem; }
+.callout details.grense > summary { cursor: pointer; font-weight: 600; }
+.callout details.grense > p { margin: .35rem 0 0 1.1rem; }
+.callout ul { margin: .35rem 0 .2rem 1.1rem; padding: 0; }
+.er-fig { margin: 1rem 0; }
+.badge.nytt { font-weight: 700; }
+.tabs button .nytt-mark { font-size: .72em; font-weight: 700; margin-left: .3em; opacity: .85; }
+
+/* Relasjonsskjema i kursets notasjon */
+.rs-schema { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: .55rem; margin: .6rem 0; }
+.rs-schema.rs-one { grid-template-columns: minmax(0, 1fr); }
+.rs-tab { font-family: var(--font-mono); font-size: 13px; line-height: 1.5; padding: .5rem .7rem;
+  border: 1px solid var(--color-outline-variant); border-radius: 10px; background: var(--color-surface-container-lowest);
+  overflow-wrap: anywhere; }
+.rs-tab .rs-head { font-weight: 700; }
+.rs-tab .rs-head .rs-pn { text-decoration: underline; text-underline-offset: 3px; }
+.rs-tab .rs-ln { padding-left: 1.1rem; color: var(--color-on-surface-variant); }
+.rs-tab .rs-ln b { color: var(--color-on-surface); font-weight: 700; }
+.rs-tab .rs-note { padding-left: 1.1rem; font-family: var(--font); font-size: 12px; color: var(--color-on-surface-variant); font-style: italic; }
+.rs-tab.rs-new { border-color: var(--color-primary); border-width: 2px; background: var(--color-tone-info); color: var(--color-on-tone-info); }
+.rs-tab.rs-new .rs-ln, .rs-tab.rs-new .rs-ln b { color: inherit; }
+.rs-tab .rs-add { background: var(--color-tone-warn); color: var(--color-on-tone-warn); border-radius: 4px; padding: 0 .15em; }
+.rs-tab .rs-newlbl { float: right; font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+.rs-legend { font-size: .85rem; margin: .2rem 0 .4rem; }
+
+/* Regelmerke i stegspilleren */
+.rs-rule { display: inline-block; font-size: .8rem; font-weight: 700; padding: .15rem .6rem; border-radius: 999px;
+  background: var(--color-primary); color: var(--color-on-primary); margin: 0 0 .35rem; }
+.rs-stage-schema { margin-top: .4rem; }
+.rs-stage-schema .rs-schema { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.rs-stage-schema .rs-tab { font-size: 12px; }
+.rs-empty { font-size: .9rem; padding: .4rem 0; }
+
+/* Utheving i ER-figuren (stegspilleren) */
+.er-svg .rs-hl { stroke: var(--color-primary); stroke-width: 3; }
+.er-svg ellipse.rs-hl, .er-svg rect.rs-hl:not(.er-inner), .er-svg polygon.rs-hl:not(.er-inner) { fill: var(--color-tone-warn); }
+.er-svg .rs-drop { stroke: var(--color-error, #b3261e); stroke-width: 2.4; stroke-dasharray: 5 3; fill: var(--color-tone-danger); }
+.er-svg .rs-wait { stroke: var(--color-on-surface-variant); stroke-width: 2.4; stroke-dasharray: 2 3; fill: var(--color-tone-caution); }
+.er-svg text.rs-hl-t { font-weight: 800; }
+
+/* Side om side */
+.rs-side { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .8rem; margin: .6rem 0; align-items: start; }
+.rs-side > .card { padding: .7rem .8rem; }
+.rs-side h5 { margin: 0 0 .3rem; font-size: .95rem; }
+.rs-side .rel-tab { font-size: 12px; }
+.rs-verdict { font-size: .88rem; margin: .4rem 0 0; }
+
+/* Stegspiller ved siden av pseudokoden */
+.rs-algo-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
+.rs-algo-grid .pseudo { font-size: 12.5px; }
+/* Pseudokoden ved siden av bare når scenen fortsatt blir bred nok til at diagrammet er lesbart */
+@media (min-width: 1280px) { .rs-algo-grid { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); } }
+@media (max-width: 760px) { .rs-side { grid-template-columns: minmax(0, 1fr); } }
+
+/* Øvelsen «Hvor havner fremmednøkkelen?» */
+.rs-fn .qz-extra .er-wrap { margin: .2rem 0; }
+.rs-fn .qz-extra .er-svg { max-height: 230px; }
+
+/* Figur og skjema: side om side når det er plass, ellers under hverandre */
+.rs-figpair { display: flex; flex-wrap: wrap; gap: 0 1.2rem; align-items: flex-start; }
+.rs-figpair > figure { flex: 0 0 auto; max-width: 100%; min-width: 0; }
+.rs-figpair > div { flex: 1 1 300px; min-width: 0; }

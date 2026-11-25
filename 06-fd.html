@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 6 · FD · IN2090</title>
+  <meta name="description" content="Funksjonelle avhengigheter i IN2090: hva en FD er, instanser som bryter FD-er, tillukning X⁺, supernøkkel, kandidatnøkkel og nøkkelattributt, og kursets metode for å finne alle kandidatnøkler – med stegspillere, øving og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261125c">
+</head>
+<body data-page="fd">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 6 · Funksjonelle avhengigheter</h1>
+      <p class="lead">FD-oppgavene står som oppgave 3 hvert år. Her lærer du hva en FD betyr, hvordan du sjekker en instans mot FD-ene, hvordan du regner ut tillukningen X⁺, og kursets faste metode for å finne alle kandidatnøkler. Alt dette trengs igjen i <a href="07-normalisering.html">blokk 7 (normalisering)</a>.</p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_1"><b>H2025</b> · Bryter instansen FD-ene? · <span class="pts">4p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_2"><b>H2025</b> · Kandidatnøkler og normalform · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-3_1"><b>H2024</b> · Nøkkelattributter · <span class="pts">6p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-3_1"><b>H2023</b> · Nøkkelattributter · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-3_2"><b>H2023</b> · Fyll inn ? · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2020-R1"><b>H2020</b> · Kryss av alle KN · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2019-3_1"><b>H2019</b> · Tillukning og «alltid med» · <span class="pts">6p</span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Funksjonelle avhengigheter">
+      <button data-tab="fd-begrep">Hva er en FD?</button>
+      <button data-tab="fd-instans">FD-er og instanser</button>
+      <button data-tab="tillukning">Tillukning X⁺</button>
+      <button data-tab="nokler">Nøkler</button>
+      <button data-tab="finn-kn">Finn alle KN</button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · HVA ER EN FD? ===================== -->
+    <section data-panel="fd-begrep">
+      <h3>Hva er en funksjonell avhengighet?</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En funksjonell avhengighet <span class="mono">X → A</span> sier at to rader med like verdier i <b>alle</b> attributtene i X alltid må ha lik verdi i A.
+        Den leses «X bestemmer A». En FD er en regel for alle lovlige instanser av skjemaet, ikke en observasjon om dataene som tilfeldigvis ligger der nå.
+        <ul>
+          <li><b>Samle eller splitte høyresider:</b> <span class="mono">X → A, B</span> betyr det samme som <span class="mono">X → A</span> og <span class="mono">X → B</span>.</li>
+          <li><b>Transitivitet:</b> fra <span class="mono">X → Y</span> og <span class="mono">Y → Z</span> følger <span class="mono">X → Z</span>.</li>
+          <li><b>Utvidet venstreside:</b> gjelder <span class="mono">X → A</span>, gjelder også <span class="mono">X, Y → A</span>.</li>
+          <li><b>Triviell FD:</b> <span class="mono">X → A</span> der A allerede står i X (for eksempel <span class="mono">kjøper, epost → epost</span>). Den gjelder alltid og sier ingenting.</li>
+        </ul></div>
+      <div id="ex-fd-begrep"></div>
+
+      <h4>Eksempelet i blokk 6 og 7: Billett</h4>
+      <div class="callout eksempel"><span class="lbl">Skjema</span>
+        <p class="mono">Billett(billettnr, konsert, sete, kjøper, epost, artist, scene, dato)</p>
+        <ul class="mono">
+          <li>FD1  billettnr → konsert, sete, kjøper</li>
+          <li>FD2  konsert → artist, scene, dato</li>
+          <li>FD3  scene, dato → konsert</li>
+          <li>FD4  konsert, sete → billettnr</li>
+          <li>FD5  kjøper → epost</li>
+        </ul>
+        Én billett gjelder ett sete på én konsert og har én kjøper. En konsert har én artist og spilles på én scene på én dato.
+        En scene har bare én konsert per dato. Et sete selges bare én gang per konsert. En kjøper har én e-postadresse.</div>
+      <div class="callout eksempel"><span class="lbl">Les FD-ene</span>
+        <ul>
+          <li><span class="mono">konsert → artist</span> er en FD: alle rader for samme konsert har samme artist. Det motsatte, <span class="mono">artist → konsert</span>, er <b>ikke</b> en FD, fordi én artist kan holde flere konserter.</li>
+          <li><span class="mono">billettnr → konsert</span> og <span class="mono">konsert → artist</span> gir <span class="mono">billettnr → artist</span> (transitivitet).</li>
+          <li><span class="mono">konsert → scene</span> gir <span class="mono">konsert, kjøper → scene</span> (utvidet venstreside). Den skal ikke listes, fordi den er overflødig.</li>
+          <li>FD2 splittet: <span class="mono">konsert → artist</span>, <span class="mono">konsert → scene</span>, <span class="mono">konsert → dato</span>.</li>
+        </ul></div>
+
+      <h4>Prøv selv: holder FD-en i radene?</h4>
+      <p class="small muted">Fire rader fra Billett. Velg en påstått FD. Grønne rader har lik venstreside og lik høyreside, røde rader viser et brudd.</p>
+      <div id="billett-sjekk"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor står FD-en bare én vei?</summary>
+          <p><span class="mono">konsert → artist</span> sier ingenting om <span class="mono">artist → konsert</span>. En FD er en enveisregel. Toveis gjelder bare når begge FD-ene er oppgitt, som <span class="mono">A → B</span> og <span class="mono">B → A</span>.</p></details>
+        <details class="grense"><summary>Hvorfor tar vi ikke med <span class="mono">konsert, kjøper → artist</span>?</summary>
+          <p>Den følger allerede av <span class="mono">konsert → artist</span>. Kurset krever at slike overflødige FD-er er fjernet før normalformalgoritmen brukes.</p></details>
+        <details class="grense"><summary>Hvorfor kan vi ikke finne FD-ene ved å se på dataene?</summary>
+          <p>Dataene viser bare én tilstand. FD-ene er regler for alle tilstander og må oppgis. I eksempelet over holder <span class="mono">scene → artist</span> i radene, men det er ikke en regel.</p></details>
+        <ul>
+          <li><b>Komma eller ikke komma?</b> <span class="mono">AB → C</span> betyr <span class="mono">{A, B} → C</span>, ikke «A eller B». Med lange navn skrives kommaet: <span class="mono">scene, dato → konsert</span>.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        FD-begrepet testes sjelden alene, men trengs i alle FD-oppgavene: fylle inn <span class="mono">?</span> (H2023 3.2), avgjøre om instanser bryter FD-er (H2025 3.1) og skrive FD-er ut fra tekst (ukesoppgavene).
+        Når FD-ene er gitt i tekst, må du selv skrive dem som <span class="mono">X → A</span>.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-fd-begrep"></div>
+    </section>
+
+    <!-- ===================== 2 · FD-ER OG INSTANSER ===================== -->
+    <section data-panel="fd-instans">
+      <h3>FD-er og instanser</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En instans kan <b>motbevise</b> en FD (to rader med lik X og ulik A), men den kan aldri <b>bevise</b> en FD.
+        At FD-en holder i dataene i dag, sier ingenting om alle lovlige tilstander.</div>
+      <div id="ex-fd-instans"></div>
+
+      <h4>Eksempel A: bryter instansen FD-ene?</h4>
+      <div class="callout eksempel"><span class="lbl">Oppgave</span>
+        <span class="mono">Vakt(ansatt, avdeling, etasje, dag)</span> med <span class="mono">ansatt → avdeling</span> og <span class="mono">avdeling → etasje</span>.
+        Fem instanser. For hver: grupper radene etter venstresiden og se om høyresiden er lik i gruppen.</div>
+      <div id="sp-instans"></div>
+
+      <h4>Eksempel B: fyll inn ?</h4>
+      <div class="callout eksempel"><span class="lbl">Oppgave</span>
+        <span class="mono">R(A, B, C, D, E)</span> med <span class="mono">AB → C</span>, <span class="mono">C → D</span>, <span class="mono">D → A</span> og <span class="mono">E → B</span>.
+        Hver <span class="mono">?</span> skal erstattes med den eneste verdien som gjør at instansen oppfyller FD-ene. Svar: A = 1, B = 2, C = 3, D = 8.
+        Velg «H2023 3.2» for å se eksamensoppgaven regnet på samme måte.</div>
+      <div id="sp-fyll"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor bryter ikke instans IV <span class="mono">avdeling → etasje</span>?</summary>
+          <p>FD-en krever bare at <i>samme avdeling</i> har <i>samme etasje</i>. To avdelinger i samme etasje er en annen FD (<span class="mono">etasje → avdeling</span>), og den er ikke oppgitt. Sjekk alltid i retningen pilen peker.</p></details>
+        <details class="grense"><summary>Hvorfor kan ikke instans I bevise FD-ene?</summary>
+          <p>En instans kan bare motbevise. «NEI, bryter ikke» betyr bare at akkurat disse radene er lovlige.</p></details>
+        <details class="grense"><summary>Hvorfor kan vi ikke fylle inn E?</summary>
+          <p>E står ikke på noen høyreside, så ingen FD tvinger verdien.</p></details>
+        <details class="grense"><summary>Hvorfor bruker du ikke FD-er der venstresiden er en supernøkkel?</summary>
+          <p>Med lik supernøkkel blir to rader like i alt, og raden du fyller inn, ville vært et duplikat. Ledetråden ligger i FD-ene med «små» venstresider.</p></details>
+        <ul>
+          <li><b>Sjekk etterpå.</b> En verdi du fyller inn, kan sette i gang en annen FD (D = 8 krever A = 6). Én kontrollrunde fanger slurvefeil.</li>
+          <li><b>NULL.</b> I H2025 3.1 regnet sensor en rad med NULL på høyresiden som brudd, fordi NULL betyr ukjent. Det er en eksamenskonvensjon fra den oppgaven, ikke en definisjon fra lysarkene.</li>
+          <li><b>Minuspoeng.</b> H2023 3.2 ga +1 per riktig verdi og −0,5 per gal. H2025 3.1 ga ±1. Er du usikker ved ±1, la være å svare.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2023 3.2 (5 p, automatisk rettet): fyll inn én <span class="mono">?</span> per attributt i fem rader ut fra fem FD-er.</li>
+          <li>H2025 3.1 (4 p, ±1): fire instanser, «bryter instansen noen av FD-ene?». Én av dem hadde NULL.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-fd-instans"></div>
+    </section>
+
+    <!-- ===================== 3 · TILLUKNING ===================== -->
+    <section data-panel="tillukning">
+      <h3>Tillukning X⁺</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Tillukningen <span class="mono">X⁺</span> er mengden av alle attributter som er funksjonelt avhengige av X, gitt FD-ene.
+        Start med X, og legg til høyresiden til hver FD der hele venstresiden allerede er med, helt til ingenting nytt kommer til.
+        <b>X er en supernøkkel hvis og bare hvis X⁺ inneholder alle attributtene i R.</b></div>
+      <div id="ex-tillukning"></div>
+
+      <h4>Algoritmen steg for steg</h4>
+      <p class="small muted">Velg et eksempel, eller skriv ditt eget på formen <span class="mono">ABCDE; A->B, BC->D; X=AC</span>. Brikkene viser X (mørk), nye attributter (markert) og resten av X⁺. FD-lista viser hvilken FD som brukes, og hva de andre mangler.</p>
+      <div id="sp-tillukning"></div>
+      <div id="pc-tillukning" class="pc-host"></div>
+
+      <h4>Flere tillukninger i Billett</h4>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>X</th><th>X⁺</th><th>SN?</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">{billettnr}</td><td>alle åtte</td><td>ja</td></tr>
+          <tr><td class="mono">{konsert}</td><td class="mono">{konsert, artist, scene, dato}</td><td>nei</td></tr>
+          <tr><td class="mono">{scene, dato}</td><td class="mono">{scene, dato, konsert, artist}</td><td>nei</td></tr>
+          <tr><td class="mono">{kjøper}</td><td class="mono">{kjøper, epost}</td><td>nei</td></tr>
+          <tr><td class="mono">{sete}</td><td class="mono">{sete}</td><td>nei</td></tr>
+          <tr><td class="mono">{konsert, kjøper}</td><td class="mono">{konsert, kjøper, artist, scene, dato, epost}</td><td>nei (mangler sete og billettnr)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Med bokstavene <span class="mono">AB → C, C → D, D → B, A → E, E → F</span>: <span class="mono">A⁺ = {A, E, F}</span>, <span class="mono">B⁺ = {B}</span> og <span class="mono">(AC)⁺ = ABCDEF</span>.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor er <span class="mono">B⁺ = {B}</span> og ikke <span class="mono">{B, C, …}</span>?</summary>
+          <p><span class="mono">AB → C</span> krever <i>både</i> A og B. Én av dem er ikke nok. Det er den vanligste feilen i tillukning.</p></details>
+        <details class="grense"><summary>Hvorfor fortsette etter første runde?</summary>
+          <p>Nye attributter kan åpne FD-er du allerede har gått forbi. I <span class="mono">(AC)⁺</span> kom D først sent, og da ble <span class="mono">D → B</span> brukbar. Stopp først når en hel runde ikke gir noe.</p></details>
+        <details class="grense"><summary>Hvorfor står X selv i X⁺?</summary>
+          <p>Algoritmen starter med <span class="mono">X⁺ = X</span>, og <span class="mono">X → X</span> er triviell. Glemmer du X, blir svaret feil, og sensor trekker for feil tillukning.</p></details>
+        <ul>
+          <li><b>Skrivemåte.</b> Skriv <span class="mono">{A, C}⁺</span> eller <span class="mono">(AC)⁺</span>. Ordet er <b>tillukning</b>.</li>
+          <li><b>Rekkefølgen spiller ingen rolle</b> for svaret. Demoen for <span class="mono">(AC)⁺</span> følger en håndregnet rekkefølge, men gir samme mengde.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2019 3.1 (6 p, avkrysning): <span class="mono">{A}⁺</span>, <span class="mono">{B}⁺</span> og hvilke attributter som er med i alle KN. Begge tillukningene ligger som eksempler i demoen.</li>
+          <li>Alle dekomposisjonsoppgaver: <span class="mono">Y⁺</span> for FD-en du splitter på, skal vises (−1 for feil tillukning i H2020, H2023 og H2024).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-tillukning"></div>
+    </section>
+
+    <!-- ===================== 4 · NØKLER ===================== -->
+    <section data-panel="nokler">
+      <h3>Supernøkkel, kandidatnøkkel, nøkkelattributt</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li><b>Supernøkkel (SN):</b> en mengde X der <span class="mono">X⁺ = R</span>, altså X bestemmer alle attributtene.</li>
+          <li><b>Kandidatnøkkel (KN):</b> en minimal supernøkkel. Ingen ekte delmengde av den er en supernøkkel.</li>
+          <li><b>Primærnøkkel (PN):</b> den KN-en vi velger.</li>
+          <li><b>Nøkkelattributt:</b> et attributt som er med i <b>minst én</b> KN. Alle andre er <i>ikke-nøkkelattributter</i>. Begrepet betyr ikke «attributt i PN» og ikke «attributt i alle KN».</li>
+        </ul></div>
+      <div id="ex-nokler"></div>
+
+      <h4>Eksempel: Billett</h4>
+      <p>Billett har tre kandidatnøkler (utregnet i fanen <a href="#fane=finn-kn">Finn alle KN</a>): <span class="mono">{billettnr}</span>, <span class="mono">{konsert, sete}</span> og <span class="mono">{scene, dato, sete}</span>.</p>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>Spørsmål</th><th>Svar</th><th>Begrunnelse</th></tr></thead>
+        <tbody>
+          <tr><td>Er <span class="mono">{billettnr, kjøper}</span> en SN?</td><td>ja</td><td>Den inneholder SN-en <span class="mono">{billettnr}</span>.</td></tr>
+          <tr><td>Er <span class="mono">{billettnr, kjøper}</span> en KN?</td><td>nei</td><td>Ikke minimal: <span class="mono">{billettnr}</span> alene er nok.</td></tr>
+          <tr><td>Er <span class="mono">{scene, dato, sete}</span> en KN?</td><td>ja</td><td>SN, og <span class="mono">{scene, dato}⁺</span>, <span class="mono">{scene, sete}⁺</span> og <span class="mono">{dato, sete}⁺</span> mangler attributter.</td></tr>
+          <tr><td>Nøkkelattributter?</td><td>billettnr, konsert, sete, scene, dato</td><td>Med i minst én KN.</td></tr>
+          <tr><td>Ikke-nøkkelattributter?</td><td>artist, kjøper, epost</td><td>Ikke med i noen KN.</td></tr>
+          <tr><td>Er sete et nøkkelattributt selv om PN er <span class="mono">{billettnr}</span>?</td><td>ja</td><td>Nøkkelattributt handler om <i>alle</i> KN-er, ikke bare PN.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Prøv selv: SN eller KN?</h4>
+      <div id="nokkel-sjekk"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor er kjøper ikke nøkkelattributt når kjøper står på en venstreside (FD5)?</summary>
+          <p>Å bestemme noe er ikke det samme som å være med i en KN. kjøper inngår ikke i noen minimal SN.</p></details>
+        <details class="grense"><summary>Hvorfor er sete et nøkkelattributt når det ikke er med i PN <span class="mono">{billettnr}</span>?</summary>
+          <p>Det holder å være med i én KN. «Ikke i PN» betyr ikke «ikke-nøkkelattributt». Dette er den typiske misforståelsen på nøkkelattributt-oppgavene.</p></details>
+        <details class="grense"><summary>Hvorfor er scene et nøkkelattributt når det ikke er med i alle KN?</summary>
+          <p>«Minst én» er nok.</p></details>
+        <details class="grense"><summary>Hvorfor supernøkkel og ikke kandidatnøkkel?</summary>
+          <p>Kan du fjerne et attributt og fortsatt ha en SN, er mengden ikke minimal. Sjekk alltid de ekte delmengdene.</p></details>
+        <ul>
+          <li><b>SN eller KN i oppgaven?</b> Spør oppgaven etter <i>alle supernøkler</i>, skal alle supermengder av hver KN listes, ikke bare KN-ene.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2023 3.1 (5 p) og H2024 3.1 (6 p): «Er attributtet et nøkkelattributt?» JA/NEI for hvert attributt, ±1.</li>
+          <li>H2020 R1 (5 p): kryss av alle KN-er i en liste med 15 delmengder, ±1,67.</li>
+          <li>H2025 3.2a: finn alle KN-er og begrunn.</li>
+          <li>I dekomposisjon: KN for hver ny relasjon (−1 for feil eller manglende KN).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-nokler"></div>
+    </section>
+
+    <!-- ===================== 5 · FINN ALLE KN ===================== -->
+    <section data-panel="finn-kn">
+      <h3>Finn alle kandidatnøkler</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Kursets metode:
+        <ol>
+          <li>Del attributtene i tre grupper:
+            <b>alltid med</b> (står aldri på en høyreside, er med i alle KN),
+            <b>aldri med</b> (står på en høyreside, men aldri på en venstreside, er ikke med i noen KN) og
+            <b>kanskje med</b> (resten).</li>
+          <li>Start med X = «alltid med» og regn ut <span class="mono">X⁺</span>. Er <span class="mono">X⁺ = R</span>, er X den eneste KN-en.</li>
+          <li>Ellers utvider du X med ett og ett attributt fra «kanskje med», deretter par, tripler og så videre, og regner ut tillukningen hver gang.</li>
+          <li>Hopp over kombinasjoner som inneholder en KN du allerede har funnet. De er ikke minimale.</li>
+          <li>Når alle kombinasjoner er prøvd eller hoppet over, har du alle KN-ene.</li>
+        </ol></div>
+      <div id="ex-finn-kn"></div>
+
+      <h4>Metoden steg for steg</h4>
+      <p class="small muted">Eksempelet med bokstaver og «Billett» følger den håndregnede gangen. «Billett (alle tester)» og eksamensoppgavene viser hver eneste kombinasjon motoren prøver. Egen input: <span class="mono">ABCDE; A->B, B->A, AC->D, D->E</span>.</p>
+      <div id="sp-kn"></div>
+      <div id="pc-kn" class="pc-host"></div>
+
+      <div class="callout eksempel"><span class="lbl">Snarvei for Billett</span>
+        «Alltid med» er tom, fordi alle åtte står på en høyreside. Aldri med: artist, epost.
+        Resonnement som er godt å skrive på eksamen: sete kommer bare fra billettnr (FD1), og billettnr kommer bare fra konsert og sete (FD4).
+        En KN må derfor inneholde billettnr eller sete. Med sete trengs i tillegg konsert, enten direkte eller via scene og dato (FD3).</div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor må et attributt som aldri står til høyre, være med i alle KN?</summary>
+          <p>Ingen FD kan gi det, så uten det blir <span class="mono">X⁺</span> aldri hele R.</p></details>
+        <details class="grense"><summary>Hvorfor kan vi kaste attributter som bare står til høyre?</summary>
+          <p>De kan alltid utledes fra resten av nøkkelen og hjelper ikke til med å utlede noe annet. Med dem blir nøkkelen ikke minimal.</p></details>
+        <details class="grense"><summary>Hvorfor stopper vi ikke ved første KN?</summary>
+          <p>Det kan finnes flere, og normalformene avhenger av alle nøkkelattributtene.</p></details>
+        <details class="grense"><summary>Hvorfor er ABC ikke en KN selv om <span class="mono">(ABC)⁺ = R</span>?</summary>
+          <p>Den inneholder AC, så den er ikke minimal.</p></details>
+        <ul>
+          <li><b>Tom «alltid med»-gruppe?</b> Da finnes det likevel en KN, fordi R selv er en SN. Start med enkeltattributter.</li>
+          <li><b>Minuspoeng på avkrysning.</b> H2020 R1 ga ±1,67 per kryss. Ett feil kryss spiser opp et riktig ett.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H2020 R1 og H2025 3.2a: finn alle KN-er.</li>
+          <li>H2019 3.1: «Hvilke attributter må være med i alle KN?» Svaret er «alltid med»-gruppen.</li>
+          <li>H2023 3.1 og H2024 3.1: nøkkelattributter JA/NEI. Det krever alle KN-ene først.</li>
+          <li>Alltid i dekomposisjon (<a href="07-normalisering.html#fane=bcnf-dekomp">blokk 7</a>): KN for hver ny relasjon.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-finn-kn"></div>
+    </section>
+
+    <!-- ===================== EKSAMEN ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver</h3>
+      <p class="muted small">FD-delen av oppgave 3 fra eksamenene i banken. Normalform og dekomposisjon ligger i <a href="07-normalisering.html#fane=eksamen">blokk 7</a>.</p>
+      <div id="bank-fd"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Merket viser hvilken fane påstanden hører til.</p>
+      <div id="tf-fd"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 6 · Funksjonelle avhengigheter · <a href="07-normalisering.html">Neste: blokk 7, normalisering</a></footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script src="assets/js/sql-lang.js?v=20261125c"></script>
+  <script src="assets/js/pseudocode.js?v=20261125c"></script>
+  <script src="assets/js/stepplayer.js?v=20261125c"></script>
+  <script src="assets/js/varline.js?v=20261125c"></script>
+  <script src="assets/js/viz-relation.js?v=20261125c"></script>
+  <script src="assets/js/viz-er.js?v=20261125c"></script>
+  <script src="assets/js/data-fd.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
+  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.dataFd, Demo = IN.fdDemo;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[06-fd] " + navn, e); } }
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-fd-begrep": {
+        eli5: "<p>Tenk på en garderobe der lappen med nummeret ditt alltid gir den samme jakka. Lappnummeret «bestemmer» jakka. Viser to personer fram samme nummer og får hver sin jakke, er regelen brutt.</p>",
+        normal: "<p>En FD beskriver hvordan verden henger sammen: billettnummeret avgjør hvilken konsert og hvilket sete det gjelder, og konserten avgjør artisten. FD-er kommer fra det vi vet om virkeligheten (forretningsregler og betydning). De kan ikke leses ut av dataene, fordi en tabell bare viser ett øyeblikk.</p>",
+        teknisk: "<p><span class=\"mono\">X → A</span> holder i en instans hvis det for alle rader t₁ og t₂ gjelder at t₁[X] = t₂[X] medfører t₁[A] = t₂[A]. Skjemaet oppfyller FD-en hvis <i>alle lovlige</i> instanser gjør det.</p><p>Kurset splitter høyresider til ett attributt før normalformanalysen, og ser bort fra trivielle FD-er og FD-er med unødvendig store venstresider. FD-ene avgjør hvilke nøkler relasjonen har og hvilke normalformer den oppfyller.</p>"
+      },
+      "ex-fd-instans": {
+        eli5: "<p>Du ser tre hvite svaner og tror at alle svaner er hvite. Én svart svane holder for å vise at du tok feil, men ingen mengde hvite svaner beviser at du har rett.</p>",
+        normal: "<p>Når du sjekker en instans mot <span class=\"mono\">X → A</span>, grupperer du radene etter verdiene i X. Har to rader i samme gruppe ulik A, er FD-en brutt. Like A-verdier i ulike X-grupper er helt i orden.</p><p>Skal du fylle inn en <span class=\"mono\">?</span>, finner du en FD med den ukjente kolonnen på høyresiden og en annen rad med samme venstreside. Den raden avgjør verdien.</p>",
+        teknisk: "<p>En instans I bryter <span class=\"mono\">X → A</span> hvis det finnes t₁, t₂ ∈ I med t₁[X] = t₂[X] og t₁[A] ≠ t₂[A]. I utfyllingsoppgaver er t[A] tvunget av <span class=\"mono\">X → A</span> hvis det finnes en annen rad t′ med t′[X] = t[X]. Da må t[A] = t′[A].</p><p>Venstresiden i FD-en du bruker, kan ikke være en supernøkkel: to rader med lik venstreside ville da vært like i alt. Sensor i H2025 3.1 regnet NULL på høyresiden som brudd (NULL = ukjent). Det er en konvensjon fra den oppgaven.</p>"
+      },
+      "ex-tillukning": {
+        eli5: "<p>Som dominobrikker: du dytter de første (X). Hver brikke som faller, kan velte nye. Når ingen flere faller, er de liggende brikkene tillukningen.</p>",
+        normal: "<p>Du har en «kurv» med attributter. Gå gjennom FD-ene: står hele venstresiden i kurven, putter du høyresiden oppi. Gå gjennom lista igjen til en hel runde ikke gir noe nytt. Rekkefølgen du bruker FD-ene i, spiller ingen rolle for svaret.</p>",
+        teknisk: "<p><span class=\"mono\">X⁺</span> er den minste mengden som inneholder X og er lukket under F: for alle <span class=\"mono\">Y → Z</span> i F med <span class=\"mono\">Y ⊆ X⁺</span> er <span class=\"mono\">Z ⊆ X⁺</span>. Algoritmen stopper fordi X⁺ bare vokser og R er endelig. <span class=\"mono\">X → A</span> følger av F nøyaktig når <span class=\"mono\">A ∈ X⁺</span>.</p><p>Tillukning er verktøyet bak resten av blokk 6 og 7: SN-test, KN-søk, spørsmål 1 i normalformalgoritmen og <span class=\"mono\">S₁(Y⁺)</span> i BCNF-dekomposisjonen.</p>"
+      },
+      "ex-nokler": {
+        eli5: "<p>En supernøkkel er en beskrivelse som alltid peker ut nøyaktig én rad, kanskje med unødvendige detaljer («billett 17, sete 4B, kjøpt av Ola»). En kandidatnøkkel er en slik beskrivelse uten noe ekstra («billett 17»). Det kan finnes flere korte nok beskrivelser. Hvert ord som er med i minst én av dem, er et nøkkelattributt.</p>",
+        normal: "<p>Sjekk SN med tillukning: blir <span class=\"mono\">X⁺</span> hele relasjonen, er X en SN. For å vise at en SN er en KN, sjekker du at du ikke kan fjerne ett eneste attributt og fortsatt ha en SN. Nøkkelattributtene trenger du i normalformene. Derfor må du finne <i>alle</i> kandidatnøklene, ikke bare én.</p>",
+        teknisk: "<p>SN ⇔ <span class=\"mono\">X⁺ = R</span>. KN ⇔ SN og ingen <span class=\"mono\">Y ⊂ X</span> er SN. Hver supermengde av en SN er en SN, og R selv er alltid en SN, så hver relasjon har minst én KN.</p><p>Mengden av nøkkelattributter er unionen av alle KN-er. Nøkkelattributt er et begrep om enkeltattributter, mens SN og KN er begreper om mengder.</p>"
+      },
+      "ex-finn-kn": {
+        eli5: "<p>Noen brikker <i>må</i> med i alle løsninger, fordi ingen andre kan lage dem. Noen brikker trengs aldri, fordi de bare blir laget og ikke lager noe selv. Da gjenstår det bare å prøve de usikre brikkene, én og én og så to og to.</p>",
+        normal: "<p>Et attributt som aldri står til høyre, kan ingen andre bestemme. Det må derfor være med i enhver nøkkel. Et attributt som bare står til høyre, blir alltid «laget» av andre og hjelper aldri til å lage noe, så det er overflødig i enhver nøkkel.</p><p>Etter sorteringen trenger du bare å prøve kombinasjoner fra «kanskje med» lagt til «alltid med». Begynn med de minste kombinasjonene, så ser du minimaliteten med en gang.</p>",
+        teknisk: "<p>La L være attributtene på venstresidene og H attributtene på høyresidene. Hver KN inneholder R − H, og ingen KN inneholder H − L. Søket går over delmengder av L ∩ H i stigende størrelse. En SN som ikke inneholder en KN du har funnet, er da minimal.</p><p>Er «alltid med» tom, starter søket på ∅. I verste fall er søket eksponentielt, men på eksamen er det 4–7 attributter.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Demoer ---------- */
+    safe("billett-sjekk", function () { Demo.billettSjekk("#billett-sjekk"); });
+    safe("sp-instans", function () { Demo.instans("#sp-instans"); });
+    safe("sp-fyll", function () { Demo.fyll("#sp-fyll"); });
+    safe("sp-tillukning", function () { Demo.tillukning("#sp-tillukning", "#pc-tillukning"); });
+    safe("nokkel-sjekk", function () { Demo.nokkelSjekk("#nokkel-sjekk"); });
+    safe("sp-kn", function () { Demo.kn("#sp-kn", "#pc-kn"); });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "fd-" + fane }); });
+    });
+
+    /* ---------- Sant/usant for hele blokken ---------- */
+    safe("tf-fd", function () {
+      IN.tfTest("#tf-fd", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: D.faner[it.fane] || it.fane, kilde: false };
+      }), { id: "fd-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-fd", function () { IN.examBank("#bank-fd", { block: "fd" }); });
+  })();
+  </script>
+</body>
+</html>

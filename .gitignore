@@ -1,0 +1,46 @@
+# ---------------------------------------------------------------
+# Kildemateriale fra UiO – deles IKKE. Tilhører Universitetet i Oslo.
+# Lysark (inkl. den lagrede UiO-nettsiden med sporingsskript), eksamenssett,
+# sensorveiledninger, løsningsforslag, ukesoppgaver, innleveringer og alle
+# PDF-er holdes utenfor versjonskontroll.
+# ---------------------------------------------------------------
+slides/
+eksamener/
+ukesoppgaver/
+innleveringer/
+kilder/
+*.pdf
+*_files/
+
+# Claude Code-verktøy og lokale sesjonsnotater
+.claude/
+
+# Internt arbeidsmateriale – IKKE publisert (kildekart, innholdsfiler, uttrekk fra
+# kildene, eksamensbank under arbeid, selvtest, verktøy, prototyper).
+plan/
+
+# Dokumentasjon/planer i rota trengs ikke for at siden skal kjøre (CLAUDE, PLAN, BYGGEGUIDE …)
+/*.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+.vscode/
+.idea/
+
+# Node (hvis verktøy legges til senere)
+node_modules/
+
+# ---------------------------------------------------------------
+# Sikkerhetsnett (hviteliste): bare det nettstedet trenger for å kjøre spores.
+# Ny fil eller mappe i rota som skal publiseres? Legg den til her eksplisitt.
+# ---------------------------------------------------------------
+/*
+!/.gitignore
+!/*.html
+!/version.json
+!/assets/
+/assets/**/*.pdf
+/assets/**/*_files/

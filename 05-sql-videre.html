@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 5 · SQL videregående · IN2090</title>
+  <meta name="description" content="SQL videregående i IN2090: aggregering, GROUP BY og HAVING, delspørringer, WITH, ytre join, NULL, mengdeoperatorer, «for alle» og «Hvor mange rader?», med stegvise demoer på en liten biblioteksdatabase og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261125c">
+</head>
+<body data-page="sql-videre">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 5 · SQL videregående</h1>
+      <p class="lead">Dette er den største poengkilden på eksamen. Nesten hver SQL-oppgave fra 5 poeng og oppover handler om å telle per gruppe, ta med dem som har 0, finne den som har flest eller håndtere NULL riktig. Her går du gjennom aggregering, delspørringer, WITH, ytre join, NULL, mengdeoperatorer og «for alle», med stegvise demoer som viser mellomtabellene. Til slutt øver du på «Hvor mange rader?» med eksamensregelen. Grunnlaget (SELECT, join, DISTINCT, skranker) ligger i <a href="04-sql.html">blokk 4 · SQL</a>.</p>
+      <div class="badges" id="badges-sqlv"></div>
+    </div>
+
+    <div id="skjema"></div>
+
+    <div class="tabs" role="tablist" aria-label="SQL videregående">
+      <button data-tab="aggregering">Aggregering</button>
+      <button data-tab="delsporringer">Delspørringer</button>
+      <button data-tab="with">WITH</button>
+      <button data-tab="ytre-join">Ytre join</button>
+      <button data-tab="null">NULL</button>
+      <button data-tab="mengde">Mengdeoperatorer</button>
+      <button data-tab="for-alle">«For alle»</button>
+      <button data-tab="radantall">Hvor mange rader?</button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · AGGREGERING ===================== -->
+    <section data-panel="aggregering">
+      <h3>Aggregering, GROUP BY og HAVING</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>aggregatfunksjon</b> (<span class="mono">count</span>, <span class="mono">sum</span>, <span class="mono">avg</span>, <span class="mono">min</span>, <span class="mono">max</span>) slår sammen mange verdier til én.
+        <b>GROUP BY</b> deler radene i grupper med lik verdi i gruppekolonnene, og da regnes aggregatet én gang per gruppe.
+        <b>HAVING</b> er en betingelse på gruppene, mens WHERE er en betingelse på radene før grupperingen. Kurset sier at du må ha GROUP BY for å bruke HAVING.</div>
+      <div id="ex-aggregering"></div>
+
+      <h4>Aggregater på hele tabellen</h4>
+      <div id="eks-agg1"></div>
+      <p><span class="mono">avg(sider)</span> deler på 5, ikke 6, fordi NULL hoppes over. <span class="mono">sum(sider) / count(*)</span> hadde gitt 300, og det er feil snitt.</p>
+
+      <h4 class="demo-h">Steg for steg: GROUP BY og HAVING</h4>
+      <p>Antall bøker per forfatter, bare de med minst to bøker. Hver farge er én gruppe. Bla gjennom stegene og se hvordan fem rader blir fire grupper og så ett svar.</p>
+      <div id="steg-groupby"></div>
+
+      <h4 class="demo-h">Steg for steg: WHERE før gruppering, HAVING etter</h4>
+      <p>Lånere med mer enn ett lån i oktober. WHERE fjerner rader, HAVING fjerner grupper.</p>
+      <div id="steg-wherehaving"></div>
+
+      <h4>Gruppering med NULL</h4>
+      <div id="eks-agg4"></div>
+      <p>4 grupper. Alle NULL-verdiene havner i <i>én</i> gruppe.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor HAVING og ikke WHERE?</summary>
+          <p><span class="mono">WHERE count(*) &gt;= 2</span> er ulovlig, fordi WHERE evalueres per rad før gruppene finnes. Aggregat i WHERE gir −2 hos sensor (H20, H23, H25).</p></details>
+        <details class="grense"><summary>Hvorfor GROUP BY f.fid og ikke bare f.navn?</summary>
+          <p>To forfattere kan hete det samme, og da slås de sammen til én gruppe. Grupper på nøkkelen, og ta med navnet hvis du vil vise det. Sensor trekker ikke for å gruppere bare på primærnøkkelen.</p></details>
+        <details class="grense"><summary>Hvorfor må navn stå i GROUP BY?</summary>
+          <p>Alt i SELECT som ikke er aggregert, må være gruppert (eller avhenge av en gruppert primærnøkkel). Ellers vet ikke databasen hvilken rad i gruppa verdien skal hentes fra. Manglende GROUP BY gir −2.</p></details>
+        <details class="grense"><summary>Hvorfor count(*) og ikke sum(…)?</summary>
+          <p><span class="mono">count</span> teller rader, <span class="mono">sum</span> legger sammen verdier. «Totalt antall sider» er <span class="mono">sum(sider)</span>, «antall bøker» er <span class="mono">count(*)</span>. H19 2.3 trakk −1 for count der det skulle vært sum.</p></details>
+        <details class="grense"><summary>Hvorfor HAVING count(*) &gt;= 2 og ikke HAVING antall &gt;= 2?</summary>
+          <p>Et navn laget med AS i SELECT finnes ikke ennå når HAVING evalueres. Kursets navneregel tillater SELECT-navn bare i ORDER BY og i ytre spørringer.</p></details>
+        <details class="grense"><summary>Hvorfor stemmer ikke snittet mitt?</summary>
+          <p><span class="mono">sum(sider) / count(*)</span> tar med NULL-raden i nevneren og gir 300. Bruk <span class="mono">avg(sider)</span>, som gir 360.</p></details>
+        <ul>
+          <li><b>Meningsløs GROUP BY.</b> Å gruppere på en kolonne som ikke hører til spørsmålet (for eksempel på <span class="mono">bid</span> når du vil ha én rad per forfatter) gir feil antall grupper. H19 2.3 trakk −2.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>Aggregat per gruppe kommer hvert år: H19 2.3 (sum per sjanger), H20 S4 og S6, H23 2.3–2.5, H24 2.3 og 2.6, H25 2.5 (<span class="mono">HAVING count(*) &gt; 3</span> og <span class="mono">max − min</span> per gruppe).</li>
+          <li>«Flest» og «størst» (fanen WITH) og VIEW med aggregat (H20 S5, H25 2.6, blokk 8).</li>
+          <li>Radantall-flervalg med GROUP BY, HAVING og OFFSET: H24 2.1, H25 2.1.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-aggregering"></div>
+    </section>
+
+    <!-- ===================== 2 · DELSPØRRINGER ===================== -->
+    <section data-panel="delsporringer">
+      <h3>Delspørringer</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>delspørring</b> er en SELECT inne i en annen spørring. Svaret på en spørring er en tabell, så den kan brukes der en tabell trengs (i FROM, og da må den ha et navn),
+        som én verdi (hvis den gir én rad og én kolonne), eller som en liste i <span class="mono">IN</span> og <span class="mono">EXISTS</span>.
+        En <b>korrelert</b> delspørring bruker en kolonne fra den ytre spørringen og regnes derfor ut på nytt for hver ytre rad.</div>
+      <div id="ex-delsporringer"></div>
+
+      <h4>Delspørring som verdi</h4>
+      <div id="eks-ds1"></div>
+
+      <h4>IN gir ingen duplikater</h4>
+      <p>Lånere som har lånt en bok av Ibsen:</p>
+      <div id="eks-ds2"></div>
+      <p>Med en vanlig join over de fire tabellene ville Ada stått to ganger, fordi hun har lånt både Et dukkehjem og Peer Gynt. Da måtte du brukt DISTINCT.</p>
+
+      <h4 class="demo-h">Steg for steg: NOT EXISTS, korrelert</h4>
+      <p>Forfattere uten bøker. Delspørringen kjøres én gang per forfatter, med forfatterens egen <span class="mono">fid</span>.</p>
+      <div id="steg-notexists"></div>
+
+      <h4>Korrelert delspørring i SELECT</h4>
+      <p>Antall lån per låner, også 0:</p>
+      <div id="eks-ds4"></div>
+
+      <h4>Delspørring i FROM</h4>
+      <p>Gjennomsnittlig antall lån blant lånere som har lånt noe:</p>
+      <div id="eks-ds5"></div>
+      <p>Gruppene er 2, 1, 2 og 1. Dina er ikke med, fordi hun ikke har rader i <span class="mono">utlån</span>.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor IN og ikke =?</summary>
+          <p><span class="mono">= (SELECT …)</span> krever at delspørringen gir høyst én rad. Gir den flere, får du kjørefeil. Bruk IN når svaret kan være en liste.</p></details>
+        <details class="grense"><summary>Hvorfor AS t etter delspørringen i FROM?</summary>
+          <p>Det er påkrevd. Uten navn gir PostgreSQL feil.</p></details>
+        <details class="grense"><summary>Hvorfor NOT EXISTS og ikke NOT IN? <span class="tag">Tilleggsfelle</span></summary>
+          <p>Kan delspørringen gi NULL, blir NOT IN aldri sann, og svaret blir tomt. <span class="mono">WHERE fid NOT IN (SELECT fid FROM bok)</span> gir 0 rader fordi Folkeeventyr har <span class="mono">fid</span> lik NULL. NOT EXISTS gir Ferrante. Fellen står ikke i lysarkene. Se demoen i fanen NULL.</p></details>
+        <details class="grense"><summary>Hvorfor SELECT * i EXISTS?</summary>
+          <p>EXISTS bryr seg bare om at det finnes rader, ikke om hva de inneholder. <span class="mono">SELECT 1</span> virker like godt.</p></details>
+        <details class="grense"><summary>Hvorfor må delspørringen være korrelert?</summary>
+          <p>Uten <span class="mono">WHERE b.fid = f.fid</span> spør <span class="mono">NOT EXISTS (SELECT * FROM bok)</span> bare om bok-tabellen er tom. Den er ikke tom, så svaret blir 0 rader.</p></details>
+        <ul>
+          <li><b>Hardkoding.</b> Skriv ikke <span class="mono">WHERE lid IN (1, 3)</span> fordi du har sett på dataene. Spørringen skal virke på alle lovlige instanser.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>Korrelert delspørring i UPDATE: H25 2.4 (<span class="mono">SET kol = (SELECT … WHERE indre.id = ytre.id)</span>).</li>
+          <li>«Uten» eller «som ikke har»: NOT EXISTS, NOT IN eller LEFT JOIN … IS NULL. Alle gir full uttelling når de er riktige.</li>
+          <li>Radantall med NOT EXISTS: H25 2.1. «For alle» i H20 S4 (fanen «For alle»).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-delsporringer"></div>
+    </section>
+
+    <!-- ===================== 3 · WITH ===================== -->
+    <section data-panel="with">
+      <h3>WITH</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <span class="mono">WITH navn AS (SELECT …)</span> gir en delspørring et navn <i>før</i> hovedspørringen. Navnet kan brukes som en vanlig tabell i resten av spørringen, også flere ganger.
+        Flere WITH-tabeller skilles med komma, og en senere kan bruke en tidligere.</div>
+      <div id="ex-with"></div>
+
+      <h4 class="demo-h">Steg for steg: «Hvem har flest lån?» med WITH og max</h4>
+      <div id="steg-withmax"></div>
+
+      <h4>Samme spørsmål med ORDER BY og LIMIT</h4>
+      <div id="eks-w2"></div>
+      <p>Gir <b>én</b> rad, enten Ada eller Cato, og det er ikke bestemt hvem. Ved likhet mister du altså den andre.</p>
+
+      <h4>To steg</h4>
+      <p>Lån som ikke er levert, gruppert på sted:</p>
+      <div id="eks-w3"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor = (SELECT max …) og ikke ORDER BY … LIMIT 1?</summary>
+          <p>LIMIT 1 tar én tilfeldig rad ved likhet. Med max får du alle som deler førsteplassen. Kursets løsning til H20 viser begge måtene. Står det «den eller de som har flest», er max tryggest.</p></details>
+        <details class="grense"><summary>Hvorfor ikke max(count(*))?</summary>
+          <p>Aggregater kan ikke nøstes direkte. Regn ut tellingen i en WITH (eller en delspørring i FROM) og ta max av den.</p></details>
+        <details class="grense"><summary>Hvorfor WITH og ikke et VIEW?</summary>
+          <p>Oppgaven sier «lag et view» bare når den vil ha det lagret. Uten VIEW-krav er WITH riktig. Når oppgaven ber om VIEW, gir manglende <span class="mono">CREATE VIEW</span> −3 (H20 S5).</p></details>
+        <details class="grense"><summary>Hvorfor komma og ikke ny WITH?</summary>
+          <p>Flere hjelpetabeller skrives <span class="mono">WITH a AS (…), b AS (…) SELECT …</span>.</p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>«Flest», «størst» og «minst»: H20 S6 (ORDER BY + LIMIT 1 eller max), H23 2.4, H24 2.3.</li>
+          <li>Spørringer i flere trinn: H25 2.5 (WITH + HAVING + <span class="mono">max − min</span>) og repetisjonsoppgavene.</li>
+          <li>WITH før LEFT JOIN for å få med 0-rader: H25 2.7 (fanen Ytre join).</li>
+        </ul></div>
+    </section>
+
+    <!-- ===================== 4 · YTRE JOIN ===================== -->
+    <section data-panel="ytre-join">
+      <h3>Ytre join</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>ytre join</b> beholder rader som ikke har en partner, og fyller de manglende kolonnene med NULL.
+        <span class="mono">LEFT OUTER JOIN</span> beholder alle radene fra venstre tabell, <span class="mono">RIGHT OUTER JOIN</span> alle fra høyre og <span class="mono">FULL OUTER JOIN</span> alle fra begge. <span class="mono">OUTER</span> kan sløyfes.</div>
+      <div id="ex-ytre-join"></div>
+
+      <h4 class="demo-h">Steg for steg: fra kryssprodukt til LEFT JOIN</h4>
+      <p>Først alle 30 kombinasjonene, så ON-betingelsen, og til slutt radene uten partner som LEFT JOIN legger tilbake.</p>
+      <div id="steg-leftjoin"></div>
+      <p class="small muted"><span class="mono">forfatter RIGHT JOIN bok</span> gir også 6 rader (de fem parene og NULL med Folkeeventyr). <span class="mono">FULL JOIN</span> gir 7.</p>
+
+      <h4>Telle med 0</h4>
+      <div id="eks-yj2"></div>
+      <p>Med <span class="mono">count(*)</span> får Ferrante 1.</p>
+
+      <h4 class="demo-h">Filter på høyre tabell: feil og riktig <span class="tag">Tilleggsfelle</span></h4>
+      <p>Antall lån i oktober per låner, også de med 0. Først den feile versjonen med WHERE etter LEFT JOIN:</p>
+      <div id="steg-wherefelle"></div>
+      <p>Så kursets måte: filtrer i en WITH først, og join etterpå.</p>
+      <div id="steg-withriktig"></div>
+
+      <h4>To LEFT JOIN-er etter hverandre</h4>
+      <p>Antall Ibsen-lån per låner:</p>
+      <div id="eks-yj4"></div>
+      <p>Hadde den andre joinen vært INNER JOIN, ville Bo, Dina og Ibsen forsvunnet.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor LEFT JOIN og ikke INNER JOIN?</summary>
+          <p>Står det «også de som har 0» eller «alle X», forsvinner radene uten partner med indre join. H19 2.5 trakk −2 for dette.</p></details>
+        <details class="grense"><summary>Hvorfor count(b.bid) og ikke count(*)?</summary>
+          <p><span class="mono">count(*)</span> teller NULL-raden fra LEFT JOIN som 1. Tell en kolonne fra høyre tabell, helst nøkkelen. H19 2.5 trakk −1.</p></details>
+        <details class="grense"><summary>Hvorfor filtrere i WITH (eller ON) og ikke i WHERE? <span class="tag">Tilleggsfelle</span></summary>
+          <p>WHERE kommer etter joinen og fjerner NULL-radene, slik demoen over viser. Kursets løsning er å filtrere i en WITH først. Fellen står ikke rett ut i lysarkene.</p></details>
+        <details class="grense"><summary>Hvorfor LEFT JOIN også i den andre joinen?</summary>
+          <p>En indre join etter en LEFT JOIN fjerner NULL-radene igjen.</p></details>
+        <details class="grense"><summary>Hvorfor 0 og ikke NULL?</summary>
+          <p><span class="mono">count</span> gir 0, men <span class="mono">sum</span> over bare NULL gir NULL. H25 2.7 godtok både 0 og NULL for «ansatte uten timer». Vil du ha 0, kan du bruke <span class="mono">coalesce(sum(x), 0)</span>. <span class="tag">Tilleggsfelle</span> coalesce står ikke i lysarkene.</p></details>
+        <details class="grense"><summary>Hvorfor forfatter LEFT JOIN bok og ikke bok LEFT JOIN forfatter?</summary>
+          <p>Tabellen du vil beholde alle radene fra, skal stå til venstre. <span class="mono">bok LEFT JOIN forfatter</span> beholder Folkeeventyr, men ikke Ferrante.</p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>«Også de med 0»: H19 2.5 og H25 2.7 (ansatte uten timer: UNION ALL, LEFT JOIN og sum). Dette er den mest gjentatte SQL-fellen i kurset.</li>
+          <li>VIEW med andel (<span class="mono">count(kol)</span> mot <span class="mono">count(*)</span>): H25 2.6.</li>
+          <li>Radantall-flervalget (H23–H25 2.1) kan ha join-varianter. LEFT JOIN gir minst like mange rader som venstre tabell.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-ytre-join"></div>
+    </section>
+
+    <!-- ===================== 5 · NULL ===================== -->
+    <section data-panel="null">
+      <h3>NULL</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <b>NULL</b> betyr at verdien mangler eller er ukjent. En sammenligning med NULL (<span class="mono">=</span>, <span class="mono">!=</span>, <span class="mono">&lt;</span>, …) gir verken TRUE eller FALSE, men <b>NULL (ukjent)</b>.
+        WHERE beholder bare rader der betingelsen er TRUE. Test derfor med <span class="mono">IS NULL</span> og <span class="mono">IS NOT NULL</span>. Aggregatfunksjonene hopper over NULL, men <span class="mono">count(*)</span> teller alle rader.</div>
+      <div id="ex-null"></div>
+
+      <h4 class="demo-h">Prøv selv: AND, OR og NOT med NULL</h4>
+      <p>Velg verdier for <span class="mono">a</span> og <span class="mono">b</span>, eller trykk på et eksempel fra databasen. Den markerte ruta i tabellene er kombinasjonen du har valgt.</p>
+      <div id="tt-null"></div>
+
+      <h4>= NULL mot IS NULL</h4>
+      <div id="eks-n1"></div>
+
+      <h4>Telling</h4>
+      <div id="eks-n2"></div>
+
+      <h4>Andel levert og heltallsdivisjon <span class="tag">Tilleggsfelle</span></h4>
+      <div id="eks-n3"></div>
+      <p>3 av 6 lån er levert. <span class="mono">3 / 6</span> blir 0 når begge er heltall.</p>
+
+      <h4>Aggregat på tom input</h4>
+      <div id="eks-n4"></div>
+
+      <h4 class="demo-h">Steg for steg: NOT IN med NULL <span class="tag">Tilleggsfelle</span></h4>
+      <div id="steg-notin"></div>
+      <p>Fiksen er å fjerne NULL fra lista (eller å bruke NOT EXISTS):</p>
+      <div id="steg-notinfiks"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor IS NULL og ikke = NULL?</summary>
+          <p><span class="mono">= NULL</span> blir aldri TRUE. <span class="mono">adresse != NULL</span> ga −1 i H20 S5, og å ikke fjerne NULL-radene der oppgaven krevde det, ga −2.</p></details>
+        <details class="grense"><summary>Hvorfor er ikke Dina med i sted != 'Oslo'?</summary>
+          <p><span class="mono">NULL != 'Oslo'</span> er NULL. Vil du ha henne med, skriv <span class="mono">sted != 'Oslo' OR sted IS NULL</span>.</p></details>
+        <details class="grense"><summary>Hvorfor ::float? <span class="tag">Tilleggsfelle</span></summary>
+          <p>Uten cast blir andelen 0 eller 1, fordi <span class="mono">count</span> gir heltall. Kurset bruker <span class="mono">::float</span> (H25 2.6).</p></details>
+        <details class="grense"><summary>Hvorfor count(levert) og ikke count(*)?</summary>
+          <p>For å telle <i>leverte</i> lån. <span class="mono">count(*)</span> teller alle.</p></details>
+        <details class="grense"><summary>Hvorfor NOT EXISTS og ikke NOT IN? <span class="tag">Tilleggsfelle</span></summary>
+          <p>Se demoen over. Fellen står ikke i lysarkene, men den er vanlig.</p></details>
+        <ul>
+          <li><b>NULL i CHECK og UNIQUE.</b> CHECK slipper NULL gjennom, og UNIQUE godtar flere NULL. Se <a href="04-sql.html#fane=skranker">blokk 4, Skranker</a>.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>NULL-filter i VIEW og spørringer: H20 S5 (<span class="mono">IS NOT NULL</span>), H25 2.6 (<span class="mono">count(ferdig)</span> mot <span class="mono">count(*)</span>).</li>
+          <li>Radantall der NULL avgjør svaret: H25 2.1 (naturlig selvjoin, <span class="mono">navn != navn</span>) og H23 2.1.</li>
+          <li>Lovlig eller ulovlig med NULL i UNIQUE og fremmednøkkel: H19 2.1 (blokk 4).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-null"></div>
+    </section>
+
+    <!-- ===================== 6 · MENGDEOPERATORER ===================== -->
+    <section data-panel="mengde">
+      <h3>Mengdeoperatorer</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <span class="mono">UNION</span>, <span class="mono">INTERSECT</span> og <span class="mono">EXCEPT</span> kombinerer svarene fra to spørringer til én tabell: alle rader fra begge, radene som finnes i begge, eller radene i den første som ikke finnes i den andre.
+        De to spørringene må være <b>union-kompatible</b>: like mange kolonner med sammenlignbare typer. Uten <span class="mono">ALL</span> fjernes duplikater. Med ALL beholdes de.</div>
+      <div id="ex-mengde"></div>
+
+      <h4 class="demo-h">Prøv selv: før og etter</h4>
+      <p>Velg data og operator. Venstre og høyre tabell viser hvilke rader som matcher, og den siste tabellen er svaret. Datasettet med <span class="mono">lid</span> har duplikater, så der ser du forskjellen ALL gjør.</p>
+      <div id="so-demo"></div>
+
+      <h4>UNION ALL med konstant kolonne</h4>
+      <p>En låner får 2 poeng per lån og 5 ekstra poeng per lån av en norsk forfatter. Alle lånerne skal med.</p>
+      <div id="eks-m3"></div>
+      <p>Ada har to lån (2 + 2), begge av Ibsen (5 + 5), og får 14. Med UNION i stedet for UNION ALL blir Adas to rader (1, 2) til én og de to radene (1, 5) til én, og hun får 7. Cato får også 7. Dina får NULL, fordi <span class="mono">sum</span> over bare NULL er NULL.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor UNION ALL og ikke UNION?</summary>
+          <p>UNION fjerner like rader. Når radene skal summeres eller telles, blir svaret for lite. H19 2.4 trakk −1 for unødvendige duplikater i den <i>andre</i> retningen, så tenk på hva oppgaven ber om: en liste av unike verdier (UNION) eller rader som skal regnes med (UNION ALL).</p></details>
+        <details class="grense"><summary>Hvorfor samme antall kolonner?</summary>
+          <p>Delspørringene må være union-kompatible. <span class="mono">SELECT lid, navn … UNION SELECT lid …</span> gir feil.</p></details>
+        <details class="grense"><summary>Hvorfor heter kolonnen p og ikke poeng?</summary>
+          <p>Svaret får kolonnenavnene fra den første delspørringen. Gi konstantkolonnen et navn der.</p></details>
+        <details class="grense"><summary>Hvorfor gir utlån EXCEPT låner ingenting?</summary>
+          <p>Alle lid i utlån finnes i låner (fremmednøkkel). Rekkefølgen betyr noe: EXCEPT er ikke symmetrisk.</p></details>
+        <details class="grense"><summary>Kan jeg skrive dette uten UNION?</summary>
+          <p>Ofte ja, med OR (og DISTINCT). Det var hele H24 2.4 (<a href="04-sql.html">blokk 4</a>).</p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>UNION ALL med konstante kolonner før en aggregering: H25 2.7 og repetisjonsoppgavene.</li>
+          <li>Skriv om UNION: H24 2.4. UNION i et VIEW: H20 S5.</li>
+          <li>EXCEPT som en av måtene å skrive «uten», og radantall med mengdeoperatorer i flervalgsdelen.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-mengde"></div>
+    </section>
+
+    <!-- ===================== 7 · FOR ALLE ===================== -->
+    <section data-panel="for-alle">
+      <h3>«For alle» og «finnes»</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        SQL har en direkte måte å si «det <b>finnes</b> en rad slik at …» (EXISTS, IN, join), men ingen egen «<b>for alle</b>».
+        «For alle X gjelder P» skrives i stedet som «det finnes <b>ingen</b> X der P <b>ikke</b> gjelder», altså med dobbel negasjon: <span class="mono">NOT EXISTS (… NOT …)</span>.
+        Et alternativ er å telle og sammenligne antall.</div>
+      <div id="ex-for-alle"></div>
+
+      <h4>«Lånere der alle lånene er levert»: feil versjon</h4>
+      <p>Ulevert lån har Ada (bok 11), Cato (bok 10) og Ibsen (bok 12). Denne spørringen svarer på «har levert <i>minst ett</i> lån», altså «finnes»:</p>
+      <div id="eks-fa1"></div>
+
+      <h4 class="demo-h">Steg for steg: riktig versjon med dobbel negasjon</h4>
+      <div id="steg-foralle"></div>
+
+      <h4>Riktig versjon med telling (bare lånere med lån)</h4>
+      <div id="eks-fa3"></div>
+
+      <h4>«Lånere som har lånt alle Ibsen-bøkene»</h4>
+      <p>Ibsen-bøkene er 10 og 11. To nivåer: det finnes ingen Ibsen-bok som låneren <i>ikke</i> har lånt.</p>
+      <div id="eks-fa4"></div>
+      <p>Den samme med telling:</p>
+      <div id="eks-fa5"></div>
+      <p>«Minst én Ibsen-bok» (finnes) gir Ada og Cato.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor NOT EXISTS og ikke DISTINCT + filter?</summary>
+          <p>Filteret plukker rader der betingelsen gjelder for <i>én</i> rad, og det er «finnes». H20 S4 trakk −3 for akkurat dette.</p></details>
+        <details class="grense"><summary>Hvorfor count(DISTINCT b.bid) og ikke count(*)?</summary>
+          <p>Hadde Ada lånt Peer Gynt to ganger, ville <span class="mono">count(*)</span> gitt 3, og sammenligningen hadde feilet. DISTINCT teller ulike bøker.</p></details>
+        <details class="grense"><summary>Hvorfor er Dina med?</summary>
+          <p>«Alle lånene er levert» er sant når hun ikke har noen. Les oppgaven: skal personer uten rader med? Står det ikke noe, er begge tolkninger vanligvis godtatt så lenge du er konsekvent.</p></details>
+        <details class="grense"><summary>Hvorfor ikke hardkode = 2?</summary>
+          <p>Antall Ibsen-bøker skal regnes ut med en delspørring, ikke leses av fra dataene.</p></details>
+      </div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        <ul>
+          <li>H20 S4 er den klassiske «for alle»-oppgaven (−3 for en «finnes»-løsning).</li>
+          <li>«Alle», «bare» og «ingen»: les ordene nøye. «Bare» og «ingen» er ofte også dobbel negasjon (det finnes ikke noen som …).</li>
+          <li>Radantall-oppgaver med NOT EXISTS (H25 2.1).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-for-alle"></div>
+    </section>
+
+    <!-- ===================== 8 · HVOR MANGE RADER ===================== -->
+    <section data-panel="radantall">
+      <h3>«Hvor mange rader?»</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Flervalgsdelen på eksamen gir en spørring og arkets eksempeldata og spør hvor mange rader svaret har. Feil svar gir minuspoeng (H25: +2 for riktig, −0,5 for feil).
+        Teknikken er å følge den logiske evalueringsrekkefølgen steg for steg og telle rader etter hvert steg.</div>
+      <div id="ex-radantall"></div>
+
+      <div class="callout eksempel"><span class="lbl">Merk</span>
+        Evalueringsrekkefølgen over er vår oppsummering. Lysarkene viser skriverekkefølgen og navnereglene.</div>
+
+      <h4 class="demo-h">Øv med eksamensregelen</h4>
+      <p>13 spørringer på biblioteksdatabasen. Fest skjemaet øverst på siden, så har du radene for hånden. La stå blankt når du ikke klarer å regne det ut.</p>
+      <div id="del1-radantall"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor 1 og ikke 0?</summary>
+          <p>Et aggregat uten GROUP BY gir alltid én rad (her med <span class="mono">count</span> lik 0 eller <span class="mono">max</span> lik NULL).</p></details>
+        <details class="grense"><summary>Hvorfor 0 og ikke 1?</summary>
+          <p>Med GROUP BY på tom input finnes ingen grupper, så svaret er 0 rader.</p></details>
+        <details class="grense"><summary>Hvorfor teller ikke NULL-raden i joinen?</summary>
+          <p>NULL er ikke lik noe, heller ikke en annen NULL.</p></details>
+        <details class="grense"><summary>Hvorfor 4 og ikke 5 i DISTINCT sted?</summary>
+          <p>Oslo står to ganger og blir én. NULL står én gang og <i>teller</i> som en rad.</p></details>
+        <ul>
+          <li><b>Ikke gjett.</b> Feil svar gir minuspoeng.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        H23 2.1, H24 2.1 og H25 2.1: 5–10 spørringer på arkets data. H25 hadde <span class="mono">LIKE '%i%'</span> (3), en naturlig selvjoin (5), <span class="mono">navn != navn</span> (0), <span class="mono">LIMIT 1 OFFSET 5</span> (0) og NOT EXISTS (2).
+        Trenes best ved å regne på arkets eksempelrader steg for steg. Se også radantall-oppgavene i <a href="04-sql.html#fane=eksamen">blokk 4</a>.</div>
+    </section>
+
+    <!-- ===================== EKSAMENSOPPGAVER ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver i SQL videregående</h3>
+      <p class="muted small">Alle oppgavene fra eksamenene i banken som hører til denne blokken, nyeste først, med skjema, løsningsforslag og sensorveiledning. VIEW-oppgavene står her fordi de egentlig er aggregat- og join-oppgaver.</p>
+      <div id="bank-sqlv"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Etiketten viser hvilken fane påstanden hører til.</p>
+      <div id="tf-sqlv"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 5 · SQL videregående</footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script src="assets/js/sql-lang.js?v=20261125c"></script>
+  <script src="assets/js/pseudocode.js?v=20261125c"></script>
+  <script src="assets/js/stepplayer.js?v=20261125c"></script>
+  <script src="assets/js/varline.js?v=20261125c"></script>
+  <script src="assets/js/viz-relation.js?v=20261125c"></script>
+  <script src="assets/js/viz-er.js?v=20261125c"></script>
+  <script src="assets/js/data-sql.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
+  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.dataSql;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[05-sql-videre] " + navn, e); } }
+    function L() { return [].slice.call(arguments).join("\n"); }
+
+    /* ---------- Skjema og merker ---------- */
+    safe("skjema", function () { IN.schema("#skjema", D.skjema, { open: false, pin: true }); });
+    safe("badges", function () { D.badges("#badges-sqlv", "sql-videre"); });
+
+    /* ---------- Forklaringer ---------- */
+    Object.keys(D.explain5).forEach(function (k) {
+      safe("ex-" + k, function () { IN.explain("#ex-" + k, D.explain5[k], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Eksempler: SQL + resultat (resultatene er fra innholdsfila, kjørt i SQLite) ---------- */
+    function eks(id, sql, kolonner, rader, extra) {
+      safe(id, function () {
+        var h = document.getElementById(id); if (!h) return;
+        IN.sqlBlock(h, sql);
+        if (kolonner) {
+          var t = { navn: "resultat", kolonner: kolonner, rader: rader };
+          if (extra) for (var k in extra) t[k] = extra[k];
+          IN.vizTable(h, t);
+        }
+      });
+    }
+    eks("eks-agg1", L("SELECT count(*) AS rader, count(fid) AS med_forfatter, count(sider) AS med_sider,",
+      "       sum(sider) AS sum_sider, avg(sider) AS snitt, min(år) AS eldst, max(år) AS nyest",
+      "FROM bok;"),
+      ["rader", "med_forfatter", "med_sider", "sum_sider", "snitt", "eldst", "nyest"], [[6, 5, 5, 1800, "360.0000000000000000", 1841, 1973]],
+      { caption: "I PostgreSQL gir <span class=\"mono\">avg</span> av heltall typen <span class=\"mono\">numeric</span>, derfor alle desimalene." });
+    eks("eks-agg4", L("SELECT sted, count(*) AS antall", "FROM låner", "GROUP BY sted;"),
+      ["sted", "antall"], [["Oslo", 2], ["Bergen", 1], ["Skien", 1], [null, 1]]);
+    eks("eks-ds1", L("SELECT tittel, sider", "FROM bok", "WHERE sider > (SELECT avg(sider) FROM bok);"),
+      ["tittel", "sider"], [["Kristin Lavransdatter", 1000]]);
+    eks("eks-ds2", L("SELECT navn", "FROM låner", "WHERE lid IN (SELECT u.lid",
+      "              FROM utlån AS u", "                INNER JOIN bok AS b ON (u.bid = b.bid)",
+      "                INNER JOIN forfatter AS f ON (b.fid = f.fid)", "              WHERE f.navn = 'Ibsen');"),
+      ["navn"], [["Ada"], ["Cato"]]);
+    eks("eks-ds4", L("SELECT l.navn,", "       (SELECT count(*) FROM utlån AS u WHERE u.lid = l.lid) AS antall", "FROM låner AS l;"),
+      ["navn", "antall"], [["Ada", 2], ["Bo", 1], ["Cato", 2], ["Dina", 0], ["Ibsen", 1]]);
+    eks("eks-ds5", L("SELECT avg(t.antall) AS snitt", "FROM (SELECT lid, count(*) AS antall", "      FROM utlån", "      GROUP BY lid) AS t;"),
+      ["snitt"], [["1.5000000000000000"]]);
+    eks("eks-w2", L("WITH per_låner AS (", "  SELECT lid, count(*) AS antall", "  FROM utlån", "  GROUP BY lid", ")",
+      "SELECT l.navn, p.antall", "FROM per_låner AS p", "  INNER JOIN låner AS l ON (p.lid = l.lid)", "ORDER BY p.antall DESC", "LIMIT 1;"));
+    eks("eks-w3", L("WITH ulevert AS (", "  SELECT lid", "  FROM utlån", "  WHERE levert IS NULL", ")",
+      "SELECT l.sted, count(*) AS antall", "FROM ulevert AS u", "  INNER JOIN låner AS l ON (u.lid = l.lid)", "GROUP BY l.sted;"),
+      ["sted", "antall"], [["Oslo", 2], ["Skien", 1]]);
+    eks("eks-yj2", L("SELECT f.navn, count(b.bid) AS antall", "FROM forfatter AS f", "  LEFT JOIN bok AS b ON (f.fid = b.fid)", "GROUP BY f.fid, f.navn;"),
+      ["navn", "antall"], [["Ibsen", 2], ["Undset", 1], ["Woolf", 1], ["Lindgren", 1], ["Ferrante", 0]]);
+    eks("eks-yj4", L("WITH ibsen_bok AS (", "  SELECT b.bid", "  FROM bok AS b", "    INNER JOIN forfatter AS f ON (b.fid = f.fid)", "  WHERE f.navn = 'Ibsen'", ")",
+      "SELECT l.navn, count(i.bid) AS ibsen_lån", "FROM låner AS l", "  LEFT JOIN utlån AS u ON (l.lid = u.lid)", "  LEFT JOIN ibsen_bok AS i ON (u.bid = i.bid)", "GROUP BY l.lid, l.navn;"),
+      ["navn", "ibsen_lån"], [["Ada", 2], ["Bo", 0], ["Cato", 1], ["Dina", 0], ["Ibsen", 0]]);
+    eks("eks-n1", L("SELECT navn FROM låner WHERE sted = NULL;     -- 0 rader",
+      "SELECT navn FROM låner WHERE sted IS NULL;    -- Dina",
+      "SELECT navn FROM låner WHERE sted = 'Oslo' OR sted != 'Oslo';   -- 4 rader, Dina mangler"));
+    eks("eks-n2", L("SELECT count(*) AS alle, count(sted) AS med_sted, count(DISTINCT sted) AS ulike_steder", "FROM låner;"),
+      ["alle", "med_sted", "ulike_steder"], [[5, 4, 3]]);
+    eks("eks-n3", L("SELECT count(levert) / count(*) AS andel_feil,", "       count(levert)::float / count(*) AS andel", "FROM utlån;"),
+      ["andel_feil", "andel"], [[0, 0.5]]);
+    eks("eks-n4", L("SELECT count(*) FROM utlån WHERE dato > '2027-01-01';   -- 1 rad: 0",
+      "SELECT max(dato) FROM utlån WHERE dato > '2027-01-01';  -- 1 rad: NULL",
+      "SELECT lid, count(*) FROM utlån WHERE dato > '2027-01-01' GROUP BY lid;  -- 0 rader"));
+    eks("eks-m3", L("WITH poeng AS (", "  SELECT lid, 2 AS p", "  FROM utlån", "  UNION ALL", "  SELECT u.lid, 5 AS p", "  FROM utlån AS u",
+      "    INNER JOIN bok AS b ON (u.bid = b.bid)", "    INNER JOIN forfatter AS f ON (b.fid = f.fid)", "  WHERE f.land = 'Norge'", ")",
+      "SELECT l.navn, sum(p.p) AS poeng", "FROM låner AS l", "  LEFT JOIN poeng AS p ON (l.lid = p.lid)", "GROUP BY l.lid, l.navn;"),
+      ["navn", "poeng"], [["Ada", 14], ["Bo", 2], ["Cato", 9], ["Dina", null], ["Ibsen", 7]]);
+    eks("eks-fa1", L("SELECT DISTINCT l.navn", "FROM låner AS l", "  INNER JOIN utlån AS u ON (l.lid = u.lid)", "WHERE u.levert IS NOT NULL;"),
+      ["navn"], [["Ada"], ["Bo"], ["Cato"]], { caption: "Feil svar på «alle lånene er levert»: Ada og Cato har ulevert lån." });
+    eks("eks-fa3", L("SELECT l.navn", "FROM låner AS l", "  INNER JOIN utlån AS u ON (l.lid = u.lid)", "GROUP BY l.lid, l.navn", "HAVING count(*) = count(u.levert);"),
+      ["navn"], [["Bo"]], { caption: "Indre join, så Dina (ingen lån) er ikke med." });
+    eks("eks-fa4", L("SELECT l.navn", "FROM låner AS l", "WHERE NOT EXISTS (", "  SELECT *", "  FROM bok AS b", "    INNER JOIN forfatter AS f ON (b.fid = f.fid)",
+      "  WHERE f.navn = 'Ibsen'", "    AND NOT EXISTS (SELECT *", "                    FROM utlån AS u", "                    WHERE u.bid = b.bid", "                      AND u.lid = l.lid)", ");"),
+      ["navn"], [["Ada"]]);
+    eks("eks-fa5", L("SELECT l.navn", "FROM låner AS l", "  INNER JOIN utlån AS u ON (l.lid = u.lid)", "  INNER JOIN bok AS b ON (u.bid = b.bid)",
+      "  INNER JOIN forfatter AS f ON (b.fid = f.fid)", "WHERE f.navn = 'Ibsen'", "GROUP BY l.lid, l.navn",
+      "HAVING count(DISTINCT b.bid) = (SELECT count(*)", "                                FROM bok AS b2", "                                  INNER JOIN forfatter AS f2 ON (b2.fid = f2.fid)",
+      "                                WHERE f2.navn = 'Ibsen');"),
+      ["navn"], [["Ada"]]);
+
+    /* ---------- Stegvise demoer ---------- */
+    var STEG = { "steg-groupby": "groupBy", "steg-wherehaving": "whereHaving", "steg-notexists": "notExists", "steg-withmax": "withMax",
+      "steg-leftjoin": "leftJoin", "steg-wherefelle": "whereFelle", "steg-withriktig": "withRiktig", "steg-notin": "notInNull",
+      "steg-notinfiks": "notInFiks", "steg-foralle": "forAlle" };
+    Object.keys(STEG).forEach(function (id) {
+      safe(id, function () { IN.sqlSteps("#" + id, D.steg[STEG[id]]); });
+    });
+
+    /* ---------- Widgets ---------- */
+    safe("tt-null", function () { D.truthTable("#tt-null"); });
+    safe("so-demo", function () { D.setOps("#so-demo"); });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz5).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.withSql(D.quiz5[fane]), { id: "sqlv-" + fane }); });
+    });
+
+    /* ---------- Hvor mange rader? ---------- */
+    safe("del1-radantall", function () { IN.del1("#del1-radantall", D.del1_5, { id: "sqlv-radantall" }); });
+
+    /* ---------- Sant/usant for hele blokken ---------- */
+    safe("tf-sqlv", function () {
+      IN.tfTest("#tf-sqlv", D.tf5.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: it.tema, kilde: false };
+      }), { id: "sqlv-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-sqlv", function () { IN.examBank("#bank-sqlv", { block: "sql-videre" }); });
+  })();
+  </script>
+</body>
+</html>

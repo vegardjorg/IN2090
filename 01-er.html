@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 1 · ER-modellering · IN2090</title>
+  <meta name="description" content="ER-modellering i IN2090: kursets Chen-notasjon, attributter, kardinalitet og deltakelse, svake entiteter, ternære relasjoner, fra kravtekst til diagram, JA/NEI-lesing og EER – med figurer, øving og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261125c">
+</head>
+<body data-page="er">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 1 · ER-modellering</h1>
+      <p class="lead">ER-oppgaven er oppgave 1 hvert år og en av de tyngste på eksamen. Her lærer du kursets notasjon, hvordan tallene og strekene leses, svake entiteter og ternære relasjoner, og en fast metode fra kravtekst til et begrunnet diagram. Til slutt øver du på å lese et diagram med meningsløse navn, slik eksamen spør.</p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_1"><b>H2025</b> · Fritidsbåt-firmaet: ER-modell · <span class="pts">18p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-1_1"><b>H2024</b> · ER-modell for et bibliotek · <span class="pts">11p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-1_2"><b>H2024</b> · Les et ER-diagram (JA/NEI) · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-1_1"><b>H2023</b> · ER-modell for en bank · <span class="pts">15p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-1_2"><b>H2023</b> · Les et «hemmelig» ER-diagram · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2019-1_2"><b>H2019</b> · Intervjuer (svak entitet og ternær) · <span class="pts">18p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2019-1_1"><b>H2019</b> · Kandidater og arbeidsgiver · <span class="pts">7p</span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="ER-modellering">
+      <button data-tab="notasjon">Tegneguide</button>
+      <button data-tab="attributter">Attributter</button>
+      <button data-tab="relasjoner">Relasjoner</button>
+      <button data-tab="svake">Svake entiteter</button>
+      <button data-tab="ternaere">Ternære</button>
+      <button data-tab="tekst-til-diagram">Fra tekst til diagram</button>
+      <button data-tab="lese">Lese et diagram</button>
+      <button data-tab="eer">EER <span class="nytt-mark">nytt i H26</span></button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · TEGNEGUIDE ===================== -->
+    <section data-panel="notasjon">
+      <h3>Tegneguide</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        ER er et lite diagramspråk med tre byggeklosser: <b>entiteter</b> (rektangler), <b>attributter</b> (ovaler) og
+        <b>relasjoner</b> (romber), bundet sammen med streker. Strekene mellom en rombe og entitetene kalles <b>deltakelser</b>.
+        Kurset bruker Chen-notasjon slik Elmasri/Navathe tegner den, ikke kråkefot og ikke UML.</div>
+      <div id="ex-notasjon"></div>
+
+      <h4>Slik tegnes hvert element</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Element</th><th>Slik tegnes det</th><th>Merk</th></tr></thead>
+        <tbody>
+          <tr><td>Entitet(stype)</td><td>Rektangel med navnet i VERSALER: <span class="mono">ARTIST</span></td><td>Navnet er unikt i diagrammet.</td></tr>
+          <tr><td>Svak entitet</td><td><b>Dobbelt rektangel</b> (et litt mindre rektangel inni)</td><td>Se fanen «Svake entiteter».</td></tr>
+          <tr><td>Attributt</td><td>Oval med navnet, koblet til <b>én</b> entitet eller relasjon med en enkel, rett strek</td><td>Kurset skriver ofte attributtnavn med stor forbokstav: <span class="mono">Navn</span>.</td></tr>
+          <tr><td>Nøkkelattributt</td><td>Navnet <b>understreket</b> med heltrukken strek</td><td>To uavhengige nøkler understrekes begge, hver for seg.</td></tr>
+          <tr><td>Svak (delvis) nøkkel</td><td>Navnet understreket med <b>stiplet eller prikket</b> strek</td><td>Bare i svake entiteter.</td></tr>
+          <tr><td>Flerverdiattributt</td><td><b>Dobbel oval</b></td><td>Kan aldri være nøkkel.</td></tr>
+          <tr><td>Utledbart attributt</td><td><b>Stiplet oval</b></td><td>Diagrammet sier ikke <i>hvordan</i> verdien regnes ut.</td></tr>
+          <tr><td>Sammensatt attributt</td><td>Oval med egne «barne-ovaler» ut fra seg, som et tre</td><td>Er det en nøkkel, understrekes bare forelderen.</td></tr>
+          <tr><td>Relasjon(stype)</td><td><b>Rombe</b> med navnet i VERSALER: <span class="mono">KONTRAKT</span></td><td>Navnet er unikt.</td></tr>
+          <tr><td>Identifiserende relasjon</td><td><b>Dobbel rombe</b></td><td>Kobler en svak entitet til eieren.</td></tr>
+          <tr><td>Relasjonsattributt</td><td>Oval koblet til <b>romben</b></td><td>Kan aldri være nøkkel.</td></tr>
+          <tr><td>Kardinalitet (øvre skranke)</td><td><span class="mono">1</span>, eller en bokstav for «mange» (<span class="mono">N</span>, <span class="mono">M</span>, og <span class="mono">K</span> i ternære), <b>på deltakelsesstreken, nær romben</b></td><td>Bare én eller mange. Aldri 2, 5 eller 0..*.</td></tr>
+          <tr><td>Partiell deltakelse (minst 0)</td><td><b>Enkel</b> strek mellom entitet og rombe</td><td></td></tr>
+          <tr><td>Total deltakelse (minst 1)</td><td><b>Dobbel</b> strek mellom entitet og rombe</td><td>«Nøyaktig én» = dobbel strek <b>og</b> <span class="mono">1</span> på den andre siden.</td></tr>
+          <tr><td>Rekursiv relasjon</td><td>To streker fra samme entitet til samme rombe, gjerne med rollenavn</td><td>Én entitetstype i to roller (fanen «Relasjoner»).</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small muted">Farger i eksamensfigurene (blå eller grønne rektangler, røde romber) er bare pynt og betyr ingenting.</p>
+
+      <h4>Hvordan tallene leses</h4>
+      <div class="callout snarvei"><span class="lbl">Kjernen</span>
+        <ul>
+          <li><b>Øvre skranke:</b> tallet som står <b>lengst unna</b> en entitet E (altså på den <i>andre</i> entitetens strek) sier hvor mange E <b>høyst</b> kan være relatert til.</li>
+          <li><b>Nedre skranke:</b> streken <b>nærmest</b> E sier hvor mange E <b>minst</b> må være relatert til: enkel strek = minst 0, dobbel strek = minst 1.</li>
+        </ul>
+        Kort sagt: <b>kardinalitet leses over romben, deltakelse leses ved deg selv.</b></div>
+
+      <figure class="er-fig exam-fig et-er"><div id="fig-tegneforklaring"></div>
+        <figcaption class="small muted" id="cap-tegneforklaring"></figcaption></figure>
+      <div class="callout eksempel"><span class="lbl">Les figuren</span>
+        <ul>
+          <li>1-tallet står ved PLATESELSKAP, altså lengst unna ARTIST: en artist har <b>høyst ett</b> plateselskap.</li>
+          <li>N står ved ARTIST, altså lengst unna PLATESELSKAP: et plateselskap kan ha <b>mange</b> artister.</li>
+          <li>Den doble streken ved PLATESELSKAP: hvert plateselskap må ha <b>minst én</b> artist.</li>
+          <li>Den enkle streken ved ARTIST: en artist trenger ikke ha noe plateselskap.</li>
+          <li>Hver artist kan ha flere sjangre (dobbel oval), og Signert gjelder kontrakten, ikke artisten alene.</li>
+        </ul></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Tallet på feil side.</b> Sensor trekker 0,5 for riktig kardinalitet på feil side og 1 for feil kardinalitet (H2020, H2023).</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor står 1-tallet ved PLATESELSKAP og ikke ved ARTIST, når en artist har høyst ett plateselskap?</summary>
+          <p>Fordi tallet sier hvor mange av <i>den entiteten tallet står ved</i> som én entitet på motsatt side kan ha. «Høyst ett plateselskap per artist» handler om antall plateselskaper, så 1-tallet står ved PLATESELSKAP.</p></details>
+        <ul>
+          <li><b>Dobbel strek på feil side:</b> −0,5 (H2020, H2023).</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor dobbel strek ved PLATESELSKAP og ikke ved ARTIST, når hvert plateselskap må ha minst én artist?</summary>
+          <p>Den doble streken gjelder den entiteten den går inn i. Det er plateselskapene som <i>må</i> delta, så det er deres strek som dobles.</p></details>
+        <ul>
+          <li><b>Kardinalitet mangler på en hel relasjon:</b> −2. Skriv alltid et tall på <b>begge</b> strekene.</li>
+          <li><b>Manglende markering av nøkkel eller flerverdi:</b> −1 (H2020, H2023).</li>
+          <li><b>Å tegne 0, 2 eller «1..*».</b> Kurset har bare <span class="mono">1</span> og bokstaver, og nedre skranke vises med strektypen.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        ER-tegning har vært oppgave 1 hvert år (15–30 poeng). H2025 ba eksplisitt om at kardinalitet og total/partiell deltakelse skulle stå på hver relasjon.
+        Tegningen leveres for hånd på skisseark, og ryddig, tydelig notasjon er en del av poengene.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-notasjon"></div>
+    </section>
+
+    <!-- ===================== 2 · ATTRIBUTTER ===================== -->
+    <section data-panel="attributter">
+      <h3>Entiteter og attributter</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>entitet</b> er én konkret ting (én bestemt artist). En <b>entitetstype</b> er mengden av ting med de samme attributtene
+        (alle artister), men kurset bruker ofte ordene om hverandre. Et <b>attributt</b> er en egenskap som hver entitet kan ha en verdi for,
+        og det hører til nøyaktig én entitetstype (eller én relasjon). Fire spesielle typer:
+        <ul>
+          <li><b>Nøkkel:</b> verdien er unik. Alle entiteter må ha en verdi for hver nøkkel.</li>
+          <li><b>Flerverdi:</b> én entitet kan ha flere verdier. Kan ikke være nøkkel.</li>
+          <li><b>Utledbar:</b> verdien kan regnes ut fra andre attributter, vanlige operasjoner og vanlig bakgrunnskunnskap (som dagens dato). Diagrammet sier ikke hvordan.</li>
+          <li><b>Sammensatt:</b> attributtet består av andre attributter, som igjen kan være sammensatte. Er et sammensatt attributt nøkkel, er det <b>kombinasjonen</b> av delene som er unik.</li>
+        </ul></div>
+      <div id="ex-attributter"></div>
+
+      <h4>Eksempel</h4>
+      <div class="callout eksempel"><span class="lbl">Kravtekst</span>
+        En frivillig har en unik e-postadresse og et unikt mobilnummer. Navnet består av fornavn og etternavn. Vi lagrer fødselsdato,
+        og alderen kan regnes ut fra den. En frivillig kan snakke ett eller flere språk. Et festivalpass identifiseres av årstallet sammen
+        med et løpenummer (to pass fra forskjellige år kan ha samme løpenummer), og har en type (dagspass, helgepass).</div>
+      <figure class="er-fig exam-fig et-er"><div id="fig-attributter"></div>
+        <figcaption class="small muted" id="cap-attributter"></figcaption></figure>
+      <p>Hva diagrammet sier: to frivillige kan ikke ha samme e-post, og heller ikke samme mobilnummer. To pass kan ha samme løpenummer
+        (fra ulike år) eller samme år, men ikke begge deler.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Flerverdi eller relasjonsattributt som nøkkel.</b> Det går ikke.</li>
+          <li><b>Understrek på barna i en sammensatt nøkkel.</b> Da ser det ut som om hver del er unik alene.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor understreke Passkode og ikke År og Løpenr?</summary>
+          <p>Fordi det bare er paret som er unikt. Understrek på hvert barn ville si at hvert år og hvert løpenummer bare kan forekomme én gang.</p></details>
+        <ul>
+          <li><b>To nøkler tegnet som én sammensatt</b> (eller omvendt). Les om teksten sier «X og Y er unike» eller «kombinasjonen av X og Y er unik».</li>
+          <li><b>Å lage en entitet av noe som bare er en verdi.</b> En tittel kan være en egen entitet eller bare et attributt, og de to modellene sier forskjellige ting. Lag en entitet bare når tingen har egne egenskaper, egen identitet eller egne relasjoner.</li>
+          <li><b>Glemme det utledbare attributtet.</b> Det skal tegnes (stiplet), selv om det droppes i realiseringen.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Nesten hvert år har kravteksten minst ett sammensatt attributt (adresse, kontonummer) og ett flerverdiattributt (telefonnumre, sjangre, nøkkelord).
+        Manglende markering gir −1 (H2020, H2023). H2025 gir 1–2 poeng for «sammensatte attributter og flerverdiattributt riktig».</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-attributter"></div>
+    </section>
+
+    <!-- ===================== 3 · RELASJONER ===================== -->
+    <section data-panel="relasjoner">
+      <h3>Relasjoner og kardinalitet</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>relasjon</b> er et forhold mellom entiteter og tegnes som en rombe med et unikt navn. Den relaterer vanligvis to entiteter (binær).
+        <b>Kardinalitet (øvre skranke)</b> sier hvor mange en entitet <i>høyst</i> kan være relatert til: én eller mange.
+        <b>Deltakelse (nedre skranke)</b> sier hvor mange den <i>minst</i> må være relatert til: null (partiell, enkel strek) eller én (total, dobbel strek).
+        Relasjoner kan ha attributter, men de kan ikke være nøkler.</div>
+      <div id="ex-relasjoner"></div>
+
+      <h4>Eksempel</h4>
+      <div class="callout eksempel"><span class="lbl">Kravtekst</span>
+        En artist har høyst ett plateselskap, og et plateselskap kan ha mange artister. Vi lagrer bare plateselskaper som har minst én artist.
+        En artist kan beherske mange instrumenter, og et instrument beherskes av mange artister. Vi lagrer nivået artisten har på instrumentet,
+        og bare instrumenter som minst én artist behersker. En artist kan varme opp for mange andre artister og ha mange oppvarmingsartister.</div>
+      <figure class="er-fig exam-fig et-er"><div id="fig-relasjoner"></div>
+        <figcaption class="small muted" id="cap-relasjoner"></figcaption></figure>
+      <figure class="er-fig exam-fig et-er"><div id="fig-sjef"></div>
+        <figcaption class="small muted" id="cap-sjef"></figcaption></figure>
+
+      <h4>Les de to figurene</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Påstand</th><th>Svar</th><th>Hvorfor</th></tr></thead>
+        <tbody>
+          <tr><td>En artist kan ha to plateselskaper.</td><td>Nei</td><td>1 står ved PLATESELSKAP.</td></tr>
+          <tr><td>Et plateselskap uten artister kan lagres.</td><td>Nei</td><td>Dobbel strek ved PLATESELSKAP.</td></tr>
+          <tr><td>En artist uten instrument kan lagres.</td><td>Ja</td><td>Enkel strek ved ARTIST i BEHERSKER.</td></tr>
+          <tr><td>Nivå er en egenskap ved paret (artist, instrument).</td><td>Ja</td><td>Ovalen henger på romben.</td></tr>
+          <tr><td>En scene kan mangle sjef.</td><td>Nei</td><td>Dobbel strek ved SCENE og 1 ved FRIVILLIG gir nøyaktig én.</td></tr>
+          <tr><td>En frivillig kan være sjef for to scener.</td><td>Nei</td><td>1 står ved SCENE.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å lese tallet ved «sin egen» entitet.</b> Det vanligste feilgrepet på JA/NEI-oppgavene.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor betyr N ved ARTIST at et plateselskap har mange artister, og ikke at en artist har mange plateselskaper?</summary>
+          <p>Tallet ved ARTIST teller artister. Det svarer på «hvor mange artister kan <i>ett</i> plateselskap ha?».</p></details>
+        <ul>
+          <li><b>Total deltakelse glemt:</b> −1 (H2020, H2023). Ord som «hver», «må», «alltid» og «vi lagrer bare … som har» betyr dobbel strek.</li>
+          <li><b>Relasjonsattributt satt på en entitet.</b> Honorar per konsert på ARTIST mister koblingen til konserten. En flerverdi-«Tittel» på PERSON sier ikke hvilket firma tittelen gjelder, mens Tittel på JOBBER_FOR gjør det.</li>
+          <li><b>Én entitet delt i to roller:</b> −2 (H2023). Bruk én entitet og to streker, eller to relasjoner.</li>
+          <li><b>1:1 tegnet som 1:N</b> når teksten sier «høyst én» i begge retninger. Les hver retning for seg.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Hvert ER-punkt i kravteksten gir typisk 1–2 poeng, og hver feil kardinalitet eller deltakelse koster. 1:1 med attributt (H2024),
+        rekursive relasjoner (H2023, RELATERT) og to relasjoner mellom de samme entitetene (H2023, TIL/FRA) har vært med.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-relasjoner"></div>
+    </section>
+
+    <!-- ===================== 4 · SVAKE ENTITETER ===================== -->
+    <section data-panel="svake">
+      <h3>Svake entiteter og identifiserende relasjoner</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>svak entitet</b> har en nøkkel som bare er unik innenfor en sammenheng, nemlig relasjonen til en annen entitet (eieren).
+        Den tegnes som dobbelt rektangel, og den svake nøkkelen får stiplet understrek. Relasjonen som gir sammenhengen er den
+        <b>identifiserende relasjonen</b> og tegnes som dobbel rombe. En svak entitet er alltid relatert til <b>nøyaktig én</b> eier gjennom
+        hver identifiserende relasjon. Den kan ha flere eiere og flere nivåer.</div>
+      <div id="ex-svake"></div>
+
+      <h4>Eksempel</h4>
+      <div class="callout eksempel"><span class="lbl">Kravtekst</span>
+        En scene har et unikt navn. En konsert går på nøyaktig én scene og har et starttidspunkt som bare er unikt på den scenen. Konserten har
+        også et sluttidspunkt, og varigheten kan regnes ut. En scene kan ha mange konserter, men trenger ikke ha noen. Hver konsert har en
+        settliste, der hver plass har et nummer som bare er unikt innenfor konserten, og en låttittel.</div>
+      <figure class="er-fig exam-fig et-er"><div id="fig-svak"></div>
+        <figcaption class="small muted" id="cap-svak"></figcaption></figure>
+      <p><b>Full nøkkel:</b> KONSERT = (Scene.Navn, Start). LÅTPLASS = (Scene.Navn, Konsert.Start, Nr).</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Bare dobbel boks, eller bare dobbel rombe:</b> −1 for hver som mangler, −2 for begge (H2020, H2023).</li>
+          <li><b>Heltrukken understrek på den svake nøkkelen.</b> Da påstår du at Start er unik på hele festivalen.</li>
+          <li><b>Enkel strek ved den svake entiteten.</b> En svak entitet kan ikke finnes uten eier, så streken er alltid dobbel.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor 1 ved SCENE og ikke N?</summary>
+          <p>En konsert tilhører nøyaktig én scene. Med N kunne samme konsert hørt til flere scener, og da ville det ikke vært klart hvilken scene som fullfører nøkkelen.</p></details>
+        <ul>
+          <li><b>Å gjøre noe svakt som har en egen unik nøkkel.</b> Står det «unikt ordrenummer», er entiteten ikke svak, selv om den hører til noe annet.</li>
+          <li><b>Å legge eierens nøkkel som attributt</b> på den svake entiteten. I ER kommer koblingen fra den identifiserende relasjonen. Eierens nøkkel kommer først inn som kolonne ved realiseringen (blokk 2).</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Den svake entiteten er det tyngste enkeltpunktet i ER-oppgaven: 3 poeng i H2023 og H2024 (mot 1–2 for vanlige punkter). Den har vært med
+        nesten hvert år (region/by, intervju, bestillingslinje, filer/mapper, transaksjon, bok, båt). JA/NEI-oppgavene spør om svake nøkler
+        («har X en nøkkel eller svak nøkkel?»).</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-svake"></div>
+    </section>
+
+    <!-- ===================== 5 · TERNÆRE ===================== -->
+    <section data-panel="ternaere">
+      <h3>Ternære relasjoner</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>ternær</b> relasjon relaterer alltid <b>tre</b> entiteter samtidig (en n-ær relasjon relaterer n). Kombinasjonen av de tre er unik,
+        og relasjonen kan ha attributter. Den <b>øvre skranken</b> ved en entitet E sier hvor mange E det kan være <b>gitt én kombinasjon av de
+        to andre</b>. Den <b>nedre skranken</b> sier om hver E må være med i minst én forekomst.</div>
+      <div id="ex-ternaere"></div>
+
+      <h4>Eksempel</h4>
+      <div class="callout eksempel"><span class="lbl">Kravtekst</span>
+        Frivillige tar vakter på scener med en bestemt oppgave (bar, sikkerhet, rigg). En oppgave har et unikt navn og en beskrivelse. Gitt en
+        frivillig og en scene har den frivillige høyst én oppgave der. Gitt en frivillig og en oppgave kan det være mange scener. Gitt en scene
+        og en oppgave kan det være mange frivillige. Alle oppgaver i registeret er brukt i minst én vakt. Vi lagrer antall timer for vakten.</div>
+      <figure class="er-fig exam-fig et-er"><div id="fig-ternaer"></div>
+        <figcaption class="small muted" id="cap-ternaer"></figcaption></figure>
+
+      <h4>Hva betyr tallene?</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Gitt</th><th>Hvor mange av</th><th>Tall</th><th>Følge</th></tr></thead>
+        <tbody>
+          <tr><td>én frivillig + én scene</td><td>oppgaver</td><td class="mono">1</td><td>Ada kan ikke ha både bar og sikkerhet på Teltet.</td></tr>
+          <tr><td>én frivillig + én oppgave</td><td>scener</td><td class="mono">N</td><td>Ada kan ha bar på både Teltet og Månescenen.</td></tr>
+          <tr><td>én scene + én oppgave</td><td>frivillige</td><td class="mono">M</td><td>Teltet kan ha mange i baren.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Kontrast: tre binære relasjoner</h4>
+      <figure class="er-fig exam-fig et-er"><div id="fig-trebinaere"></div>
+        <figcaption class="small muted" id="cap-trebinaere"></figcaption></figure>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Tre binære i stedet for én ternær.</b> Det sier noe annet og gir trekk når teksten beskriver en kombinasjon.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor holder det ikke med JOBBER_PÅ, KAN og TRENGER?</summary>
+          <p>Fordi de bare lagrer par. At Ada jobber på Teltet og kan bar, betyr ikke at hun hadde bar på Teltet.</p></details>
+        <ul>
+          <li><b>Feil tolkning av «gitt …».</b> Tallet står ved den entiteten du <i>teller</i>, ikke ved de to du holder fast.</li>
+          <li><b>Relasjonsattributtet på feil sted.</b> Timer gjelder hele trippelen og skal på romben.</li>
+          <li><b>Samme bokstav på alle mange-sider</b> er ikke feil, men kurset bruker gjerne M, N og K for å vise at de er uavhengige.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Ternære relasjoner har vært med i P19, H19, P20 og H20 (tegning) og i H2024 oppgave 1.3 (realisering av utleiebyrået). Sammen med
+        den svake entiteten gir de flest poeng i ER-oppgaven. JA/NEI-oppgavene kan også spørre «gitt X og Y, kan de være relatert til mange Z?».</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-ternaere"></div>
+    </section>
+
+    <!-- ===================== 6 · FRA TEKST TIL DIAGRAM ===================== -->
+    <section data-panel="tekst-til-diagram">
+      <h3>Fra tekst til diagram</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Kursets metode går fra kravtekst til en <b>begrunnet</b> ER-modell: hvert valg skal kunne pekes tilbake på en formulering i teksten.
+        Metoden er første ledd i en kjede: ER-modell → realisering → FD-er → normalform → dekomponering.</div>
+
+      <h4>Fremgangsmåten</h4>
+      <ol>
+        <li>Finn entitetene.</li>
+        <li>Har entiteten en egen nøkkel? Hvis ja, tegn den. Hvis nei, er den svak og tas til slutt.</li>
+        <li>Finn attributtene for hver entitet. Navngi de sammensatte, understrek nøklene, og tegn inn utledbare attributter og flerverdiattributter.</li>
+        <li>Finn relasjonene og eventuelle relasjonsattributter.</li>
+        <li>Sett kardinalitet (1 eller mange) og deltakelse (dobbel strek) på hver side.</li>
+        <li>Tegn de svake entitetene med attributter og svake nøkler, og koble dem til eieren med identifiserende relasjoner.</li>
+      </ol>
+      <p>For hvert valg: hvor i teksten står begrunnelsen?</p>
+      <div id="ex-tekst"></div>
+
+      <h4>Ordliste: fra formulering til notasjon</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Teksten sier</th><th>Tegn</th></tr></thead>
+        <tbody>
+          <tr><td>«har et unikt …», «identifiseres av …»</td><td>Nøkkel (understrek)</td></tr>
+          <tr><td>«X og Y er begge unike»</td><td>To nøkler, hver understreket</td></tr>
+          <tr><td>«kombinasjonen av X og Y er unik»</td><td>Sammensatt nøkkel (understrek på forelderen)</td></tr>
+          <tr><td>«én eller flere», «en mengde», «en liste av»</td><td>Flerverdi (dobbel oval)</td></tr>
+          <tr><td>«består av»</td><td>Sammensatt (barne-ovaler)</td></tr>
+          <tr><td>«kan regnes ut / utledes fra»</td><td>Utledbar (stiplet oval)</td></tr>
+          <tr><td>«bare unikt innenfor …»</td><td>Svak entitet + identifiserende relasjon</td></tr>
+          <tr><td>«høyst én», «maks én»</td><td>1 ved det det er høyst én <i>av</i></td></tr>
+          <tr><td>«kan ha mange», «flere»</td><td>N/M ved det det kan være mange <i>av</i></td></tr>
+          <tr><td>«hver X må», «alle X har», «vi lagrer bare X som …»</td><td>Dobbel strek ved X</td></tr>
+          <tr><td>«trenger ikke», «kan»</td><td>Enkel strek</td></tr>
+          <tr><td>«nøyaktig én»</td><td>1 på motparten + dobbel strek ved deg selv</td></tr>
+          <tr><td>«vi lagrer [verdi] for hver [kombinasjon]»</td><td>Relasjonsattributt</td></tr>
+          <tr><td>«gitt A og B, høyst én C»</td><td>Ternær med 1 ved C</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Eksempel: festivalen</h4>
+      <div class="callout eksempel"><span class="lbl">Kravtekst</span>
+        <ol>
+          <li>En artist har et unikt artistnummer og et unikt kunstnernavn. Vi lagrer hjemland og én eller flere sjangre.</li>
+          <li>Et plateselskap har et unikt organisasjonsnummer og et navn. En artist har kontrakt med høyst ett plateselskap, og et plateselskap kan ha mange artister. Vi lagrer bare plateselskaper som har minst én artist.</li>
+          <li>En scene har et unikt navn og en kapasitet.</li>
+          <li>En konsert går på nøyaktig én scene og har et starttidspunkt som bare er unikt på den scenen. Den har også et sluttidspunkt, og varigheten kan regnes ut. En scene kan ha mange konserter, men trenger ikke ha noen.</li>
+          <li>Artister spiller på konserter. En konsert har minst én artist, og en artist kan spille på mange konserter. Vi lagrer honoraret artisten får for konserten.</li>
+          <li>En frivillig har en unik e-postadresse, et navn som består av fornavn og etternavn, og en fødselsdato. Alderen kan regnes ut.</li>
+          <li>Hver scene har nøyaktig én scenesjef, som er en frivillig. En frivillig kan være sjef for høyst én scene.</li>
+          <li>Frivillige tar vakter på scener med en oppgave. En oppgave har et unikt navn og en beskrivelse. Gitt en frivillig og en scene: høyst én oppgave. Gitt en frivillig og en oppgave: mange scener. Gitt en scene og en oppgave: mange frivillige. Alle oppgaver er brukt i minst én vakt. Vi lagrer antall timer.</li>
+        </ol></div>
+
+      <h4>Bygg diagrammet steg for steg</h4>
+      <div id="steg-festival"></div>
+
+      <h4>Antakelser</h4>
+      <p>Eksamen ber deg skrive en kommentar når teksten er uklar, og sensor godtar rimelige tolkninger (H2019 godtok tvetydige krav begge veier).
+        Skriv antakelsen <b>kort ved figuren</b>, med henvisning til punktet:</p>
+      <ul>
+        <li>«Pkt. 5: teksten sier ikke at en artist må spille. Antar at artister kan registreres før de er satt opp (enkel strek).»</li>
+        <li>«Pkt. 5: honoraret gjelder én artist på én konsert → attributt på SPILLER.»</li>
+      </ul>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å hoppe over punkter.</b> Poengene gis per punkt i teksten (H2023: 2 poeng per punkt, H2024: 1 poeng per punkt, 3 poeng for den svake entiteten). Kryss av punktene når de er tegnet.</li>
+          <li><b>Å glemme deltakelse på den ene siden.</b> Ta stilling til begge strekene i hver relasjon.</li>
+          <li><b>Overflødige entiteter.</b> Lag ikke to entitetstyper for ting som har de samme attributtene og bare spiller ulike roller. Én FRIVILLIG kan både være scenesjef og ta vakter.</li>
+          <li><b>Svak entitet tegnet først.</b> Ta de svake til slutt, så eieren og den identifiserende relasjonen allerede er på plass.</li>
+          <li><b>Antakelser som ikke skrives ned.</b> Sensor kan ikke gi poeng for en tolkning som ikke står der.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Hvert år: «Lag en ER-modell som inneholder informasjonen over» med 6–9 nummererte punkter (11–18 poeng de siste årene). Du kan dele
+        modellen opp per punkt og skrive kommentarer med antakelser. H2025 lister selv hva som skal være med: entitetstyper, attributter, nøkler,
+        relasjonstyper, kardinaliteter, flerverdi- og sammensatte attributter, og total/partiell deltakelse.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-tekst-til-diagram"></div>
+    </section>
+
+    <!-- ===================== 7 · LESE ET DIAGRAM ===================== -->
+    <section data-panel="lese">
+      <h3>Lese et diagram (JA/NEI)</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Eksamen gir et diagram med meningsløse navn og fem påstander. Du krysser <b>JA</b> hvis påstanden følger av diagrammet og <b>NEI</b> hvis den
+        ikke gjør det. Riktig svar gir +1, galt svar −1, blankt 0, og oppgaven gir minst 0 til sammen (H2023 «Hemmelig», H2024 «Dataspill»).</div>
+      <div id="ex-lese"></div>
+
+      <h4>Det «krypterte» diagrammet</h4>
+      <figure class="er-fig exam-fig et-er"><div id="fig-krypto"></div>
+        <figcaption class="small muted" id="cap-krypto"></figcaption></figure>
+
+      <h4>Øv: JA eller NEI?</h4>
+      <div id="tf-lese"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å lese tallet ved den entiteten påstanden starter med.</b> Spør alltid «hvilken entitet <i>teller</i> jeg?», og se på tallet ved den.</li>
+        </ul>
+        <details class="grense"><summary>Påstanden «En TROD kan være VOLP-relatert til to ulike FASK»: hvorfor ser vi på tallet ved FASK og ikke ved TROD?</summary>
+          <p>Påstanden teller FASK-er per TROD. Tallet ved FASK (1) er svaret.</p></details>
+        <ul>
+          <li><b>Å glemme at svake entiteter arver nøkkel.</b> «Unikt identifisert av den svake nøkkelen alene» er alltid NEI.</li>
+          <li><b>Å blande «finnes det minst én» med «er alle relatert».</b> «Alle X er relatert» spør om dobbel strek ved X, ikke om tallet.</li>
+          <li><b>Å gjette.</b> Med ±1 gir et blankt svar 0, mens et galt svar spiser opp et riktig.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        H2023 oppgave 1.2 (5 poeng) og H2024 oppgave 1.2 (5 poeng) hadde fem påstander om et diagram med meningsløse navn. Typiske spørsmål: nøkkel
+        eller svak nøkkel, «hver X har minst én Y», «gitt X og Y, mange Z» (ternær), «finnes A, så finnes B», og om et attributt «via en relasjon»
+        tilhører en entitet. H2025 hadde ingen slik oppgave. Begge eksamensdiagrammene ligger under «Eksamensoppgaver».</div>
+    </section>
+
+    <!-- ===================== 8 · EER ===================== -->
+    <section data-panel="eer">
+      <h3>EER og subklasser <span class="badge nytt">nytt i H26</span></h3>
+      <div class="callout uni"><span class="lbl">Merk</span>
+        Temaet kom inn i H26 og har aldri vært spurt om på eksamen. Kurset <b>tegner ikke</b> EER-symboler i lysarkene: kravene skrives som mengder og logikk.
+        Derfor viser guiden heller ingen tegning her.</div>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>subklasse</b> er en delmengde av en superklasse og arver attributtene til superklassen: <span class="mono">Student ⊆ Person</span>.
+        Subklassene er <b>disjunkte</b> hvis ingen entitet kan være i to av dem (<span class="mono">Student ∩ Ansatt = ∅</span>), ellers <b>overlappende</b>.
+        Spesialiseringen er <b>total</b> hvis hver entitet i superklassen er med i minst én subklasse (<span class="mono">Person = Student ∪ Ansatt</span>),
+        ellers <b>partiell</b>. Dette er krav vanlig ER ikke kan uttrykke.</div>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th></th><th>Disjunkte</th><th>Overlappende</th></tr></thead>
+        <tbody>
+          <tr><th>Total</th><td>nøyaktig én subklasse</td><td>minst én subklasse</td></tr>
+          <tr><th>Partiell</th><td>høyst én subklasse</td><td>ingen, én eller flere</td></tr>
+        </tbody>
+      </table></div>
+      <div id="ex-eer"></div>
+
+      <h4>Eksempel: sjekk en instans</h4>
+      <p class="mono">Gjest = {1, 2, 3, 4}, Vip = {1, 2}, Presse = {2, 3}</p>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Krav</th><th>Oppfylt?</th><th>Hvorfor</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Vip ⊆ Gjest, Presse ⊆ Gjest</td><td>Ja</td><td>Alle id-ene finnes i Gjest.</td></tr>
+          <tr><td>Disjunkte</td><td>Nei</td><td>Gjest 2 er i begge.</td></tr>
+          <tr><td>Total</td><td>Nei</td><td>Gjest 4 er i ingen subklasse.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Bare kombinasjonen <b>partiell + overlappende</b> tillater denne instansen.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å tro at disjunkt og total henger sammen.</b> De er uavhengige. Alle fire kombinasjonene finnes.</li>
+          <li><b>Å tro at realiseringen håndhever kravene.</b> Fremmednøkler håndhever <span class="mono">Vip ⊆ Gjest</span>, men ikke disjunkthet eller totalitet (se blokk 2).</li>
+          <li><b>Lukket og åpen verden.</b> I en database (lukket verden) regnes det som mangler som usant. I åpen verden er det bare ukjent.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Ukjent. Temaet er nytt i H26 og finnes ikke i noen tidligere eksamen. Det mest sannsynlige er en kort oppgave om hvilke krav en gitt instans
+        oppfyller, eller hvilke krav PK/FK kan håndheve.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-eer"></div>
+    </section>
+
+    <!-- ===================== EKSAMENSOPPGAVER ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver i ER-modellering</h3>
+      <p class="muted small">Alle ER-oppgavene fra eksamenene i banken, nyeste først, med diagrammene fra arket tegnet på nytt, JA/NEI-øving med eksamensregelen og løsningsforslag.</p>
+      <div id="bank-er"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Etiketten viser hvilken fane påstanden hører til.</p>
+      <div id="tf-er"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 1 · ER-modellering</footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script src="assets/js/sql-lang.js?v=20261125c"></script>
+  <script src="assets/js/pseudocode.js?v=20261125c"></script>
+  <script src="assets/js/stepplayer.js?v=20261125c"></script>
+  <script src="assets/js/varline.js?v=20261125c"></script>
+  <script src="assets/js/viz-relation.js?v=20261125c"></script>
+  <script src="assets/js/viz-er.js?v=20261125c"></script>
+  <script src="assets/js/data-er.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
+  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, el = IN.el, D = IN.dataEr;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[01-er] " + navn, e); } }
+
+    /* ---------- ER-figurer ---------- */
+    function fig(hostId, f, title) {
+      safe(hostId, function () {
+        IN.vizEr("#" + hostId, f, { title: title });
+        var cap = document.getElementById(hostId.replace(/^fig-/, "cap-"));
+        if (cap && f.merknad) cap.textContent = f.merknad;
+      });
+    }
+    fig("fig-tegneforklaring", D.fig.tegneforklaring, "Tegneforklaring: ARTIST, KONTRAKT og PLATESELSKAP");
+    fig("fig-attributter", D.fig.attributter, "Attributtyper: FRIVILLIG og FESTIVALPASS");
+    fig("fig-relasjoner", D.fig.relasjoner, "Relasjoner: KONTRAKT, BEHERSKER og den rekursive OPPVARMING");
+    fig("fig-sjef", D.fig.sjef, "1:1-relasjonen SJEF mellom SCENE og FRIVILLIG");
+    fig("fig-svak", D.fig.svak, "Svake entiteter: KONSERT og LÅTPLASS");
+    fig("fig-ternaer", D.fig.ternaer, "Den ternære relasjonen VAKT");
+    fig("fig-trebinaere", D.fig.treBinaere, "Tre binære relasjoner som kontrast");
+    fig("fig-krypto", D.fig.krypto, "Øvingsdiagram med meningsløse navn");
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-notasjon": {
+        eli5: "<p>Tenk deg at du står inne i en boks og ser over romben mot naboboksen. Tallet ved naboboksen sier hvor mange av dem du høyst kan holde hånden til. Streken rett ved føttene dine sier om du <i>må</i> holde noen i hånden (dobbel strek) eller kan stå alene (enkel strek).</p>",
+        normal: "<p>Et ER-diagram består av rektangler for ting vi vil lagre (entiteter), ovaler for egenskapene deres (attributter) og romber for forhold mellom tingene (relasjoner). Hver strek fra en rombe til et rektangel har to opplysninger. Tallet på streken (1 eller en bokstav for «mange») gjelder den <i>andre</i> siden: det sier hvor mange av <i>denne</i> entiteten én entitet på den andre siden kan kobles til. Om streken er enkel eller dobbel gjelder entiteten streken går til: dobbel betyr at hver slik entitet må være med i relasjonen minst én gang.</p><p>Spesielle attributter får spesielle ovaler: understreket navn for nøkler, dobbel oval for flere verdier, stiplet oval for verdier som kan regnes ut.</p>",
+        teknisk: "<p>Hver deltakelse bærer et par (nedre, øvre) skranke. Den øvre skranken tegnes som <span class=\"mono\">1</span> eller som en bokstav, og kurset skiller bare mellom «høyst én» og «potensielt flere». Den nedre skranken tegnes som strektype, og kurset skiller bare mellom «minst 0» (partiell) og «minst 1» (total).</p><p>Plasseringen er asymmetrisk: øvre skranke for E står på motpartens strek, mens nedre skranke for E er E sin egen strek. Det er derfor sensor skiller mellom «feil kardinalitet» og «riktig kardinalitet på feil side». Notasjonen fanger bare det som kan oversettes til tabeller, nøkler og fremmednøkler. Den er ikke en generell kunnskapsmodell, og kan for eksempel ikke uttrykke alle funksjonelle avhengigheter.</p>"
+      },
+      "ex-attributter": {
+        eli5: "<p>En entitet er som et kort i en kortstokk, og attributtene er det som står på kortet. Noe står bare én gang og er unikt for kortet (nøkkel). Noe kan stå flere ganger, som en liste (flerverdi). Noe kan du regne ut selv, så det trenger ikke stå der (utledbart). Og noe er delt opp i småbiter, som et navn med fornavn og etternavn (sammensatt).</p>",
+        normal: "<p>Når du leser en kravtekst, blir substantivene som har egne egenskaper og noe som identifiserer dem, entiteter. Egenskapene deres blir attributter. Ordet «unik» peker mot en nøkkel. «En eller flere», «en mengde» eller «en liste» peker mot flerverdi. «Består av» peker mot et sammensatt attributt. «Kan regnes ut fra» eller «kan utledes» peker mot et utledbart attributt.</p><p>Vær nøye med forskjellen på <b>to nøkler</b> og <b>én sammensatt nøkkel</b>: «unik e-post og unikt mobilnummer» betyr at hver av dem er unik for seg (to understrekede ovaler). «Kombinasjonen av år og løpenummer er unik» betyr at bare paret er unikt (én understreket forelder-oval med to barn).</p>",
+        teknisk: "<p>Attributtypene bestemmer hvordan modellen senere realiseres: nøkler blir kandidatnøkler, flerverdiattributter blir egne tabeller, sammensatte attributter beholder bare bladnodene, og utledbare attributter forsvinner. Derfor er markeringene ikke pynt, men informasjon som realiseringen trenger.</p><p>En flerverdi kan ikke være nøkkel, fordi én entitet har flere verdier og verdien da ikke kan identifisere entiteten. Et sammensatt nøkkelattributt markeres med understrek på forelderen. Barna understrekes ikke, siden ingen av dem er unike alene. ER-notatet viser nettopp denne forskjellen med et forlag som har to uavhengige nøkler, satt opp mot en tenkt sammensatt nøkkel.</p>"
+      },
+      "ex-relasjoner": {
+        eli5: "<p>En relasjon er et håndtrykk mellom to typer ting. Kardinaliteten sier hvor mange hender du kan trykke. Deltakelsen sier om du <i>må</i> trykke minst én hånd. Noen ganger vil vi også huske noe om selve håndtrykket, for eksempel når det skjedde. Det henger vi på håndtrykket, ikke på personene.</p>",
+        normal: "<p>Det finnes tre slags binære relasjoner etter kardinalitet:</p><ul><li><b>1:1</b>, der begge sider har høyst én: en scene har én scenesjef, og en frivillig er sjef for høyst én scene.</li><li><b>1:N</b>, der den ene siden har mange: et plateselskap har mange artister, og en artist har høyst ett plateselskap.</li><li><b>M:N</b>, der begge sider har mange: en artist behersker mange instrumenter, og et instrument beherskes av mange artister.</li></ul><p>Deltakelsen bestemmes for hver side for seg. Spør: «<i>Må</i> hver X ha minst én?» Hvis ja, blir streken ved X dobbel. «Nøyaktig én» får du med 1-tallet ved den andre siden og dobbel strek ved deg selv. Opplysninger som gjelder <i>paret</i>, ikke hver entitet for seg (honorar, dato, nivå), skal være attributter på romben.</p>",
+        teknisk: "<p>En relasjonsforekomst er et par av entiteter, og kombinasjonen er unik: samme par kan ikke være relatert to ganger i samme relasjon. Det er grunnen til at et relasjonsattributt bare kan ha én verdi per par. Trenger du flere verdier per par (for eksempel flere datoer), er det et tegn på at det du modellerer egentlig er en egen entitet.</p><p>Forskjellen mellom relasjonsattributt og entitetsattributt er en funksjonell avhengighet. Et attributt på JOBBER_FOR avhenger av paret (person, firma), mens et attributt på PERSON bare avhenger av personen. Når samme entitetstype spiller to roller i ett forhold (hovedartist og oppvarming), skal du bruke <b>én</b> entitetstype med to streker til romben (en rekursiv relasjon), eller to relasjoner. Ikke del entitetstypen i to: H2023 trakk 2 poeng for TIL-KONTO og FRA-KONTO som egne entiteter.</p>"
+      },
+      "ex-svake": {
+        eli5: "<p>Sete 12 finnes i mange saler. «Sete 12» alene sier ikke hvilket sete du mener. Du må også si hvilken sal. Setet er svakt: det trenger salen for å bli unikt.</p>",
+        normal: "<p>Les etter formuleringer som «unikt innenfor», «bare unikt i» eller «nummerert per». Da er tingen svak. Tegn den med dobbelt rektangel, tegn den svake nøkkelen med stiplet understrek, og koble den til eieren med en dobbel rombe.</p><p>Den svake siden får <b>dobbel strek</b> (den kan ikke finnes uten eieren). Eiersiden får <b>1</b> (hver svak entitet har nøyaktig én eier). Den fulle nøkkelen til den svake entiteten er eierens nøkkel pluss den svake nøkkelen.</p>",
+        teknisk: "<p>Den identifiserende relasjonen må markeres fordi en svak entitet kan ha mange andre relasjoner. Uten den doble romben vet ikke leseren hvilken relasjon som fullfører nøkkelen. Kardinaliteten er låst: 1 ved eieren og total deltakelse for den svake.</p><p>Er eieren selv svak, blir nøkkelen bygget opp i flere ledd (kurset viser et rom som får nøkkel fra universitet, bygg, romtype og romnummer). Med flere eiere blir den fulle nøkkelen alle eiernes nøkler pluss den svake nøkkelen. Kurset viser også at en binær eller n-ær relasjon kan omformes til en svak entitet med én identifiserende relasjon per deltaker, men da kan man ikke lenger uttrykke de samme øvre skrankene.</p>"
+      },
+      "ex-ternaere": {
+        eli5: "<p>En vakt på festivalen er alltid tre ting på én gang: <i>hvem</i> (frivillig), <i>hvor</i> (scene) og <i>hva</i> (oppgave). Lapper du sammen tre par i stedet (hvem–hvor, hvem–hva, hvor–hva), vet du ikke lenger hvilken oppgave hun hadde på <i>hvilken</i> scene.</p>",
+        normal: "<p>For å sette tallene tar du én side om gangen og holder de to andre fast. «Gitt en frivillig og en scene, hvor mange oppgaver?» Hvis svaret er høyst én, skriver du 1 på OPPGAVE sin strek. «Gitt en frivillig og en oppgave, hvor mange scener?» Hvis mange, skriver du N ved SCENE. Og så videre.</p><p>Bruk forskjellige bokstaver (M, N, K) for de ulike «mange»-sidene. Deltakelse settes som før: dobbel strek hvis hver entitet av typen må være med i minst én forekomst.</p>",
+        teknisk: "<p>En ternær relasjon kan ikke erstattes av tre binære. De tre binære sier mindre (kombinasjonen går tapt), og de tillater andre skranker. Når relasjonen har 1 på én side, uttrykker det en funksjonell avhengighet: 1 på OPPGAVE betyr (frivillig, scene) → oppgave. Den FD-en bestemmer nøkkelen når den ternære relasjonen realiseres (blokk 2).</p><p>Velg ternær bare når teksten virkelig snakker om tre ting samtidig. Gjelder en opplysning bare to av dem, er det en binær relasjon. Plasseringen av for eksempel et datoattributt (på relasjonen eller på en entitet) kan avhenge av tolkningen, og begge er riktige når antakelsen er skrevet ned.</p>"
+      },
+      "ex-tekst": {
+        eli5: "<p>Ta tre fargeblyanter. Ring rundt <i>tingene</i> med blått, <i>egenskapene</i> med gult og <i>forholdene</i> med grønt. Strek under ordene som sier <i>hvor mange</i> og <i>om noen må</i>. Så tegner du blått som bokser, gult som ovaler og grønt som romber, og setter tallene etter understrekene.</p>",
+        normal: "<p>Gå gjennom teksten punkt for punkt og tegn mens du leser. Ring inn entiteter, nøkler og attributter i teksten, og strek under setningene som gir kardinalitet og deltakelse. Del gjerne tegningen i deler merket med punktnummer, slik eksamen foreslår. Til slutt sjekker du hver relasjon: har begge strekene et tall? Har du tatt stilling til enkel eller dobbel strek på begge sider?</p>",
+        teknisk: "<p>Modellen skal fange akkurat det tabellene senere trenger, ikke all kunnskap om domenet. Derfor er det viktig å skille mellom attributt og entitet (har tingen egen identitet eller egne relasjoner?), mellom entitetsattributt og relasjonsattributt (avhenger verdien av én entitet eller av en kombinasjon?), og mellom binær og ternær (snakker teksten om par eller om trippler?).</p><p>Hver av disse beslutningene kan begrunnes med en setning i teksten. ER-notatet stiller spørsmålet om hvordan vi kan vite at en modell, for eksempel en som en KI har foreslått, er riktig. Svaret er at hvert element må ha en tekstlig begrunnelse.</p>"
+      },
+      "ex-lese": {
+        eli5: "<p>Navnene er tull med vilje, så du må lese bare formene: bokser, romber, streker og tall. Det er som å lese et kart uten stedsnavn. Du ser fortsatt hvor veiene går.</p>",
+        normal: "<p>Gå gjennom hver påstand med en fast sjekkliste:</p><ul><li>«Unikt identifisert av X»: er X understreket med heltrukken strek? Er entiteten svak, trengs også eierens nøkkel.</li><li>«Minst én» eller «alle … er relatert»: se etter dobbel strek ved den entiteten påstanden handler om.</li><li>«Høyst én» eller «mange»: se på tallet ved den <i>andre</i> entiteten, altså den det telles av.</li><li>«Hvis det finnes en A, finnes det også en B»: følg doble streker fra A og videre, gjennom identifiserende relasjoner (en svak entitet krever eieren).</li><li>«Har attributtet X»: henger ovalen på entiteten, eller på en relasjon?</li></ul>",
+        teknisk: "<p>Påstandene tester nesten alltid én av fire ting: øvre skranke (tallet ved den talte entiteten), nedre skranke (dobbel strek), nøkkelbegrepet (vanlig, sammensatt eller svak nøkkel) og hvor et attributt hører hjemme (entitet eller relasjon).</p><p>Kjedeslutninger («hvis det finnes en A, finnes det en B») følger av at total deltakelse og identifiserende relasjoner krever at partneren finnes. Siden galt svar gir −1, lønner det seg ikke å gjette. La en påstand stå blank hvis du ikke kan peke på symbolet som avgjør den.</p>"
+      },
+      "ex-eer": {
+        eli5: "<p>Alle gjestene på festivalen har et armbånd. Noen har i tillegg et gullmerke (VIP), og noen har et pressekort. <i>Disjunkt</i> betyr at ingen får ha begge merkene. <i>Total</i> betyr at ingen får gå rundt uten noe merke i det hele tatt.</p>",
+        normal: "<p>Subklasser brukes når noen entiteter i en type har egne attributter eller egne regler. To spørsmål bestemmer kravene. Kan én entitet være i flere subklasser? Hvis ja, er de overlappende, og hvis nei, disjunkte. Må hver entitet i superklassen være i minst én subklasse? Hvis ja, er spesialiseringen total, og hvis nei, partiell. Kravene sjekkes på en konkret instans ved å se på mengdene.</p>",
+        teknisk: "<p>Kravene kan skrives i førsteordenslogikk:</p><ul><li>subklasse: <span class=\"mono\">∀x (Vip(x) → Gjest(x))</span></li><li>disjunkthet: <span class=\"mono\">∀x ¬(Vip(x) ∧ Presse(x))</span></li><li>totalitet: <span class=\"mono\">∀x (Gjest(x) → (Vip(x) ∨ Presse(x)))</span></li></ul><p>eller i beskrivelseslogikk (<span class=\"mono\">Vip ⊑ Gjest</span>, <span class=\"mono\">Vip ⊓ Presse ⊑ ⊥</span>, <span class=\"mono\">Gjest ⊑ Vip ⊔ Presse</span>). Å sjekke om en gitt instans oppfyller kravene kalles <b>model checking</b> (<span class=\"mono\">D ⊨ C</span>). Å spørre om det i det hele tatt <i>finnes</i> en instans som oppfyller dem kalles <b>satisfiability</b>. At en instans bryter kravene, betyr ikke at kravene er umulige å oppfylle.</p><p>Grafiske språk som ER og EER er lette å lese, men har begrenset uttrykkskraft. Logikk er presis og mer generell, men krever at leseren kan notasjonen.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Stegspiller: festivalen bygges opp ---------- */
+    safe("steg-festival", function () {
+      // Fast ramme fra den ferdige figuren, så diagrammet ikke hopper mellom stegene
+      // (union av alle stegene, siden attributtene kan ligge annerledes før alle relasjonene er tegnet)
+      var ramme = null;
+      if (IN.vizEr.bounds) D.festivalSteg.forEach(function (s) {
+        if (!s.fig) return;
+        var b = IN.vizEr.bounds(s.fig);
+        if (!ramme) { ramme = b.slice(); return; }
+        var x1 = Math.max(ramme[0] + ramme[2], b[0] + b[2]), y1 = Math.max(ramme[1] + ramme[3], b[1] + b[3]);
+        ramme[0] = Math.min(ramme[0], b[0]); ramme[1] = Math.min(ramme[1], b[1]);
+        ramme[2] = x1 - ramme[0]; ramme[3] = y1 - ramme[1];
+      });
+      IN.stepPlayer("#steg-festival", {
+        initial: [1],
+        customInput: false,
+        generate: function () { return D.festivalSteg; },
+        render: function (s, ctx) {
+          IN.clear(ctx.stage);
+          ctx.stage.classList.add("er-steg-stage");
+          IN.vizEr(ctx.stage, s.fig, { title: "Festivalen, " + (s.tag || ""), bounds: ramme, fit: true });
+        }
+      });
+    });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "er-" + fane }); });
+    });
+
+    /* ---------- JA/NEI på det krypterte diagrammet (eksamensregelen ±1, minst 0) ---------- */
+    safe("tf-lese", function () {
+      IN.tfTest("#tf-lese", D.lese.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, kilde: false };
+      }), {
+        id: "er-lese", labels: ["JA", "NEI"], keepOrder: true, checkLabel: "Rett som på eksamen",
+        result: function (c) {
+          var p = Math.max(0, c.right - c.wrong);
+          return '<p class="del1-sum"><b>Med eksamensregelen (+1 / −1 / 0, minst 0): ' + p + " av " + c.total + " poeng.</b> " +
+            c.right + " riktig, " + c.wrong + " galt, " + c.blank + " blankt.</p>";
+        }
+      });
+    });
+
+    /* ---------- Sant/usant for hele blokken ---------- */
+    var FANE = { notasjon: "Tegneguide", attributter: "Attributter", relasjoner: "Relasjoner", svake: "Svake entiteter", ternaere: "Ternære" };
+    safe("tf-er", function () {
+      IN.tfTest("#tf-er", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, blokk: FANE[it.blokk] || it.blokk, kilde: it.kilde };
+      }), { id: "er-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-er", function () { IN.examBank("#bank-er", { block: ["er", "eer"] }); });
+  })();
+  </script>
+</body>
+</html>

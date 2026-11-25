@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 2 · Realisering · IN2090</title>
+  <meta name="description" content="Realisering i IN2090: fra ER-diagram til relasjonsskjema med kursets algoritme. Entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter, ternære relasjoner og subklasser, med KN, PN og FN i kursets notasjon, stegspiller over et helt eksempel, øving og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261125c">
+</head>
+<body data-page="realisering">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 2 · Realisering</h1>
+      <p class="lead">Rett etter ER-tegningen kommer realiseringen: diagrammet skal bli et relasjonsskjema med tabeller, kandidatnøkler,
+        primærnøkkel og fremmednøkler. Kurset har en fast algoritme for det, og eksamen spør om den hvert år. Her går du gjennom
+        reglene én om gangen, ser hele festivalen fra <a href="01-er.html">blokk 1</a> bli realisert tabell for tabell, og lærer
+        hvilke begrunnelser sensor ser etter.</p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_2"><b>H2025</b> · Fritidsbåt-firmaet: realisering · <span class="pts">7p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-1_3"><b>H2024</b> · Realiser utleiebyrå-modellen · <span class="pts">12p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-1_3"><b>H2023</b> · Realiser nettavis-modellen · <span class="pts">10p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2020-M4"><b>H2020</b> · Musikkalbum, band og sangere til relasjoner · <span class="pts">10p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2019-1_3"><b>H2019</b> · Book, Author, Publisher og Chapter til relasjoner · <span class="pts">15p</span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Realisering">
+      <button data-tab="algoritmen">Algoritmen</button>
+      <button data-tab="entiteter">Entiteter</button>
+      <button data-tab="svake">Svake entiteter</button>
+      <button data-tab="en-til-en">1:1</button>
+      <button data-tab="en-til-mange">1:N</button>
+      <button data-tab="mange-til-mange">M:N</button>
+      <button data-tab="flerverdi">Flerverdi</button>
+      <button data-tab="naere">Ternære</button>
+      <button data-tab="hele">Hele eksemplet</button>
+      <button data-tab="subklasser">Subklasser <span class="nytt-mark">nytt i H26</span></button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · ALGORITMEN ===================== -->
+    <section data-panel="algoritmen">
+      <h3>Algoritmen og notasjonen</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <b>Realisering</b> er å oversette en ER-modell til et relasjonsskjema: tabeller med attributter, kandidatnøkler (KN),
+        én valgt primærnøkkel (PN) og fremmednøkler (FN). Kurset gjør det med en fast algoritme som tar elementene i en bestemt
+        rekkefølge. Målet er et korrekt skjema med <b>færrest mulig tabeller og færrest mulig NULL-verdier</b>.
+        <ol style="margin:.4rem 0 0 1.2rem;padding:0">
+          <li>vanlige entiteter</li>
+          <li>svake entiteter</li>
+          <li>1:1-relasjoner</li>
+          <li>1:N-relasjoner</li>
+          <li>M:N-relasjoner</li>
+          <li>flerverdiattributter</li>
+          <li>ternære og n-ære relasjoner</li>
+        </ol>
+        <span class="small muted">Realiseringsnotatet s. 2 og F06-02 lysark 3, formulert med egne ord. Diagrammet du realiserer, lærer du å tegne i <a href="01-er.html">blokk 1</a>.</span></div>
+
+      <h4>Notasjonen</h4>
+      <p>Én tabell per blokk: navnet med attributtene i parentes, og under den én linje for KN, PN og FN hver for seg. Attributtene i PN er understreket.</p>
+      <div id="skj-notasjon"></div>
+      <ul>
+        <li><b>KN</b> er en minimal mengde attributter som er unik og aldri NULL. En tabell kan ha flere KN-er, og hver skrives i egne krøllparenteser.</li>
+        <li><b>PN</b> er den KN-en vi velger. Det er nøyaktig én per tabell.</li>
+        <li><b>FN</b> <span class="mono">(a) -&gt; T(b)</span> betyr at verdien i kolonnen <span class="mono">a</span> må finnes i kolonnen <span class="mono">b</span> i tabellen <span class="mono">T</span>, der <span class="mono">b</span> er en KN (som regel PN) i <span class="mono">T</span>. En sammensatt FN skrives med parentes på begge sider: <span class="mono">(Scene, Start) -&gt; Konsert(Scene, Start)</span>.</li>
+      </ul>
+      <p class="small muted">Guiden skriver <span class="mono">-&gt;</span> som realiseringsnotatet. Løsningsforslaget til H2025 skriver <span class="mono">→</span>, og begge brukes. Eksamensinstruksen godtar også understrek for KN, fet skrift for PN og piler for FN.</p>
+
+      <div id="ex-algoritmen"></div>
+
+      <h4>Hva som skjer med hvert ER-element</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>ER-element</th><th>Resultat</th><th>Fane</th></tr></thead>
+        <tbody>
+          <tr><td>Entitet</td><td>Egen tabell. Nøklene blir KN, og én av dem blir PN.</td><td>Entiteter</td></tr>
+          <tr><td>Utledbart attributt</td><td>Droppes.</td><td>Entiteter</td></tr>
+          <tr><td>Sammensatt attributt</td><td>Bare bladnodene blir kolonner.</td><td>Entiteter</td></tr>
+          <tr><td>Svak entitet</td><td>Egen tabell. PN = eierens PN + svak nøkkel. FN til eieren.</td><td>Svake entiteter</td></tr>
+          <tr><td>Identifiserende relasjon</td><td>Ferdig realisert gjennom FN-en over. Ikke noe mer.</td><td>Svake entiteter</td></tr>
+          <tr><td>1:1</td><td>Slå sammen (bare når begge sider er totale), FN på én av sidene, eller egen tabell.</td><td>1:1</td></tr>
+          <tr><td>1:N</td><td>FN på N-siden, eller egen tabell med PN = N-sidens PN.</td><td>1:N</td></tr>
+          <tr><td>M:N</td><td>Egen tabell. PN = alle FN-attributtene.</td><td>M:N</td></tr>
+          <tr><td>Relasjonsattributt</td><td>Følger med dit relasjonen realiseres. Aldri del av KN.</td><td>1:N, M:N</td></tr>
+          <tr><td>Flerverdiattributt</td><td>Egen tabell. KN = alle attributtene. FN til entiteten.</td><td>Flerverdi</td></tr>
+          <tr><td>Ternær / n-ær</td><td>Egen tabell. KN bestemmes av hvor det står 1.</td><td>Ternære</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Algoritmen som pseudokode</h4>
+      <p class="small muted">Guidens egen oppsummering av rekkefølgen, ikke kursets kode. Hold musa over en linje for forklaring. Subklasser (nytt i H26) er ikke med her, se egen fane. I fanen «Hele eksemplet» følger pseudokoden stegene.</p>
+      <div id="algo-pseudo"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Manglende markering:</b> −0,5 for hvert attributt, hver KN- eller PN-markering og hver FN-markering som mangler (H2020, H2023).</li>
+          <li><b>Valg som ikke er forklart:</b> −0,5 per valg. I H2020 ble det trukket 2 poeng når forklaringene manglet helt.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor skrive begrunnelse når skjemaet er riktig?</summary>
+          <p>Fordi oppgaven ber om et skjema som er korrekt, effektivt og tydelig, og om at valgene forklares. Uten begrunnelse kan sensor ikke se at du valgte og ikke bare gjettet.</p></details>
+        <ul>
+          <li><b>En FN som peker på noe som ikke er en nøkkel.</b> En FN skal alltid peke på en KN i måltabellen.</li>
+          <li><b>Å blande PN og FN i én markering</b> («KN:PN», «FK»). Skriv KN, PN og FN hver for seg.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Realisering av en gitt ER-figur har kommet hvert år, til 7–15 poeng (typisk 10–12): P19 bygg og rom, H19 bok og forlag,
+        P20 sjakk, H20 musikkalbum, H23 nettavis, H24 utleiebyrå og H25 din egen båtmodell. Instruksen er den samme hvert år:
+        skjemaet skal være korrekt, effektivt og tydelig, valgene skal forklares, og KN, PN og FN skal markeres.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-algoritmen"></div>
+    </section>
+
+    <!-- ===================== 2 · ENTITETER ===================== -->
+    <section data-panel="entiteter">
+      <h3>Vanlige entiteter og attributter</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Hver vanlig entitet blir en tabell med de <b>enkle</b> attributtene sine som kolonner. Hver nøkkel i diagrammet blir en KN,
+        og én av dem velges som PN. <b>Utledbare</b> attributter droppes, fordi de kan regnes ut. <b>Sammensatte</b> attributter gir
+        bare bladnodene som kolonner. <b>Flerverdiattributter</b> venter til sitt eget steg.</div>
+      <div id="ex-entiteter"></div>
+
+      <h4>Eksempel: FRIVILLIG og FESTIVALPASS</h4>
+      <div class="rs-figpair">
+        <figure class="er-fig exam-fig et-er"><div id="fig-attributter"></div>
+          <figcaption class="small muted" id="cap-attributter"></figcaption></figure>
+        <div>
+          <div id="skj-entiteter"></div>
+          <ul>
+            <li>Alder er utledbar og droppes. Navn er sammensatt og gir Fornavn og Etternavn.</li>
+            <li>Språk er flerverdi og venter til fanen «Flerverdi».</li>
+            <li>Epost og Mobil er to uavhengige nøkler, så de blir to KN-er. Vi velger {Epost} som PN.</li>
+            <li>Passkode er en sammensatt nøkkel, så bladene År og Løpenr blir <b>én</b> KN sammen.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å ta med det utledbare attributtet.</b> Det droppes. Skriv gjerne i begrunnelsen at Alder kan regnes ut fra Fdato.</li>
+          <li><b>Å ta med det sammensatte attributtet som kolonne.</b> <span class="mono">Navn</span> forsvinner. Bare <span class="mono">Fornavn</span> og <span class="mono">Etternavn</span> blir kolonner.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor blir Passkode til KN {År, Løpenr}, og ikke til to KN-er {År} og {Løpenr}?</summary>
+          <p>Fordi det bare er kombinasjonen som er unik. Hver del alene kan gjentas: mange pass har samme år, og samme løpenummer brukes hvert år.</p></details>
+        <ul>
+          <li><b>Å glemme den andre KN-en.</b> {Mobil} er en KN selv om {Epost} er valgt som PN.</li>
+          <li><b>Å legge flerverdiattributtet rett i tabellen</b> som kolonnen <span class="mono">Språk</span>. Det bryter 1NF.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Alle realiseringsoppgavene starter her. Sammensatte attributter (adresse, kontonummer) og flere KN-er (Kunde i H2025) har vært
+        med. Et manglende attributt koster 0,5.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-entiteter"></div>
+    </section>
+
+    <!-- ===================== 3 · SVAKE ===================== -->
+    <section data-panel="svake">
+      <h3>Svake entiteter</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En svak entitet blir en tabell der <b>PN = eierens PN + den svake nøkkelen</b>. Eierens PN er også en <b>FN</b> til eieren.
+        Den identifiserende relasjonen er dermed realisert og skal ikke realiseres en gang til. Har den svake entiteten flere eiere,
+        kommer PN-en til alle eierne med. Er eieren selv svak, må eieren realiseres først.</div>
+      <div id="ex-svake"></div>
+
+      <h4>Eksempel: KONSERT og LÅTPLASS</h4>
+      <figure class="er-fig exam-fig et-er"><div id="fig-svak"></div>
+        <figcaption class="small muted" id="cap-svak"></figcaption></figure>
+      <div id="skj-svake"></div>
+      <ul>
+        <li>Varighet er utledbar og droppes.</li>
+        <li>PÅ og I_LISTE er ferdig realisert gjennom FN-ene. De får ingen egne tabeller.</li>
+        <li>FN-en i Låtplass peker på hele PN-en i Konsert. Den peker ikke på Scene direkte, fordi eieren til en låtplass er en konsert.</li>
+      </ul>
+      <div id="inst-konsert"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å realisere den identifiserende relasjonen dobbelt</b> (en egen tabell PÅ eller en ekstra FN): −0,5 (H2020).</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor får ikke PÅ en egen tabell, når SPILLER gjør det?</summary>
+          <p>PÅ er identifiserende. Koblingen ligger allerede i PN-en til Konsert. SPILLER er M:N og har ingen tabell den kan bo i.</p></details>
+        <ul>
+          <li><b>Bare den svake nøkkelen som PN.</b> {Start} er ikke unik.</li>
+          <li><b>FN mot bare en del av eierens PN</b> når nivåene stables. <span class="mono">(Start) -&gt; Konsert(Start)</span> er feil, fordi Start ikke er en KN i Konsert.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Den svake entiteten er med i nesten alle realiseringsoppgavene. Feilen sensor oftest trekker for, er at den identifiserende
+        relasjonen er realisert to ganger.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-svake"></div>
+    </section>
+
+    <!-- ===================== 4 · 1:1 ===================== -->
+    <section data-panel="en-til-en">
+      <h3>1:1-relasjoner</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En 1:1-relasjon kan realiseres på fire måter:
+        <ol style="margin:.4rem 0 .3rem 1.2rem;padding:0">
+          <li><b>Slå sammen</b> de to tabellene. Det er bare lov når <b>begge</b> sider har total deltakelse.</li>
+          <li><b>FN i den ene tabellen</b> til den andre.</li>
+          <li><b>FN i den andre tabellen.</b></li>
+          <li><b>Egen tabell</b> med FN til begge. Hver av dem er en KN.</li>
+        </ol>
+        Velg FN på den siden som har <b>total</b> deltakelse, så slipper du NULL. Fordi relasjonen er 1:1, er FN-verdien unik.
+        Er siden den står i i tillegg total, er den aldri NULL. Da er FN-en også en <b>KN</b>.</div>
+      <div id="ex-en-til-en"></div>
+
+      <h4>Eksempel A: FN på den totale siden (SJEF)</h4>
+      <div class="rs-figpair">
+        <figure class="er-fig exam-fig et-er"><div id="fig-sjef"></div>
+          <figcaption class="small muted" id="cap-sjef"></figcaption></figure>
+        <div>
+          <div id="skj-sjef"></div>
+          <p><i>Begrunnelse:</i> SCENE har total deltakelse, så Sjef er aldri NULL. Relasjonen er 1:1, så Sjef er unik, og dermed en KN.
+            Sammenslåing er ikke lov, fordi FRIVILLIG er partiell.</p>
+        </div>
+      </div>
+      <h5>Sammenlignet med FN på den andre siden</h5>
+      <div class="rs-side">
+        <div id="inst-scenesjef"></div>
+        <div id="inst-frivilligsjef"></div>
+      </div>
+      <p>Med FN i Frivillig blir det NULL for alle som ikke er sjef. Med FN i Scene blir det ingen NULL.</p>
+
+      <h4>Eksempel B: sammenslåing (begge sider totale)</h4>
+      <p><i>Hvert festivalpass har nøyaktig ett armbånd, og hvert armbånd hører til nøyaktig ett pass. Et armbånd har en unik chip-id og en farge.</i></p>
+      <div class="rs-figpair">
+        <figure class="er-fig exam-fig et-er"><div id="fig-armband"></div>
+          <figcaption class="small muted" id="cap-armband"></figcaption></figure>
+        <div>
+          <div id="skj-armband"></div>
+          <p><i>Begrunnelse:</i> Begge sider er totale, så hvert pass har nøyaktig ett armbånd og omvendt. Én tabell gir ingen NULL og
+            én tabell mindre. Begge nøklene blir KN-er.</p>
+        </div>
+      </div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Sammenslåing når bare én side er total.</b> Det gir NULL i nøkkelen til den partielle siden.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor ikke slå Scene og Frivillig sammen, når relasjonen er 1:1?</summary>
+          <p>Fordi de fleste frivillige ikke er sjef. De ville enten mistet raden sin eller fått NULL i scenekolonnene, også i Navn, som er en KN.</p></details>
+        <ul>
+          <li><b>FN på den partielle siden uten begrunnelse.</b> Det er ikke galt, men det gir NULL. Skriv hvorfor hvis du likevel velger det.</li>
+          <li><b>Å glemme at FN-en er en KN.</b> Står FN-en på en total side i en 1:1, skal den også stå under KN.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor er ikke Sjef_for en KN hvis FN-en legges i Frivillig?</summary>
+          <p>Kolonnen er fortsatt unik blant verdiene som ikke er NULL, men de fleste radene har NULL der. En KN kan aldri være NULL.</p></details>
+        <ul>
+          <li><b>FN i begge tabellene.</b> Da er samme opplysning lagret to ganger.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        1:1 med attributt kom i H2024 1.3 (utleiebyrå), og H2025 1.2 hadde en 1:1 mellom faktura og ordre. I begge gjelder det å
+        velge side og forklare hvorfor.
+        <br><span class="small"><b>Merk om H2025 1.2:</b> løsningsforslaget oppgir bare {Fakturanr} som KN i Faktura. Ordrenr står i Faktura,
+        er unik (1:1) og aldri NULL (FAKTURA er total), så etter kursets regel er {Ordrenr} <b>også</b> en KN. Skriv begge.</span></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-en-til-en"></div>
+    </section>
+
+    <!-- ===================== 5 · 1:N ===================== -->
+    <section data-panel="en-til-mange">
+      <h3>1:N-relasjoner</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En 1:N-relasjon realiseres med en <b>FN på N-siden</b>, det vil si i tabellen til entiteten som har N på <i>sin</i> strek.
+        Den entiteten kan bare være relatert til høyst én på den andre siden. Alternativet er en <b>egen tabell</b> med FN til begge,
+        der PN = N-sidens PN. Et relasjonsattributt følger med dit FN-en havner.</div>
+      <div id="ex-en-til-mange"></div>
+
+      <h4>Eksempel: KONTRAKT med Signert</h4>
+      <figure class="er-fig exam-fig et-er"><div id="fig-kontrakt"></div>
+        <figcaption class="small muted" id="cap-kontrakt"></figcaption></figure>
+      <div class="rs-side">
+        <div class="card">
+          <h5>Valg 1: FN på N-siden</h5>
+          <div id="skj-kontrakt1"></div>
+          <div id="inst-artist1"></div>
+        </div>
+        <div class="card">
+          <h5>Valg 2: egen tabell</h5>
+          <div id="skj-kontrakt2"></div>
+          <div id="inst-kontrakt2"></div>
+        </div>
+      </div>
+      <p><i>Begrunnelse for valg 1:</i> ARTIST har N på sin strek, så hver artist har høyst ett plateselskap, og FN-en får plass i Artist.
+        Det gir én tabell mindre, mot NULL for artister uten kontrakt. Begge valgene godtas når de er forklart.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>FN på 1-siden.</b> Et plateselskap har mange artister, og de får ikke plass i én kolonne.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor står FN-en i Artist og ikke i Plateselskap?</summary>
+          <p>Fordi hver artist har høyst ett plateselskap. Det er siden med N <i>på sin strek</i> som får FN-en.</p></details>
+        <ul>
+          <li><b>PN = {Artist, Plateselskap} i en egen tabell.</b> Da kunne samme artist fått to plateselskaper.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor er PN i Kontrakt bare {Artist}, når M:N-tabeller bruker begge FN-ene?</summary>
+          <p>Fordi hver artist høyst kan stå én gang. Det er nettopp «høyst ett plateselskap» som håndheves av at {Artist} er nøkkelen. I M:N kan begge sider gjentas, og da er det bare paret som er unikt.</p></details>
+        <ul>
+          <li><b>Relasjonsattributt i feil tabell.</b> Signert skal stå sammen med FN-en, ikke i Plateselskap.</li>
+          <li><b>FN-en markert som KN.</b> I 1:N er den ikke unik.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        1:N finnes i alle realiseringsoppgavene. H2024 1.3 hadde både EIE og ADMINISTRERE. Det som gir poeng, er riktig side for FN-en
+        og én setning om NULL eller antall tabeller.
+        <br><span class="small"><b>Merk om H2024 1.3:</b> løsningsdelen i sensorveiledningen gir tabellen Administrere to forskjellige PN-er
+        (én i stegvisningen og en annen i det samlede skjemaet). Etter kursets regel er {Agnt} riktig, fordi agenten er N-siden.</span></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-en-til-mange"></div>
+    </section>
+
+    <!-- ===================== 6 · M:N ===================== -->
+    <section data-panel="mange-til-mange">
+      <h3>M:N-relasjoner (og rekursive)</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En M:N-relasjon blir alltid en <b>egen tabell</b> med FN til hver av entitetene. PN er <b>alle FN-attributtene sammen</b>.
+        Relasjonsattributter blir vanlige kolonner i tabellen, men aldri en del av KN eller PN. En <b>rekursiv</b> relasjon
+        realiseres på samme måte, med kolonnenavn etter rollene.</div>
+      <div id="ex-mange-til-mange"></div>
+
+      <h4>Eksempel: SPILLER og OPPVARMING</h4>
+      <figure class="er-fig exam-fig et-er"><div id="fig-mn"></div>
+        <figcaption class="small muted" id="cap-mn"></figcaption></figure>
+      <div id="skj-mn"></div>
+      <div id="inst-spiller"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>M:N med FN i en av entitetstabellene.</b> Det går ikke, fordi hver entitet kan ha mange partnere.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor holder det ikke med en FN-kolonne Konsert i Artist?</summary>
+          <p>En artist spiller på mange konserter. Én kolonne har bare plass til én.</p></details>
+        <ul>
+          <li><b>Honorar i PN.</b> Relasjonsattributter er aldri en del av nøkkelen. Var det det, kunne samme par stått to ganger med forskjellig honorar.</li>
+          <li><b>FN mot bare Start.</b> Konsert er svak, så FN-en må peke på hele PN-en (Scene, Start).</li>
+          <li><b>Like kolonnenavn i en rekursiv relasjon.</b> Bruk rollenavn (Hovedartist, Oppvarmer).</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Hver realiseringsoppgave har minst én M:N. Det som ofte går galt, er PN-en når en av sidene er svak.</div>
+
+      <h4>Øv: Hvor havner fremmednøkkelen?</h4>
+      <p class="small muted">Seks små diagrammer med 1:1, 1:N og M:N. Velg det beste valget og les begrunnelsen. Der to valg godtas, står det i fasiten.</p>
+      <div id="fn-ovelse"></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-mange-til-mange"></div>
+    </section>
+
+    <!-- ===================== 7 · FLERVERDI ===================== -->
+    <section data-panel="flerverdi">
+      <h3>Flerverdiattributter</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Et flerverdiattributt blir en <b>egen tabell</b> med entitetens PN (som FN) og attributtet selv. <b>KN = alle attributtene
+        i tabellen</b>, fordi hver kombinasjon av entitet og verdi forekommer én gang.</div>
+      <div id="ex-flerverdi"></div>
+
+      <h4>Eksempel: Sjanger og Språk</h4>
+      <div class="rs-figpair">
+        <figure class="er-fig exam-fig et-er"><div id="fig-flerverdi"></div>
+          <figcaption class="small muted" id="cap-flerverdi"></figcaption></figure>
+        <div>
+          <div id="skj-flerverdi"></div>
+          <div id="inst-sjanger"></div>
+        </div>
+      </div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>PN = {Artist}.</b> Da kunne hver artist bare hatt én sjanger.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor er Sjanger med i PN?</summary>
+          <p>Fordi samme artist forekommer i flere rader. Det er bare paret (artist, sjanger) som er unikt.</p></details>
+        <ul>
+          <li><b>Sjanger som kolonne i Artist,</b> for eksempel <span class="mono">'pop, elektronika'</span>. Det bryter 1NF.</li>
+          <li><b>Kolonnene Sjanger1, Sjanger2 og Sjanger3.</b> Det gir NULL og et fast tak på antallet.</li>
+          <li><b>Glemt FN.</b> Tabellen må peke på eieren.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Flerverdiattributter har vært med i ER-oppgavene både i H2024 (bibliotek) og H2025 (telefonnumre i båtoppgaven), og de skal
+        da også realiseres. Steget er lett og gir poeng, men det glemmes ofte fordi det står sist på listen før de n-ære.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-flerverdi"></div>
+    </section>
+
+    <!-- ===================== 8 · TERNÆRE ===================== -->
+    <section data-panel="naere">
+      <h3>Ternære og n-ære relasjoner</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En ternær (n-ær) relasjon blir <b>alltid en egen tabell</b> med FN til hver deltaker, pluss eventuelle relasjonsattributter.
+        KN-en avhenger av kardinalitetene:
+        <ul>
+          <li>Er det <b>mange</b> på alle sider, er alle FN-ene sammen KN.</li>
+          <li>Står det <b>1</b> på én side, er FN-ene til de <b>andre</b> sidene en KN.</li>
+          <li>Står det 1 på flere sider, får du én KN for hver slik side.</li>
+        </ul>
+        Relasjonsattributter er aldri en del av KN.</div>
+      <div id="ex-naere"></div>
+
+      <h4>Eksempel A: VAKT med 1 ved OPPGAVE</h4>
+      <div class="rs-figpair">
+        <figure class="er-fig exam-fig et-er"><div id="fig-ternaer"></div>
+          <figcaption class="small muted" id="cap-ternaer"></figcaption></figure>
+        <div id="skj-naereA"></div>
+      </div>
+      <div id="inst-vakt"></div>
+      <div id="inst-vaktnei"></div>
+
+      <h4>Eksempel B og C: andre kardinaliteter</h4>
+      <div class="rs-side">
+        <div class="card">
+          <h5>B: 1 ved både OPPGAVE og SCENE</h5>
+          <p class="small">Anta i tillegg at en frivillig med en gitt oppgave bare kan ha den på én scene.</p>
+          <div id="skj-naereB"></div>
+          <p class="rs-verdict">Raden (ada@fest.no, Månescenen, bar) fra eksempel A er da ikke lov, fordi Ada allerede har bar på Teltet.</p>
+        </div>
+        <div class="card">
+          <h5>C: mange på alle sider (M, N, K)</h5>
+          <p class="small">Ingen to deltakere bestemmer den tredje.</p>
+          <div id="skj-naereC"></div>
+          <p class="rs-verdict">Nå kan Ada ha både bar og sikkerhet på Teltet. Bare samme trippel to ganger er forbudt.</p>
+        </div>
+      </div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å prøve å realisere den ternære med FN-er i entitetstabellene.</b> Ternære blir alltid egen tabell.</li>
+        </ul>
+        <details class="grense"><summary>1 står ved OPPGAVE. Hvorfor kan ikke Oppgave legges som FN i Frivillig, slik som i 1:N?</summary>
+          <p>Fordi 1-tallet gjelder per <i>par</i> (frivillig, scene), ikke per frivillig. En frivillig kan ha forskjellige oppgaver på forskjellige scener.</p></details>
+        <ul>
+          <li><b>Alle tre FN-ene som KN når det står 1 på en side.</b> Da er KN-en ikke minimal, og skjemaet tillater to oppgaver for samme frivillig på samme scene.</li>
+          <li><b>Timer i KN.</b> Relasjonsattributter er aldri en del av nøkkelen.</li>
+          <li><b>Bare én KN når det står 1 på to sider.</b> Skriv alle KN-ene.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        H2024 1.3 hadde en ternær relasjon (visning: leietaker, agent og eiendom) i realiseringen. Ternære har også vært med i
+        ER-tegningen i P19, H19, P20 og H20. Riktig KN ut fra 1-tallene er det sensor ser etter.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-naere"></div>
+    </section>
+
+    <!-- ===================== 9 · HELE ===================== -->
+    <section data-panel="hele">
+      <h3>Hele eksemplet, steg for steg</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        På eksamen gjøres hele algoritmen på én figur. Svaret skal være et komplett skjema der hver tabell har KN, PN og FN, med en
+        kort begrunnelse for hvert valg. Det er tre krav: <b>korrekt</b> (alt i diagrammet er med, og nøklene stemmer),
+        <b>effektivt</b> (få tabeller og få NULL) og <b>tydelig</b> (lett å lese og markert).</div>
+      <div id="ex-hele"></div>
+
+      <h4>Festivalen realiseres</h4>
+      <p class="small muted">Diagrammet er festivalen fra <a href="01-er.html">blokk 1</a>. Elementene steget gjelder, er uthevet. Stiplet rødt betyr at attributtet droppes, og stiplet grått at det venter til et senere steg. Under figuren vokser skjemaet. Den nyeste tabellen er markert, og nye kolonner i en tabell som fantes fra før, er uthevet.</p>
+      <div class="rs-algo-grid">
+        <div id="steg-hele"></div>
+        <div id="algo-hele"></div>
+      </div>
+
+      <h4>Oppsummering</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Steg</th><th>Element</th><th>Resultat</th><th>Begrunnelse</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>ARTIST, PLATESELSKAP, SCENE, FRIVILLIG, OPPGAVE</td><td>Fem tabeller</td><td>Vanlige entiteter. Alder droppes (utledbar). Navn gir Fornavn og Etternavn. Sjanger venter.</td></tr>
+          <tr><td>2</td><td>KONSERT (svak) og PÅ</td><td>Konsert med PN {Scene, Start}</td><td>Eierens PN + svak nøkkel. PÅ er ferdig gjennom FN-en. Varighet droppes.</td></tr>
+          <tr><td>3</td><td>SJEF (1:1)</td><td>Kolonnen Sjef i Scene, som også er KN</td><td>SCENE er total, så ingen NULL. Sammenslåing er ikke lov, fordi FRIVILLIG er partiell.</td></tr>
+          <tr><td>4</td><td>KONTRAKT (1:N)</td><td>Kolonnen Plateselskap i Artist</td><td>ARTIST er N-siden. Én tabell mindre, mot NULL for artister uten kontrakt.</td></tr>
+          <tr><td>5</td><td>SPILLER (M:N)</td><td>Spiller med PN {Artist, Scene, Start}</td><td>M:N gir alltid egen tabell. Honorar er en vanlig kolonne.</td></tr>
+          <tr><td>6</td><td>Sjanger (flerverdi)</td><td>Sjanger med PN {Artist, Sjanger}</td><td>Flerverdi gir alltid egen tabell.</td></tr>
+          <tr><td>7</td><td>VAKT (ternær)</td><td>Vakt med PN {Frivillig, Scene}</td><td>1 ved OPPGAVE, så frivillig og scene bestemmer oppgaven.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Ferdig skjema (9 tabeller)</h4>
+      <div id="skj-festival"></div>
+
+      <div class="callout eksempel"><span class="lbl">Hva skjemaet ikke håndhever</span>
+        At hvert plateselskap har minst én artist, at hver konsert har minst én artist, og at hver oppgave brukes i minst én vakt.
+        Total deltakelse på den <i>refererte</i> siden kan ikke uttrykkes med KN og FN. (Guidens egen observasjon. Lysarkene sier det ikke rett ut.)</div>
+
+      <div class="callout uni"><span class="lbl">Bare 1NF er garantert</span>
+        Realiseringen gir et skjema på minst 1NF, men det kan bryte BCNF hvis domenet har funksjonelle avhengigheter som ER-diagrammet
+        ikke kan uttrykke (F08-03 lysark 3). Eksempel: en frivillig har Postnr og Poststed, og postnummeret bestemmer poststedet. I
+        <span class="mono">Frivillig(Epost, Postnr, Poststed)</span> er {Epost} den eneste KN-en. FD-en <span class="mono">Postnr → Poststed</span>
+        har en venstreside som ikke er en supernøkkel, så tabellen bryter BCNF. Den bryter også 3NF, siden Poststed ikke er et
+        nøkkelattributt, men 2NF holder, fordi Postnr ikke er en del av noen KN. Det er normaliseringen i
+        <a href="07-normalisering.html">blokk 7</a> som fanger slike avhengigheter.</div>
+
+      <h4>Fra skjema til SQL (utdrag)</h4>
+      <p>PN blir <span class="mono">PRIMARY KEY</span>, og en ekstra KN blir <span class="mono">UNIQUE NOT NULL</span> (F04-01 lysark 8).
+        En FN blir <span class="mono">REFERENCES</span>, og en sammensatt FN skrives som <span class="mono">FOREIGN KEY (…) REFERENCES …</span>.
+        Mer om <span class="mono">CREATE TABLE</span> i <a href="04-sql.html">blokk 4</a>.</p>
+      <div id="sql-hele"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>En relasjon realisert to ganger</b> (for eksempel både Sjef i Scene og en egen tabell Sjef).</li>
+          <li><b>En relasjon som er glemt.</b> Kryss av hver rombe i figuren.</li>
+          <li><b>Valg uten begrunnelse:</b> −0,5 hver. Det holder med én setning per valg.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor ikke bare lage egen tabell for alle relasjoner? Da er det jo riktig.</summary>
+          <p>Det er korrekt, men ikke effektivt. Kurset ber om færrest mulig tabeller, så 1:1 og 1:N skal normalt realiseres med FN når det ikke gir urimelig mange NULL-er.</p></details>
+        <ul>
+          <li><b>Å tro at skjemaet er på BCNF fordi det kommer fra ER.</b> Realiseringen garanterer bare 1NF.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Hele algoritmen på én figur hvert år (7–15 poeng). Sensor trekker 0,5 for hver manglende kolonne, markering eller begrunnelse,
+        så et helt skjema med korte begrunnelser gir mest. H2025 lot deg realisere din egen ER-modell fra 1.1.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-hele"></div>
+    </section>
+
+    <!-- ===================== 10 · SUBKLASSER ===================== -->
+    <section data-panel="subklasser">
+      <h3>Subklasser <span class="tag">nytt i H26</span></h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En subklasse realiseres med en <b>egen tabell</b> for superklassen og <b>én tabell per subklasse</b>. Subklassetabellen har
+        superklassens PN som sin PN, og den er samtidig en FN til superklassen. Det håndhever kravet om delmengde
+        (<span class="mono">Vip ⊆ Gjest</span>), men <b>ikke</b> disjunkthet eller totalitet. De må uttrykkes som egne krav.
+        <br><span class="small muted">F13-uttrykkskraft s. 8–11, med egne ord. Lysarkene skriver PK/FK og «constraint». Guiden bruker PN/FN som resten av kurset.
+        Kravene (disjunkt, total) er forklart i <a href="01-er.html#fane=eer">blokk 1, fanen EER</a>. Kurset tegner ikke ISA-figurer, så her brukes mengdenotasjon.</span></div>
+      <div id="ex-subklasser"></div>
+
+      <h4>Eksempel: Gjest, Vip og Presse</h4>
+      <p class="mono">Gjest = {1, 2, 3, 4}, Vip = {1, 2}, Presse = {2, 3}</p>
+      <div class="rs-side">
+        <div class="card">
+          <h5>A: kursets realisering</h5>
+          <div id="skj-subA"></div>
+          <div id="inst-subA"></div>
+          <p class="rs-verdict"><b>Riktig.</b> Ingen NULL. FN-en sørger for at hver VIP og hver presseperson også er en gjest.</p>
+        </div>
+        <div class="card">
+          <h5>B: alt i én tabell</h5>
+          <div id="skj-subB"></div>
+          <div id="inst-subB"></div>
+          <p class="rs-verdict"><b>Dårligere.</b> Subklassenes attributter blir NULL for alle som ikke er med i subklassen. Hvem som er VIP, kan bare leses ut av om Bord er NULL.</p>
+        </div>
+        <div class="card">
+          <h5>C: egen nøkkel i subklassen</h5>
+          <div id="skj-subC"></div>
+          <div id="inst-subC"></div>
+          <p class="rs-verdict"><b>Feil etter kurset.</b> Subklassen skal bruke superklassens PN. Med en ny nøkkel kan samme gjest stå flere ganger i Vip.</p>
+        </div>
+      </div>
+
+      <h4>Hva håndheves?</h4>
+      <div class="table-wrap"><table class="cmp-table ls-prose">
+        <thead><tr><th>Krav</th><th>Håndhevet av skjemaet?</th><th>Oppfylt i instansen?</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Vip ⊆ Gjest, Presse ⊆ Gjest</td><td>Ja, av FN</td><td>Ja</td></tr>
+          <tr><td>Disjunkte subklasser</td><td>Nei</td><td>Nei, gjest 2 er i begge</td></tr>
+          <tr><td>Total spesialisering</td><td>Nei</td><td>Nei, gjest 4 er i ingen</td></tr>
+        </tbody>
+      </table></div>
+      <p>Skjemaet godtar instansen selv om modellen skulle kreve disjunkte og totale subklasser.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <ul>
+          <li><b>Å tro at FN-en håndhever disjunkthet.</b> Den sjekker bare at id-en finnes i Gjest.</li>
+        </ul>
+        <details class="grense"><summary>Hvorfor stopper ikke nøklene at gjest 2 er både VIP og presse?</summary>
+          <p>PN-en i Vip er bare unik <i>innenfor</i> Vip. Ingenting i Vip vet hva som står i Presse.</p></details>
+        <ul>
+          <li><b>Subklassens attributter i superklassen.</b> Bord hører til Vip og skal ikke gi NULL for alle andre gjester.</li>
+          <li><b>Egen id i subklassen.</b> Subklassen bruker superklassens PN, ikke en ny nøkkel.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Ukjent, fordi temaet er nytt i H26 og ikke har vært gitt på eksamen. Det mest sannsynlige er en kort oppgave om hvilke krav
+        PK/FK håndhever, eller om en gitt instans oppfyller kravene.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-subklasser"></div>
+    </section>
+
+    <!-- ===================== EKSAMENSOPPGAVER ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver i realisering</h3>
+      <p class="muted small">Alle realiseringsoppgavene fra eksamenene i banken, nyeste først, med ER-figurene fra arket tegnet på nytt og løsningsforslag.</p>
+      <div id="bank-real"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Etiketten viser hvilken fane påstanden hører til.</p>
+      <div id="tf-real"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 2 · Realisering</footer>
+
+  <script src="assets/js/core.js?v=20261125c"></script>
+  <script src="assets/js/symboler.js?v=20261125c"></script>
+  <script src="assets/js/sql-lang.js?v=20261125c"></script>
+  <script src="assets/js/pseudocode.js?v=20261125c"></script>
+  <script src="assets/js/stepplayer.js?v=20261125c"></script>
+  <script src="assets/js/varline.js?v=20261125c"></script>
+  <script src="assets/js/viz-relation.js?v=20261125c"></script>
+  <script src="assets/js/viz-er.js?v=20261125c"></script>
+  <script src="assets/js/data-realisering.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
+  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, el = IN.el, D = IN.dataReal;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[02-realisering] " + navn, e); } }
+    function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    function host(id) { return document.getElementById(id); }
+
+    /* ---------- Skjema i kursets notasjon ----------
+       Navn(A, B, …) med PN understreket, og under: KN, PN og FN på egne linjer. */
+    function tabHTML(t, o) {
+      o = o || {};
+      var nye = o.nye || [];
+      var head = esc(t.navn) + "(" + t.attr.map(function (a) {
+        var h = esc(a);
+        if (t.pn.indexOf(a) >= 0) h = '<span class="rs-pn">' + h + "</span>";
+        if (nye.indexOf(a) >= 0) h = '<span class="rs-add">' + h + "</span>";
+        return h;
+      }).join(", ") + ")";
+      var set = function (xs) { return "{" + xs.map(esc).join(", ") + "}"; };
+      var h = '<div class="rs-head">' + (o.ny ? '<span class="rs-newlbl">ny</span>' : o.endret ? '<span class="rs-newlbl">endret</span>' : "") + head + "</div>";
+      h += '<div class="rs-ln"><b>KN:</b> ' + t.kn.map(set).join(", ") + "</div>";
+      h += '<div class="rs-ln"><b>PN:</b> ' + set(t.pn) + "</div>";
+      t.fn.forEach(function (f) {
+        h += '<div class="rs-ln"><b>FN:</b> (' + f[0].map(esc).join(", ") + ") -&gt; " + esc(f[1]) + "(" + f[2].map(esc).join(", ") + ")</div>";
+      });
+      if (t.notat) h += '<div class="rs-note">' + t.notat + "</div>";
+      return h;
+    }
+    function skjema(target, tabeller, o) {
+      o = o || {};
+      if (typeof target === "string") target = host(target);
+      if (!target) return;
+      var grid = el("div", { class: "rs-schema" + (tabeller.length === 1 || o.one ? " rs-one" : ""), role: "group", "aria-label": "Relasjonsskjema" });
+      tabeller.forEach(function (t) {
+        var isNy = o.ny === t.navn;
+        grid.appendChild(el("div", { class: "rs-tab" + (isNy ? " rs-new" : ""),
+          html: tabHTML(t, { ny: isNy && !o.endret, endret: isNy && o.endret, nye: isNy ? o.nye : null }) }));
+      });
+      target.appendChild(grid);
+    }
+
+    /* ---------- ER-figurer ---------- */
+    function fig(hostId, f, title) {
+      safe(hostId, function () {
+        IN.vizEr("#" + hostId, f, { title: title });
+        var cap = host(hostId.replace(/^fig-/, "cap-"));
+        if (cap && f.merknad) cap.textContent = f.merknad;
+      });
+    }
+    fig("fig-attributter", D.fig.attributter, "Attributtyper: FRIVILLIG og FESTIVALPASS");
+    fig("fig-svak", D.fig.svak, "Svake entiteter: KONSERT og LÅTPLASS");
+    fig("fig-sjef", D.fig.sjef, "1:1-relasjonen SJEF mellom SCENE og FRIVILLIG");
+    fig("fig-armband", D.fig.armband, "1:1-relasjonen BÆRER, total på begge sider");
+    fig("fig-kontrakt", D.fig.kontrakt, "1:N-relasjonen KONTRAKT med attributtet Signert");
+    fig("fig-mn", D.fig.mn, "M:N-relasjonene SPILLER og OPPVARMING");
+    fig("fig-flerverdi", D.fig.flerverdi, "Flerverdiattributtene Sjanger og Språk");
+    fig("fig-ternaer", D.fig.ternaer, "Den ternære relasjonen VAKT");
+
+    /* ---------- Skjemaer ---------- */
+    var SK = D.skjema;
+    safe("skjemaer", function () {
+      skjema("skj-notasjon", SK.konsertNotasjon);
+      skjema("skj-entiteter", SK.entiteter, { one: true });
+      skjema("skj-svake", SK.svake);
+      skjema("skj-sjef", SK.sjef, { one: true });
+      skjema("skj-armband", SK.armband);
+      skjema("skj-kontrakt1", SK.kontrakt1, { one: true });
+      skjema("skj-kontrakt2", [SK.kontrakt2[0], SK.kontrakt2[2]], { one: true });
+      skjema("skj-mn", SK.mn);
+      skjema("skj-flerverdi", SK.flerverdi, { one: true });
+      skjema("skj-naereA", SK.naereA, { one: true });
+      skjema("skj-naereB", SK.naereB);
+      skjema("skj-naereC", SK.naereC);
+      skjema("skj-festival", SK.festival);
+      skjema("skj-subA", SK.subA, { one: true });
+      skjema("skj-subB", SK.subB);
+      skjema("skj-subC", SK.subC, { one: true });
+    });
+
+    /* ---------- Instanser ---------- */
+    var I = D.inst;
+    function inst(id, t) { safe(id, function () { IN.vizTable("#" + id, t, { compact: true }); }); }
+    inst("inst-konsert", I.konsert);
+    inst("inst-scenesjef", I.sceneSjef);
+    inst("inst-frivilligsjef", I.frivilligSjef);
+    inst("inst-artist1", I.artist1);
+    inst("inst-kontrakt2", I.kontrakt2);
+    inst("inst-spiller", I.spiller);
+    inst("inst-sjanger", I.sjanger);
+    inst("inst-vakt", I.vakt);
+    inst("inst-vaktnei", I.vaktNei);
+    safe("inst-subA", function () { ["gjest", "vip", "presse"].forEach(function (k) { IN.vizTable("#inst-subA", I[k], { compact: true }); }); });
+    inst("inst-subB", I.gjestB);
+    inst("inst-subC", I.vipC);
+
+    safe("sql-hele", function () { IN.sqlBlock(host("sql-hele"), D.sql); });
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-algoritmen": {
+        eli5: "<p>Du har en tegning med bokser og romber og skal bygge den som et sett med regneark. Hver boks blir et ark. Strekene blir kolonner som peker til et annet ark. Du gjør det i en fast rekkefølge, så du ikke glemmer noe og ikke lager flere ark enn nødvendig.</p>",
+        normal: "<p>Hver entitet blir en tabell, og nøklene blir kandidatnøkler. Relasjoner blir enten en fremmednøkkel i en av tabellene (når minst én side har 1) eller en egen tabell (M:N og ternære). Flerverdiattributter får alltid egen tabell.</p><p>Der du kan velge, velger du det som gir færrest tabeller og færrest NULL-er, og du <b>skriver én setning om hvorfor</b>. Eksamen gir poeng for forklaringen.</p>",
+        teknisk: "<p>Rekkefølgen er ikke tilfeldig. Svake entiteter trenger eierens PN, så eieren må være realisert først. 1:1 og 1:N kan ofte realiseres uten ny tabell, mens M:N, flerverdi og n-ære alltid gir nye tabeller som peker på tabeller som allerede finnes.</p><p>Resultatet oppfyller alltid 1NF, men realiseringen garanterer ikke BCNF. ER kan ikke uttrykke alle funksjonelle avhengigheter, så det kan finnes FD-er i domenet som ingen nøkkel fanger opp (F08-03 lysark 3, se fanen «Hele eksemplet»). Skjemaet håndhever heller ikke all informasjon fra diagrammet. KN og FN uttrykker unikhet og «må finnes», men ikke at hver entitet på den <i>refererte</i> siden deltar minst én gang.</p>"
+      },
+      "ex-entiteter": {
+        eli5: "<p>Hver boks blir et ark. Overskriftene er egenskapene. Det du kan regne ut selv, trenger ikke egen kolonne. Et navn som består av fornavn og etternavn, får to kolonner. Lister (flere språk) venter du med, for de passer ikke inn i én rute.</p>",
+        normal: "<p>Gå gjennom entitetene én om gangen. Skriv tabellnavnet og alle enkle attributter. For et sammensatt attributt skriver du bare delene nederst i treet. Er det sammensatte attributtet en nøkkel, blir <b>alle bladene sammen</b> én KN. Har entiteten flere nøkler, blir hver av dem en egen KN. Velg den enkleste som PN, og skriv alle KN-ene.</p>",
+        teknisk: "<p>Én celle skal inneholde én verdi (1NF). Det er derfor sammensatte attributter flates ut til bladene og flerverdiattributter flyttes til egne tabeller. Navnet på en bladkolonne kan få et prefiks hvis to sammensatte attributter har deler med samme navn (for eksempel <span class=\"mono\">Post_gatenavn</span> og <span class=\"mono\">Besok_gatenavn</span> for en postadresse og en besøksadresse).</p><p>Utledbare attributter droppes fordi de ville gitt dobbeltlagring som kan bli inkonsistent. Valget av PN påvirker bare hva fremmednøklene peker på. Alle KN-ene skal skrives uansett.</p>"
+      },
+      "ex-svake": {
+        eli5: "<p>Sete 12 er bare unikt i én sal. På arket for seter skriver du derfor både salen og setenummeret, og salen peker tilbake til arket for saler.</p>",
+        normal: "<p>Lag tabellen for den svake entiteten med de vanlige attributtene. Legg til eierens PN som kolonner. Sammen med den svake nøkkelen blir de PN. Eierkolonnene er samtidig en FN til eieren.</p><p>Siden en svak entitet alltid har nøyaktig én eier, blir FN-en aldri NULL. Den identifiserende relasjonen trenger ingen egen tabell og ingen ekstra FN.</p>",
+        teknisk: "<p>Den svake nøkkelen er ikke unik alene, så den må kombineres med eierens PN for å bli en KN. Når nivåene stables (en låtplass på settlisten til en konsert på en scene), vokser PN-en nedover: hver svak tabell arver <i>hele</i> PN-en til eieren, selv om den er sammensatt. Da blir også FN-en sammensatt. Den peker på hele eierens PN, ikke på deler av den.</p>"
+      },
+      "ex-en-til-en": {
+        eli5: "<p>Hver scene har nøyaktig én sjef, men de fleste frivillige er ikke sjef. Skriver du sjefens navn på scenearket, er alle rutene fylt. Skriver du scenen på frivilligarket, blir de fleste rutene tomme.</p>",
+        normal: "<p>Spør hvilken side som <i>må</i> delta. Den siden får FN-en. I SJEF har SCENE dobbel strek (hver scene har en sjef), mens FRIVILLIG har enkel. Derfor får Scene kolonnen <span class=\"mono\">Sjef</span>.</p><p>Siden en frivillig er sjef for høyst én scene, kan samme e-post ikke stå på to scener. Kolonnen er altså unik og aldri tom, og dermed en KN. Bare når begge sider må delta, kan du slå tabellene sammen til én.</p>",
+        teknisk: "<p>Sammenslåing når bare én side er total ville tvinge NULL inn i nøkkelkolonnene til den partielle siden, og det er ikke lov for en KN. FN på den partielle siden gir NULL i FN-kolonnen. Den kolonnen er fortsatt unik blant verdiene som ikke er NULL, men den er ikke en KN, fordi en KN aldri kan være NULL.</p><p>En egen tabell gir ingen NULL, men gir én tabell ekstra. Den kan være riktig hvis relasjonen har mange attributter eller begge sider er partielle. Ved sammenslåing blir begge entitetenes nøkler KN-er i den nye tabellen.</p>"
+      },
+      "ex-en-til-mange": {
+        eli5: "<p>Hver artist har høyst ett plateselskap. Da er det lett å skrive plateselskapet i én rute på artistarket. Motsatt går ikke: et plateselskap har mange artister, og de får ikke plass i én rute.</p>",
+        normal: "<p>Finn siden der hver entitet høyst har én partner. Det er siden med N på sin egen strek (og 1 ved motparten). Legg motpartens PN som FN-kolonne der. Er N-siden partiell, får de som ikke er relatert, NULL i FN-kolonnen.</p><p>Vil du unngå det, kan du lage en egen tabell. Den har bare rader for de som faktisk er relatert, og PN er N-sidens PN, fordi hver av dem bare kan forekomme én gang.</p>",
+        teknisk: "<p>FN-en på N-siden er <i>ikke</i> en KN, fordi mange rader kan ha samme verdi. Er N-siden total, blir FN-en aldri NULL (den kan få <span class=\"mono\">NOT NULL</span> i SQL). Er den partiell, må du veie én tabell mindre mot NULL-verdier. Begge løsningene godtas når valget er forklart.</p><p>I en egen tabell er PN-en N-sidens PN alene, ikke paret. Det er nettopp det som sikrer «høyst én» på 1-siden. Et relasjonsattributt bor i samme tabell som FN-en, fordi det avhenger av paret, og paret er bestemt av N-sidens PN. Ukesoppgavene for uke 6 gjør det samme med et periodeattributt på en ansattrelasjon.</p>"
+      },
+      "ex-mange-til-mange": {
+        eli5: "<p>En artist spiller på mange konserter, og en konsert har mange artister. Ingen av arkene har plass til en liste, så du lager et nytt ark der hver rad er ett par: denne artisten på denne konserten.</p>",
+        normal: "<p>Lag en tabell med PN-en til hver side som kolonner. Hvert par kan bare forekomme én gang, så alle FN-kolonnene sammen blir PN. Relasjonsattributter (honorar) legges til som vanlige kolonner. Er en av sidene en svak entitet med sammensatt PN, blir hele den PN-en med, og FN-en blir sammensatt.</p>",
+        teknisk: "<p>PN-en følger av at relasjonen er en mengde par: samme par kan ikke være relatert to ganger. Et relasjonsattributt avhenger av hele paret, så det kan ikke være del av nøkkelen. Var det det, kunne samme par stått to ganger med forskjellig honorar.</p><p>En <b>rekursiv</b> relasjon realiseres på samme måte, men begge FN-ene peker på samme tabell. Da trenger kolonnene navn etter <b>rollene</b>, fordi to kolonner ikke kan hete det samme.</p>"
+      },
+      "ex-flerverdi": {
+        eli5: "<p>En artist kan ha mange sjangre. I stedet for å presse en liste inn i én rute lager du et eget ark der hver rad er én artist og én sjanger.</p>",
+        normal: "<p>Tabellen har to deler: kolonnene som peker på eieren (eierens PN) og kolonnen for verdien. Hver rad er ett par, og hele paret er PN. Er flerverdiattributtet samtidig sammensatt (for eksempel flere telefonnumre med landskode og nummer), blir alle bladene kolonner, og alle sammen inngår i PN.</p>",
+        teknisk: "<p>Dette er nødvendig for 1NF, siden en celle bare kan ha én atomær verdi. PN består av alle kolonnene, fordi både eieren og verdien gjentas på tvers av rader, men aldri samme par. Steget kommer etter M:N i rekkefølgen, men det avhenger bare av at eierens tabell finnes. Er eieren svak, blir hele eierens sammensatte PN med.</p>"
+      },
+      "ex-naere": {
+        eli5: "<p>En vakt er alltid hvem, hvor og hva. Kan en frivillig bare ha én oppgave på hver scene, holder det å vite hvem og hvor for å finne raden. Hva følger av de to.</p>",
+        normal: "<p>Les tallene som i blokk 1: 1 ved OPPGAVE betyr at frivillig og scene sammen bestemmer oppgaven. Da er {Frivillig, Scene} unik og blir en KN. Oppgave kan ikke være med i KN-en, for da er den ikke minimal. Med N eller M på alle tre sidene bestemmer ingen to den tredje, og alle tre trengs.</p>",
+        teknisk: "<p>1 ved en side E betyr FD-en «de andre deltakerne → E». Venstresiden er da en supernøkkel for relasjonen, og den er minimal fordi hver deltaker kan gjentas. For n-ære relasjoner gjelder det samme: hver side med 1 gir en KN bestående av de n−1 andre FN-ene.</p><p>En ternær relasjon kan ikke erstattes av tabeller for tre binære relasjoner, fordi kombinasjonen da går tapt (<a href=\"01-er.html#fane=ternaere\">blokk 1, Ternære</a>).</p>"
+      },
+      "ex-hele": {
+        eli5: "<p>Du bygger hele huset etter tegningen, rom for rom i fast rekkefølge, og skriver en lapp på hver dør om hvorfor døren står akkurat der.</p>",
+        normal: "<p>Følg rekkefølgen slavisk og kryss av hvert element i figuren når det er realisert. Til slutt sjekker du tre ting. Har hver tabell en PN? Peker hver FN på en KN? Er hver relasjon realisert nøyaktig én gang?</p>",
+        teknisk: "<p>Realiseringen gir et skjema på minst 1NF, men BCNF er ikke garantert, fordi domenet kan ha FD-er som ER-diagrammet ikke kan uttrykke (se boksen «Bare 1NF er garantert» under). Skjemaet håndhever heller ikke total deltakelse på den refererte siden. Begge deler er greit å nevne i en begrunnelse, men det er ikke noe du skal «reparere» i realiseringsoppgaven.</p>"
+      },
+      "ex-subklasser": {
+        eli5: "<p>Alle gjester står på gjestelisten. VIP-listen og presselisten har bare gjestenummeret og det som er spesielt for dem. Listene passer på at ingen står på VIP-listen uten å være gjest. De passer ikke på at ingen står på begge, eller at alle står på minst én.</p>",
+        normal: "<p>Lag tabellen for superklassen med alle felles attributter. For hver subklasse lager du en tabell med superklassens PN og subklassens egne attributter. PN-en er en FN til superklassen, så hver rad i en subklasse må finnes i superklassen. Disjunkthet (ingen i to subklasser) og totalitet (alle i minst én) følger ikke av nøklene.</p>",
+        teknisk: "<p>FN håndhever inklusjonen <span class=\"mono\">∀x (Vip(x) → Gjest(x))</span>. Disjunkthet <span class=\"mono\">∀x ¬(Vip(x) ∧ Presse(x))</span> er et krav på tvers av to tabeller, og totalitet <span class=\"mono\">∀x (Gjest(x) → (Vip(x) ∨ Presse(x)))</span> krever at noe <i>finnes</i> i en annen tabell. Ingen av dem kan uttrykkes med PRIMARY KEY, UNIQUE eller REFERENCES alene.</p><p>F13 bruker dette til å vise at hvert språk (ER, relasjonsskjema, logikk) har begrenset uttrykkskraft. Hvordan slike krav håndheves i et DBMS, går kurset ikke inn på her.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Pseudokoden (statisk i fanen Algoritmen) ---------- */
+    safe("algo-pseudo", function () { IN.pseudo.render("#algo-pseudo", D.algo); });
+
+    /* ---------- Utheving i ER-figuren ----------
+       viz-er.js har ingen uthevings-API, så vi finner formen under hver etikett etter geometri. */
+    function near(a, b) { return Math.abs(a - b) < 1.6; }
+    function markFig(svg, hl) {
+      if (!svg || !hl) return;
+      function each(sel, fn) { Array.prototype.forEach.call(svg.querySelectorAll(sel), fn); }
+      function num(n, a) { return parseFloat(n.getAttribute(a)); }
+      function boxes(names, cls) {
+        if (!names || !names.length) return;
+        each("text.er-ent-t", function (t) {
+          if (names.indexOf(t.textContent) < 0) return;
+          var x = num(t, "x"), y = num(t, "y") - 5;
+          t.classList.add("rs-hl-t");
+          each("rect.er-ent", function (r) {
+            if (near(num(r, "x") + num(r, "width") / 2, x) && near(num(r, "y") + num(r, "height") / 2, y)) r.classList.add(cls);
+          });
+        });
+        each("text.er-rel-t", function (t) {
+          if (names.indexOf(t.textContent) < 0) return;
+          var x = num(t, "x"), y = num(t, "y") - 4;
+          t.classList.add("rs-hl-t");
+          each("polygon.er-rel", function (p) {
+            var pts = p.getAttribute("points").trim().split(/\s+/).map(function (q) { return q.split(",").map(parseFloat); });
+            var cx = 0, cy = 0;
+            pts.forEach(function (q) { cx += q[0]; cy += q[1]; });
+            if (near(cx / pts.length, x) && near(cy / pts.length, y)) p.classList.add(cls);
+          });
+        });
+      }
+      function attrs(names, cls) {
+        if (!names || !names.length) return;
+        each("text.er-attr-t", function (t) {
+          if (names.indexOf(t.textContent) < 0) return;
+          var x = num(t, "x"), y = num(t, "y") - 4;
+          t.classList.add("rs-hl-t");
+          each("ellipse", function (e) { if (near(num(e, "cx"), x) && near(num(e, "cy"), y)) e.classList.add(cls); });
+        });
+      }
+      boxes(hl.e, "rs-hl");
+      attrs(hl.a, "rs-hl");
+      attrs(hl.drop, "rs-drop");
+      attrs(hl.wait, "rs-wait");
+    }
+
+    /* ---------- Stegspiller: hele festivalen ---------- */
+    safe("steg-hele", function () {
+      var pseudo = IN.pseudo.render("#algo-hele", D.algo);
+      var ramme = IN.vizEr.bounds ? IN.vizEr.bounds(D.fig.festival) : null;
+      IN.stepPlayer("#steg-hele", {
+        initial: [1],
+        customInput: false,
+        pseudo: pseudo,
+        generate: function () { return D.steg; },
+        render: function (s, ctx) {
+          IN.clear(ctx.stage);
+          ctx.stage.appendChild(el("span", { class: "rs-rule", text: s.regelTekst }));
+          var svg = IN.vizEr(ctx.stage, D.fig.festival, ramme ? { title: "Festivalen, " + (s.tag || ""), bounds: ramme, fit: true } : { title: "Festivalen" });
+          markFig(svg, s.hl);
+          var box = el("div", { class: "rs-stage-schema" });
+          ctx.stage.appendChild(box);
+          if (!s.tabeller.length) box.appendChild(el("p", { class: "rs-empty muted", text: "Skjemaet er tomt. Trykk «Neste» for første tabell." }));
+          else {
+            box.appendChild(el("p", { class: "rs-legend muted", text: "Skjemaet så langt: " + s.tabeller.length + (s.tabeller.length === 1 ? " tabell" : " tabeller") + ". Understrek = PN." }));
+            skjema(box, s.tabeller, { ny: s.ny, endret: !!s.set, nye: s.nye || null });
+          }
+        }
+      });
+    });
+
+    /* ---------- «Hvor havner fremmednøkkelen?» ---------- */
+    safe("fn-ovelse", function () {
+      IN.quiz("#fn-ovelse", D.fnOvelse.map(function (it) {
+        return {
+          q: '<span class="tag">' + it.tag + "</span> " + it.q,
+          options: it.options, answer: it.answer, godta: it.godta, explain: it.explain, kilde: false,
+          render: function (node) { IN.vizEr(node, it.fig, { title: it.tittel }); }
+        };
+      }), { id: "real-fn", cls: "rs-fn" });
+    });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "real-" + fane }); });
+    });
+
+    /* ---------- Sant/usant for hele blokken ---------- */
+    var FANE = { algoritmen: "Algoritmen", entiteter: "Entiteter", svake: "Svake entiteter", "en-til-en": "1:1",
+      "en-til-mange": "1:N", "mange-til-mange": "M:N", flerverdi: "Flerverdi", naere: "Ternære", hele: "Hele eksemplet", subklasser: "Subklasser" };
+    safe("tf-real", function () {
+      IN.tfTest("#tf-real", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, blokk: FANE[it.blokk] || it.blokk, kilde: it.kilde };
+      }), { id: "real-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-real", function () { IN.examBank("#bank-real", { block: "realisering" }); });
+  })();
+  </script>
+</body>
+</html>

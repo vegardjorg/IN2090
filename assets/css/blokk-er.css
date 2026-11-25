@@ -1,0 +1,10 @@
+/* IN2090 · blokk 1 (ER-modellering): små tillegg til styles.css/viz.css */
+.callout details.grense { margin: .5rem 0 .2rem; }
+.callout details.grense > summary { cursor: pointer; font-weight: 600; }
+.callout details.grense > p { margin: .35rem 0 0 1.1rem; }
+.callout ul { margin: .35rem 0 .2rem 1.1rem; padding: 0; }
+.er-fig { margin: 1rem 0; }
+.er-fig figcaption { margin-top: .35rem; }
+.er-steg-stage { min-height: 240px; }
+.badge.nytt { font-weight: 700; }
+.tabs button .nytt-mark { font-size: .72em; font-weight: 700; margin-left: .3em; opacity: .85; }

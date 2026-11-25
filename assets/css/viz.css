@@ -1,0 +1,138 @@
+/* ============================================================
+   IN2090 guide · viz.css
+   SQL-farger, relasjoner som tabeller, databaseskjema, ER-diagram, del 1-øving og eksamensbank.
+   Lastes etter styles.css. Fargene kommer fra temaets tokens (lys/mørk følger automatisk);
+   bare de få egne fargene under har en mørk variant.
+   ============================================================ */
+:root {
+  --sql-kw: #1f5d99;  --sql-fn: #7a3e9d;  --sql-str: #8a4b00;  --sql-num: #0f6e5a;  --sql-cmt: #6b7380;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --sql-kw: #8fc1f2; --sql-fn: #d2b0f0; --sql-str: #f0c27f; --sql-num: #7fd8c2; --sql-cmt: #98a0ab; }
+}
+:root[data-theme="dark"] { --sql-kw: #8fc1f2; --sql-fn: #d2b0f0; --sql-str: #f0c27f; --sql-num: #7fd8c2; --sql-cmt: #98a0ab; }
+
+/* ---------- SQL ---------- */
+.pseudo.sql .code { font-family: var(--font-mono); font-size: 13.5px; white-space: pre; }
+/* Ingen fontligaturer i kode: >= skal se ut som det du skriver, ikke som ≥ (Cascadia Code o.l.) */
+.pseudo.sql, .rel-tab, .schema-line, .et-pf-pre, .mono { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.sql-kw  { color: var(--sql-kw); font-weight: 700; }
+.sql-fn  { color: var(--sql-fn); }
+.sql-str { color: var(--sql-str); }
+.sql-num { color: var(--sql-num); }
+.sql-cmt { color: var(--sql-cmt); font-style: italic; }
+.sql-id  { color: var(--color-on-surface); }
+.sql-op  { color: var(--color-on-surface); font-weight: 600; }
+.et-sql { margin: .5rem 0; }
+/* Svar uten deloppgavebokstav: bruk hele bredden (ellers havner innholdet i bokstavkolonnen) */
+.et-pf-del > .et-pf-main:first-child, .et-sv-del > :first-child:not(.et-sv-dl) { grid-column: 1 / -1; }
+.et-skjema { white-space: pre-wrap; }
+
+/* ---------- Relasjon som tabell ---------- */
+.rel { margin: .4rem 0 .8rem; min-width: 0; }
+.rel-name { font-family: var(--font-mono); font-weight: 700; font-size: var(--text-sm); margin-bottom: .25rem; }
+.rel-count { font-family: var(--font); font-weight: 400; color: var(--color-on-surface-variant); margin-left: .35rem; }
+.rel-scroll { max-width: 100%; overflow-x: auto; }
+.rel-tab { border-collapse: collapse; font-family: var(--font-mono); font-size: 13px; background: var(--color-surface-container-lowest); }
+.rel-tab th, .rel-tab td { border: 1px solid var(--color-outline-variant); padding: .22rem .6rem; text-align: left; white-space: nowrap; }
+.rel-tab th { background: var(--color-surface-container-high); font-weight: 700; }
+.rel-tab th.pk span:first-child { text-decoration: underline; text-underline-offset: 3px; }
+.rel-fk { display: block; font-weight: 400; font-size: 11px; color: var(--color-on-surface-variant); }
+.rel-null { font-style: italic; color: var(--color-on-surface-variant); }
+.rel-empty td { color: var(--color-on-surface-variant); font-style: italic; font-family: var(--font); }
+.rel-compact .rel-tab { font-size: 12px; }
+.rel-compact .rel-tab th, .rel-compact .rel-tab td { padding: .12rem .45rem; }
+.rel-cap { margin-top: .25rem; color: var(--color-on-surface-variant); }
+.rel-row { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: flex-start; }
+/* Merking i steg: rader og kolonner */
+.rel-tab tr.r-hit td, .rel-tab tr.r-keep td { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+.rel-tab tr.r-drop td { background: var(--color-tone-danger); color: var(--color-on-tone-danger); text-decoration: line-through; text-decoration-color: color-mix(in srgb, currentColor 55%, transparent); }
+.rel-tab tr.r-new td { background: var(--color-tone-info); color: var(--color-on-tone-info); }
+.rel-tab tr.r-grp1 td { background: var(--color-tone-info); color: var(--color-on-tone-info); }
+.rel-tab tr.r-grp2 td { background: var(--color-tone-warn); color: var(--color-on-tone-warn); }
+.rel-tab tr.r-grp3 td { background: var(--color-tone-heavy); color: var(--color-on-tone-heavy); }
+.rel-tab tr.r-grp4 td { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+.rel-tab th.c-sel, .rel-tab td.c-sel { box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--color-primary) 14%, transparent); }
+.rel-tab th.c-drop, .rel-tab td.c-drop { opacity: .45; }
+.rel-tab th.c-new, .rel-tab td.c-new { box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--color-tertiary) 16%, transparent); }
+.rel-tab td.x-hit { outline: 2px solid var(--color-primary); outline-offset: -2px; font-weight: 700; }
+
+/* ---------- Stegvis SQL ---------- */
+/* sqlSteps: scenen vokser med mellomtabellene; teksten står i scenen, så spillerens egen forklaringsboks skjules */
+.sqlsteps .sp-stage { display: block; height: auto; min-height: 240px; overflow-y: visible; }
+.sqlsteps .sp-explain:empty, .sqlsteps .sp-explain:not(:has(:not(:empty))) { display: none; }
+.sqlsteps-in { margin: .3rem 0 .6rem; }
+.sqlsteps-in > summary { cursor: pointer; }
+.sqlsteps-txt { margin-bottom: .5rem; }
+
+/* ---------- Databaseskjema ---------- */
+.schema { padding: 0; }
+.schema-sum { cursor: pointer; padding: .6rem var(--d-md); display: flex; gap: .5rem; align-items: center; }
+.schema-ic { color: var(--color-primary); }
+.schema-tools { display: flex; flex-wrap: wrap; gap: .4rem .8rem; align-items: center; padding: 0 var(--d-md) .4rem; }
+.schema-body { padding: 0 var(--d-md) .8rem; }
+.schema-list { display: grid; gap: .55rem; }
+.schema-line { font-size: 13.5px; overflow-wrap: anywhere; }
+.schema-tn { color: var(--color-primary); }
+.schema-col.pk { text-decoration: underline; text-underline-offset: 3px; }
+.schema-col.fk { font-style: italic; }
+.schema-col[title] { cursor: help; }
+.schema-fks, .schema-desc { color: var(--color-on-surface-variant); margin-left: 1rem; }
+.schema-legend { margin: .6rem 0 0; }
+.schema-merknad { margin: .4rem 0 0; }
+.schema-pin {
+  position: fixed; right: 12px; bottom: 12px; z-index: 40;
+  width: min(420px, calc(100vw - 24px)); max-height: min(60vh, 520px); overflow: auto;
+  background: var(--color-surface-container-lowest); color: var(--color-on-surface);
+  border: 1px solid var(--color-outline); border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+}
+.schema-pin[hidden] { display: none; }
+.schema-pin-head { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+  padding: .45rem var(--d-md); background: var(--color-surface-container-high); border-bottom: 1px solid var(--color-outline-variant); }
+.schema-pin .schema-body { padding-top: .6rem; }
+@media (max-width: 640px) {
+  .schema-pin { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 45vh; }
+}
+
+/* ---------- ER-diagram ---------- */
+.er-wrap { max-width: 100%; overflow-x: auto; padding: .3rem 0; }
+.exam-fig.et-er, .et-pf-fig.et-er { display: block; width: 100%; max-width: 100%; }
+.exam-fig.et-er figcaption { text-align: left; font-weight: 400; }
+.er-svg { display: block; height: auto; font-family: var(--font); }
+.er-wrap.er-fit { width: 100%; align-self: stretch; overflow: visible; }
+.er-fit .er-svg { width: 100%; margin: 0 auto; }
+/* Stegspiller med ER-figur: scenen vokser med figuren i stedet for fast høyde */
+.sp-stage:has(> .er-wrap) { height: auto; min-height: 240px; display: block; padding: var(--d-sm); overflow: visible; }
+.er-line { stroke: var(--color-on-surface); stroke-width: 1.4; fill: none; }
+.er-ent, .er-rel, .er-attr, .er-isa { fill: var(--color-surface-container-lowest); stroke: var(--color-on-surface); stroke-width: 1.5; }
+.er-ent { fill: var(--color-primary-container); }
+.er-rel { fill: var(--color-tertiary-container); }
+.er-inner { fill: none; }
+.er-derived { stroke-dasharray: 5 3; }
+.er-ent-t { font-weight: 700; font-size: 14px; fill: var(--color-on-primary-container); }
+.er-rel-t { font-weight: 600; font-size: 12px; fill: var(--color-on-tertiary-container); }
+.er-attr-t { font-size: 12px; fill: var(--color-on-surface); }
+.er-key { text-decoration: underline; }
+.er-pkey-u { stroke: var(--color-on-surface); stroke-width: 1.1; stroke-dasharray: 3 2; }
+.er-kard { font-size: 13px; font-weight: 700; fill: var(--color-primary); }
+.er-rolle { font-size: 11px; font-style: italic; fill: var(--color-on-surface-variant); }
+.er-isa-t { font-size: 13px; font-weight: 700; fill: var(--color-on-surface); }
+.er-subset { font-size: 15px; fill: var(--color-on-surface); }
+
+/* ---------- Del 1 (automatisk rettet) ---------- */
+.del1 { margin: .6rem 0; padding: .6rem .8rem; border: 1px dashed var(--color-outline); border-radius: 10px; background: var(--color-surface-container-low); }
+.del1-regel { margin: 0 0 .5rem; }
+.del1-sum { margin: .4rem 0 0; padding: .45rem .7rem; border-radius: 8px; background: var(--color-tone-info); color: var(--color-on-tone-info); }
+.qz-extra .et-sql { margin: .3rem 0 .2rem; }
+
+/* ---------- Eksamensbank ---------- */
+.bank-sum { margin: .2rem 0 .5rem; }
+.bank-years { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .8rem; }
+.bank-years .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+.bank-year { margin-bottom: 1.4rem; }
+.bank-year[hidden] { display: none; }
+.bank-yh { margin: .4rem 0 .5rem; }
+.bank-year > .schema { margin-bottom: .7rem; }
+.bank-cards { display: grid; gap: .6rem; }
+.bank-oppg .exam-fig { margin: .6rem 0; }
