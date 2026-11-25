@@ -7,14 +7,20 @@
   <title>Puggekort · IN2090</title>
   <meta name="description" content="Puggekort i IN2090: ER-symboler, lesing av kardinalitet og deltagelse, realisering, relasjonsalgebra-tegn, FD og normalformer og SQL-regler. Kortene du kan forsvinner, de andre kommer igjen til de sitter.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
   <style>
     /* Puggekort: sidespesifikt */
     .pg { max-width: 760px; outline: none; }
     .pg [hidden] { display: none !important; }
     .pg { overflow-x: hidden; overflow-x: clip; padding-bottom: 2px; }
     .pg-kort { touch-action: pan-y; will-change: transform; }
+    /* Ingen egne sideveis-rulleflater inne i kortet: de tar over sveipet (pointercancel).
+       Skjemaene brytes i stedet for å rulle, figurene skaleres til bredden. */
+    .pg-kort * { touch-action: pan-y; }
+    .pg-kort .exam-fig, .pg-kort .er-wrap, .pg-kort .exam-fig-h { overflow: visible; }
+    .pg-kort .pg-pre { overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
+    @media (pointer: coarse) { .pg-kort { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; } }
     .pg-plass { flex-direction: column; gap: .25rem; }
     .pg-plass-pc, .pg-plass-mob { font-size: .8rem; opacity: .85; }
     .pg-plass-mob { display: none; }
@@ -119,11 +125,11 @@
 
   <footer class="footer">IN2090-guide · Puggekort</footer>
 
-  <script src="assets/js/core.js?v=20261126e"></script>
-  <script src="assets/js/symboler.js?v=20261126e"></script>
-  <script src="assets/js/viz-er.js?v=20261126e"></script>
-  <script src="assets/js/pugg.js?v=20261126e"></script>
-  <script src="assets/js/data-pugg.js?v=20261126e"></script>
+  <script src="assets/js/core.js?v=20261126f"></script>
+  <script src="assets/js/symboler.js?v=20261126f"></script>
+  <script src="assets/js/viz-er.js?v=20261126f"></script>
+  <script src="assets/js/pugg.js?v=20261126f"></script>
+  <script src="assets/js/data-pugg.js?v=20261126f"></script>
   <script>
   (function () {
     "use strict";

@@ -290,8 +290,6 @@
     var dra = null, varDra = false;
     kort.addEventListener("pointerdown", function (e) {
       if (e.pointerType === "mouse" || !e.isPrimary || kø.length < 2) return;
-      var pre = e.target.closest && e.target.closest(".pg-pre");
-      if (pre && pre.scrollWidth > pre.clientWidth + 2) return; // la brede skjemaer scrolle selv
       dra = { x: e.clientX, y: e.clientY, dx: 0, låst: false, id: e.pointerId };
     });
     kort.addEventListener("pointermove", function (e) {
