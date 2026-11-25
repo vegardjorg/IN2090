@@ -1,0 +1,71 @@
+/* IN2090 guide · sql-oppgave.css – «Skriv SQL»-oppgaver (sql-oppgave.js). Bruker temaets fargetokens. */
+.sqlo {
+  border: 1px solid var(--color-outline-variant); border-radius: 10px;
+  background: var(--color-surface-container-lowest); padding: var(--d-sm) var(--d-md) var(--d-md);
+  margin: var(--d-md) 0; min-width: 0;
+}
+.sqlo-hode { display: flex; align-items: baseline; justify-content: space-between; gap: var(--d-sm); flex-wrap: wrap; }
+.sqlo-tittel { margin: .3rem 0 .2rem; }
+.sqlo-status { font-weight: 600; }
+.sqlo-status.ok { color: var(--color-on-tone-ok); }
+.sqlo-status.feil { color: var(--color-on-tone-danger); }
+.sqlo-tekst p { margin: .3rem 0 .5rem; }
+.sqlo .sr-only, .sqlo-wrap .sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Redigering: gjennomsiktig textarea over en uthevet <pre> med nøyaktig samme mål */
+.sqlo-ed { position: relative; margin: .3rem 0 .1rem; }
+.sqlo-pre, .sqlo-ta {
+  box-sizing: border-box; width: 100%; margin: 0; padding: .55rem .7rem;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.5; tab-size: 2;
+  white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal;
+  font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; letter-spacing: 0;
+  border: 1px solid transparent; border-radius: 8px;
+}
+.sqlo-pre {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  background: var(--color-surface-container-low); color: var(--color-on-surface);
+}
+.sqlo-ta {
+  position: relative; display: block; resize: none; overflow: hidden; min-height: 96px;
+  background: transparent; color: transparent; caret-color: var(--color-on-surface);
+  border-color: var(--color-outline);
+}
+.sqlo-ta::placeholder { color: var(--color-placeholder); }
+.sqlo-ta::selection { background: color-mix(in srgb, var(--color-primary) 30%, transparent); color: transparent; }
+.sqlo-ta:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.sqlo-kbd { margin: .15rem 0 .4rem; }
+
+.sqlo-knapper { display: flex; flex-wrap: wrap; gap: var(--d-xs) var(--d-sm); margin: .2rem 0 .4rem; }
+.sqlo-ut, .sqlo-hintboks, .sqlo-fasit { min-width: 0; }
+.sqlo-ut > :first-child { margin-top: .5rem; }
+.sqlo-ok, .sqlo-nei { margin: .5rem 0; padding: .45rem .7rem; border-radius: 8px; border-left: 4px solid; }
+.sqlo-ok { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+.sqlo-nei { background: var(--color-tone-warn); color: var(--color-on-tone-warn); }
+
+.sqlo-feil { margin: .5rem 0; padding: .45rem .7rem; border-radius: 8px; border-left: 4px solid var(--color-on-tone-danger);
+  background: var(--color-tone-danger); color: var(--color-on-tone-danger); min-width: 0; }
+.sqlo-feil p { margin: .2rem 0; }
+.sqlo-feil-linje { margin: .35rem 0; padding: .3rem .5rem; overflow-x: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.35;
+  background: var(--color-surface-container-lowest); color: var(--color-on-surface); border-radius: 6px; white-space: pre; }
+.sqlo-feil-sensor { opacity: .9; }
+
+.sqlo-merk { margin: .5rem 0; padding: .35rem .7rem; border-radius: 8px; background: var(--color-tone-info); color: var(--color-on-tone-info); }
+.sqlo-merk ul { margin: .2rem 0 .2rem 1.1rem; padding: 0; }
+.sqlo-merk.sqlo-hint { background: var(--color-tone-heavy); color: var(--color-on-tone-heavy); }
+.sqlo-merk-lbl { margin: .4rem 0 .15rem; font-weight: 700; }
+.sqlo-hint-linje { margin: .15rem 0; }
+.sqlo-info { margin: .4rem 0 .2rem; }
+
+.sqlo-legend { margin: .1rem 0 .5rem; color: var(--color-on-surface-variant); }
+.sqlo-sw { display: inline-block; width: .9em; height: .9em; border-radius: 3px; vertical-align: -.1em; margin-right: .2em; border: 1px solid var(--color-outline-variant); }
+.sqlo-sw.r-keep { background: var(--color-tone-ok); }
+.sqlo-sw.r-drop { background: var(--color-tone-danger); }
+.sqlo-sw.r-new { background: var(--color-tone-info); }
+.sqlo-diff { margin-top: .4rem; min-width: 0; }
+.sqlo-tabeller { display: flex; flex-wrap: wrap; gap: 0 var(--d-md); align-items: flex-start; min-width: 0; }
+.sqlo-tabeller > .rel { max-width: 100%; }
+.sqlo-fasit { margin-top: .4rem; padding-top: .2rem; border-top: 1px dashed var(--color-outline-variant); }
+.sqlo-skjema { margin: .4rem 0 .6rem; }
+.sqlo-skjema > summary { cursor: pointer; font-weight: 600; }

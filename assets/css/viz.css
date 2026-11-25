@@ -6,11 +6,15 @@
    ============================================================ */
 :root {
   --sql-kw: #1f5d99;  --sql-fn: #7a3e9d;  --sql-str: #8a4b00;  --sql-num: #0f6e5a;  --sql-cmt: #6b7380;
+  /* gruppefarger (venstrekant) og kanten på nye rader */
+  --rel-grp1: #2f6fb0; --rel-grp2: #b86e00; --rel-grp3: #7b4fb3; --rel-grp4: #b0407a; --rel-new: #2f6fb0;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --sql-kw: #8fc1f2; --sql-fn: #d2b0f0; --sql-str: #f0c27f; --sql-num: #7fd8c2; --sql-cmt: #98a0ab; }
+  :root:not([data-theme="light"]) { --sql-kw: #8fc1f2; --sql-fn: #d2b0f0; --sql-str: #f0c27f; --sql-num: #7fd8c2; --sql-cmt: #98a0ab;
+    --rel-grp1: #6fa9e6; --rel-grp2: #e0a13f; --rel-grp3: #b38fe6; --rel-grp4: #e07fb0; --rel-new: #8fc1f2; }
 }
-:root[data-theme="dark"] { --sql-kw: #8fc1f2; --sql-fn: #d2b0f0; --sql-str: #f0c27f; --sql-num: #7fd8c2; --sql-cmt: #98a0ab; }
+:root[data-theme="dark"] { --sql-kw: #8fc1f2; --sql-fn: #d2b0f0; --sql-str: #f0c27f; --sql-num: #7fd8c2; --sql-cmt: #98a0ab;
+  --rel-grp1: #6fa9e6; --rel-grp2: #e0a13f; --rel-grp3: #b38fe6; --rel-grp4: #e07fb0; --rel-new: #8fc1f2; }
 
 /* ---------- SQL ---------- */
 .pseudo.sql .code { font-family: var(--font-mono); font-size: 13.5px; white-space: pre; }
@@ -44,14 +48,42 @@
 .rel-compact .rel-tab th, .rel-compact .rel-tab td { padding: .12rem .45rem; }
 .rel-cap { margin-top: .25rem; color: var(--color-on-surface-variant); }
 .rel-row { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: flex-start; }
-/* Merking i steg: rader og kolonner */
-.rel-tab tr.r-hit td, .rel-tab tr.r-keep td { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+/* Merking i steg: rader og kolonner.
+   keep = grønn, drop = rød (overstreket, men aldri sannhetsverdi-cellene), new = blå med tykk venstrekant,
+   hit = ramme i primærfargen (ikke grønn, så «gjeldende rad» ikke ser ut som «beholdes»),
+   grp1–grp4 = farget venstrekant og svak tone (ikke keep/drop-fargene). */
+.rel-tab tr.r-keep td { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
 .rel-tab tr.r-drop td { background: var(--color-tone-danger); color: var(--color-on-tone-danger); text-decoration: line-through; text-decoration-color: color-mix(in srgb, currentColor 55%, transparent); }
-.rel-tab tr.r-new td { background: var(--color-tone-info); color: var(--color-on-tone-info); }
-.rel-tab tr.r-grp1 td { background: var(--color-tone-info); color: var(--color-on-tone-info); }
-.rel-tab tr.r-grp2 td { background: var(--color-tone-warn); color: var(--color-on-tone-warn); }
-.rel-tab tr.r-grp3 td { background: var(--color-tone-heavy); color: var(--color-on-tone-heavy); }
-.rel-tab tr.r-grp4 td { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+.rel-tab tr.r-drop td.rel-tv { text-decoration: none; }
+.rel-tab tr.r-new td { background: var(--color-tone-info); color: var(--color-on-tone-info); font-weight: 600; }
+.rel-tab tr.r-new td:first-child { box-shadow: inset 5px 0 0 var(--rel-new); }
+.rel-tab tr.r-hit td { background: color-mix(in srgb, var(--color-primary) 9%, var(--color-surface-container-lowest)); font-weight: 600;
+  box-shadow: inset 0 2px 0 var(--color-primary), inset 0 -2px 0 var(--color-primary); }
+.rel-tab tr.r-hit td:first-child { box-shadow: inset 3px 0 0 var(--color-primary), inset 0 2px 0 var(--color-primary), inset 0 -2px 0 var(--color-primary); }
+.rel-tab tr.r-hit td:last-child { box-shadow: inset -3px 0 0 var(--color-primary), inset 0 2px 0 var(--color-primary), inset 0 -2px 0 var(--color-primary); }
+.rel-tab tr.r-hit td:first-child:last-child { box-shadow: inset 0 0 0 2px var(--color-primary); }
+.rel-tab tr.r-grp1 { --rel-g: var(--rel-grp1); }
+.rel-tab tr.r-grp2 { --rel-g: var(--rel-grp2); }
+.rel-tab tr.r-grp3 { --rel-g: var(--rel-grp3); }
+.rel-tab tr.r-grp4 { --rel-g: var(--rel-grp4); }
+.rel-tab tr.r-grp1 td, .rel-tab tr.r-grp2 td, .rel-tab tr.r-grp3 td, .rel-tab tr.r-grp4 td { background: color-mix(in srgb, var(--rel-g) 9%, var(--color-surface-container-lowest)); }
+.rel-tab tr.r-grp1 td:first-child, .rel-tab tr.r-grp2 td:first-child, .rel-tab tr.r-grp3 td:first-child, .rel-tab tr.r-grp4 td:first-child { box-shadow: inset 6px 0 0 var(--rel-g); padding-left: .9rem; }
+.rel-tab tr.r-grp1 + tr:not(.r-grp1) td, .rel-tab tr.r-grp2 + tr:not(.r-grp2) td, .rel-tab tr.r-grp3 + tr:not(.r-grp3) td { border-top: 3px solid var(--color-surface-container-lowest); }
+/* Sannhetsverdier i tabellceller (kolonner med bare TRUE/FALSE/NULL) */
+.rel-tvc { display: inline-block; padding: 0 .4rem; border-radius: 5px; font-family: var(--font-mono); font-size: .92em; font-weight: 700; line-height: 1.45; text-decoration: none; }
+.rel-tvc + .rel-tvc { margin-left: .25rem; }
+.rel-tvc-TRUE { background: var(--color-tone-ok); color: var(--color-on-tone-ok); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-on-tone-ok) 35%, transparent); }
+.rel-tvc-FALSE { background: var(--color-tone-danger); color: var(--color-on-tone-danger); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-on-tone-danger) 35%, transparent); }
+.rel-tvc-NULL { background: var(--color-tone-warn); color: var(--color-on-tone-warn); font-style: italic; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-on-tone-warn) 35%, transparent); }
+.rel-tab th.rel-tv { font-weight: 600; font-size: 12px; }
+/* Fargeforklaring (IN.vizLegend) */
+.rel-legend { margin: .35rem 0 .5rem; }
+.rel-sw { flex: none; }
+.rel-sw.r-keep { background: var(--color-tone-ok); }
+.rel-sw.r-drop { background: var(--color-tone-danger); }
+.rel-sw.r-new { background: var(--color-tone-info); box-shadow: inset 4px 0 0 var(--rel-new); }
+.rel-sw.r-hit { background: transparent; box-shadow: inset 0 0 0 2px var(--color-primary); }
+.rel-sw.rel-sw-grp { background: linear-gradient(90deg, var(--rel-grp1) 0 25%, var(--rel-grp2) 25% 50%, var(--rel-grp3) 50% 75%, var(--rel-grp4) 75%); }
 .rel-tab th.c-sel, .rel-tab td.c-sel { box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--color-primary) 14%, transparent); }
 .rel-tab th.c-drop, .rel-tab td.c-drop { opacity: .45; }
 .rel-tab th.c-new, .rel-tab td.c-new { box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--color-tertiary) 16%, transparent); }
@@ -64,6 +96,10 @@
 .sqlsteps-in { margin: .3rem 0 .6rem; }
 .sqlsteps-in > summary { cursor: pointer; }
 .sqlsteps-txt { margin-bottom: .5rem; }
+/* Hurtigfiks: kontrollene står over scenen (flyttes dit i IN.sqlSteps), uten autospill; SQL-en følger med ved rulling */
+.sqlsteps-sp > .sp-controls { margin: 0 0 .5rem; }
+.sqlsteps-sp > .sp-controls > .btn:nth-child(2) { display: none; }
+@media (min-width: 720px) { .sqlsteps > div:first-child { position: sticky; top: 110px; align-self: start; } }
 
 /* ---------- Databaseskjema ---------- */
 .schema { padding: 0; }

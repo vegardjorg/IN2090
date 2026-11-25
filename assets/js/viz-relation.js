@@ -8,6 +8,9 @@
                     kolonner: { <navn>: "sel"|"drop"|"new" }, celler: { "<rad>,<kol>": "hit" } },
           caption?: html, tom?: "tekst når tabellen er tom" }
      NULL vises som «NULL» i kursiv (verdien null i data).
+     Kolonner med bare TRUE/FALSE/NULL får .rel-tv og merkelapper (.rel-tvc-TRUE …), uten overstreking.
+
+   IN.vizLegend(host, keys?, opts?) → fargeforklaring for keep/drop/new/hit/grp/tv.
 
    IN.schema(host, skjema, opts) → element. skjema som i plan/format.md § 3.
      opts.pin (standard true): knapp «Fest skjemaet» som holder det synlig i et sidepanel.
@@ -25,6 +28,19 @@
 
   function colName(c) { return typeof c === "string" ? c : c.navn; }
   function cellText(v) { return v === null || v === undefined ? null : String(v); }
+  function tvText(v) { return v === true || v === "TRUE" ? "TRUE" : v === false || v === "FALSE" ? "FALSE" : v == null ? "NULL" : null; }
+  /* Sannhetsverdi-kolonne: alle verdier er TRUE/FALSE/NULL og minst én er TRUE eller FALSE.
+     Slike celler får .rel-tv og en liten merkelapp, og strekes aldri over (de forklarer hvorfor raden faller ut). */
+  function tvCols(t) {
+    var out = {}, rows = t.rader || [];
+    if (!rows.length) return out;
+    (t.kolonner || []).forEach(function (_, j) {
+      var ok = true, any = false;
+      rows.forEach(function (r) { var x = tvText(r[j]); if (x === null) ok = false; else if (x !== "NULL") any = true; });
+      if (ok && any) out[j] = true;
+    });
+    return out;
+  }
 
   IN.vizTable = function (host, t, opts) {
     if (typeof host === "string") host = IN.qs(host);
@@ -46,14 +62,18 @@
     thead.appendChild(hr); table.appendChild(thead);
     var tb = el("tbody");
     var names = (t.kolonner || []).map(colName);
+    var tv = tvCols(t);
+    if (tv.length) IN.qsa("th", hr).forEach(function (th, j) { if (tv[j]) th.classList.add("rel-tv"); });
     (t.rader || []).forEach(function (r, i) {
       var tr = el("tr", { class: rm[i] ? "r-" + rm[i] : null });
       r.forEach(function (v, j) {
         var txt = cellText(v), cls = [];
         if (cm[names[j]]) cls.push("c-" + cm[names[j]]);
         if (cellm[i + "," + j] || cellm[i + "," + names[j]]) cls.push("x-" + (cellm[i + "," + j] || cellm[i + "," + names[j]]));
+        if (tv[j]) cls.push("rel-tv");
         var td = el("td", { class: cls.join(" ") || null });
-        if (txt === null) td.appendChild(el("span", { class: "rel-null", text: "NULL" }));
+        if (tv[j]) { var tvv = tvText(v); td.appendChild(el("span", { class: "rel-tvc rel-tvc-" + tvv, text: tvv })); }
+        else if (txt === null) td.appendChild(el("span", { class: "rel-null", text: "NULL" }));
         else td.textContent = txt;
         tr.appendChild(td);
       });
@@ -71,6 +91,37 @@
     host.appendChild(wrap);
     return wrap;
   };
+
+  /* ---------- Fargeforklaring for radmerkene ----------
+     IN.vizLegend(host, keys?, opts?) → element. keys: ["keep","drop","new","hit","grp","tv"] (standard: alle).
+     opts.labels: { keep: "…" } for egne tekster. Bruker de samme klassene som tabellene. */
+  var LEG_STD = { keep: "beholdes", drop: "fjernes", "new": "ny rad", hit: "raden det gjelder", grp: "én farge per gruppe", tv: "sannhetsverdi" };
+  IN.vizLegend = function (host, keys, opts) {
+    if (typeof host === "string") host = IN.qs(host);
+    opts = opts || {};
+    keys = keys || ["keep", "drop", "new", "hit", "grp", "tv"];
+    var lab = opts.labels || {};
+    var box = el("div", { class: "legend rel-legend", "aria-label": "Fargeforklaring" });
+    keys.forEach(function (k) {
+      var txt = lab[k] || LEG_STD[k];
+      if (!txt) return;
+      if (k === "tv") box.appendChild(el("span", { class: "item", html: '<span class="rel-tvc rel-tvc-TRUE">TRUE</span><span class="rel-tvc rel-tvc-FALSE">FALSE</span><span class="rel-tvc rel-tvc-NULL">NULL</span> ' + txt }));
+      else box.appendChild(el("span", { class: "item" }, [el("span", { class: "sw rel-sw " + (k === "grp" ? "rel-sw-grp" : "r-" + k), "aria-hidden": "true" }), el("span", { text: txt })]));
+    });
+    if (host) host.appendChild(box);
+    return box;
+  };
+  function marksIn(steps) {
+    var seen = {};
+    (steps || []).forEach(function (s) {
+      (s.tabeller || (s.tabell ? [s.tabell] : [])).forEach(function (t) {
+        var rm = (t && t.marks && t.marks.rader) || {};
+        Object.keys(rm).forEach(function (k) { seen[/^grp/.test(rm[k]) ? "grp" : rm[k]] = 1; });
+        if (t && Object.keys(tvCols(t)).length) seen.tv = 1;
+      });
+    });
+    return ["keep", "drop", "new", "hit", "grp", "tv"].filter(function (k) { return seen[k]; });
+  }
 
   /* ---------- Skjema ---------- */
   function schemaBody(skjema) {
@@ -170,7 +221,7 @@
     var code = typeof demo.sql === "string" ? IN.sql.algo(demo.sql) : demo.sql;
     var handle = IN.sql.render(left, code, { tooltips: false });
     var steps = demo.steg;
-    return IN.stepPlayer(right, {
+    var player = IN.stepPlayer(right, {
       generate: function () { return steps; },
       initial: [0],
       customInput: false,
@@ -185,5 +236,16 @@
         stage.appendChild(row);
       }
     });
+    // Hurtigfiks (vurdering-sql-visning trinn 1–2): kontrollene over scenen så de ikke hopper,
+    // ingen autospill, og fargeforklaring for merkene demoen bruker.
+    var sp = right.querySelector(".stepplayer");
+    if (sp) {
+      sp.classList.add("sqlsteps-sp");
+      var ctr = sp.querySelector(".sp-controls"), frame = sp.querySelector(".sp-frame");
+      if (ctr && frame) sp.insertBefore(ctr, frame);
+      var keys = marksIn(steps);
+      if (keys.length) IN.vizLegend(sp, keys, { labels: { drop: "fjernes", "new": "ny rad (fylt ut med NULL)" } });
+    }
+    return player;
   };
 })();

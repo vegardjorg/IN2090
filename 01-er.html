@@ -6,9 +6,10 @@
   <title>Blokk 1 · ER-modellering · IN2090</title>
   <meta name="description" content="ER-modellering i IN2090: kursets Chen-notasjon, attributter, kardinalitet og deltakelse, svake entiteter, ternære relasjoner, fra kravtekst til diagram, JA/NEI-lesing og EER – med figurer, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261125c">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261125c">
-  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261125c">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125d">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125d">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261125d">
+  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261125d">
 </head>
 <body data-page="er">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -37,6 +38,7 @@
       <button data-tab="tekst-til-diagram">Fra tekst til diagram</button>
       <button data-tab="lese">Lese et diagram</button>
       <button data-tab="eer">EER <span class="nytt-mark">nytt i H26</span></button>
+      <button data-tab="dra">Øv: dra og sorter</button>
       <button data-tab="eksamen">Eksamensoppgaver</button>
       <button data-tab="test">Sant/usant</button>
     </div>
@@ -471,6 +473,13 @@
       <div id="quiz-eer"></div>
     </section>
 
+    <!-- ===================== ØV: DRA OG SORTER ===================== -->
+    <section data-panel="dra">
+      <h3>Øv: dra og sorter</h3>
+      <p class="muted small">Sorter ordene i en kravtekst før du tegner. Velg en brikke og så en bøtte, eller dra i ☰. Tastatur: Tab til brikken, Mellomrom for å løfte, piltaster for å velge plass og Mellomrom for å slippe.</p>
+      <div id="dra-ovinger"></div>
+    </section>
+
     <!-- ===================== EKSAMENSOPPGAVER ===================== -->
     <section data-panel="eksamen">
       <h3>Eksamensoppgaver i ER-modellering</h3>
@@ -488,21 +497,23 @@
 
   <footer class="footer">IN2090-guide · Blokk 1 · ER-modellering</footer>
 
-  <script src="assets/js/core.js?v=20261125c"></script>
-  <script src="assets/js/symboler.js?v=20261125c"></script>
-  <script src="assets/js/sql-lang.js?v=20261125c"></script>
-  <script src="assets/js/pseudocode.js?v=20261125c"></script>
-  <script src="assets/js/stepplayer.js?v=20261125c"></script>
-  <script src="assets/js/varline.js?v=20261125c"></script>
-  <script src="assets/js/viz-relation.js?v=20261125c"></script>
-  <script src="assets/js/viz-er.js?v=20261125c"></script>
-  <script src="assets/js/data-er.js?v=20261125c"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261125c"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261125c"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261125c"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261125c"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261125c"></script>
-  <script src="assets/js/bank.js?v=20261125c"></script>
+  <script src="assets/js/core.js?v=20261125d"></script>
+  <script src="assets/js/symboler.js?v=20261125d"></script>
+  <script src="assets/js/sql-lang.js?v=20261125d"></script>
+  <script src="assets/js/pseudocode.js?v=20261125d"></script>
+  <script src="assets/js/stepplayer.js?v=20261125d"></script>
+  <script src="assets/js/varline.js?v=20261125d"></script>
+  <script src="assets/js/viz-relation.js?v=20261125d"></script>
+  <script src="assets/js/viz-er.js?v=20261125d"></script>
+  <script src="assets/js/data-er.js?v=20261125d"></script>
+<script src="assets/js/dra.js?v=20261125d"></script>
+<script src="assets/js/data-dra.js?v=20261125d"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125d"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125d"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125d"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125d"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125d"></script>
+  <script src="assets/js/bank.js?v=20261125d"></script>
   <script>
   (function () {
     "use strict";
@@ -629,5 +640,8 @@
     safe("bank-er", function () { IN.examBank("#bank-er", { block: ["er", "eer"] }); });
   })();
   </script>
+<script>
+(function () { try { IN.draOvinger("#dra-ovinger", "er"); } catch (e) { if (window.console) console.error("[01-er] dra", e); } })();
+</script>
 </body>
 </html>
