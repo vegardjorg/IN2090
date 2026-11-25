@@ -2,11 +2,23 @@
 <html lang="nb">
 <head>
   <meta charset="utf-8">
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IN2090 – interaktiv eksamensguide</title>
-  <meta name="description" content="Interaktiv eksamensguide for IN2090 Databaser og datamodellering: ER, relasjonsmodellen, relasjonsalgebra, SQL, FD og normalisering.">
-  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme')||'light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level')||'normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261125i">
+  <meta name="description" content="Interaktiv eksamensguide for IN2090 Databaser og datamodellering. Slik ser eksamen ut, og alle eksamensoppgavene fra H2019 til H2025.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125j">
+  <style>
+    /* Fargene på eksamensdelene i IN2090 (styles.css har 2010-delene) */
+    .a4-er   { --a4-c: var(--c-sorted); }
+    .a4-real { --a4-c: var(--c-default); }
+    .a4-rad  { --a4-c: var(--c-compare); }
+    .a4-sql  { --a4-c: var(--c-target); }
+    .a4-norm { --a4-c: var(--c-min); }
+    /* Oppgavenumrene i IN2090 er lengre (1.1, M4, S6) */
+    .a4-year .a4-nr { width: 1.7rem; }
+    .a4-year .a4-auto { flex: none; font-size: 10px; padding: 0 5px; }
+  </style>
 </head>
 <body data-page="index">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -18,20 +30,59 @@
       <header class="a4-head">
         <div>
           <h1 id="a4-title">IN2090 – interaktiv eksamensguide</h1>
-          <p class="a4-lead">Databaser og datamodellering steg for steg, knyttet til tidligere eksamensoppgaver.
+          <p class="a4-lead">Databaser og datamodellering steg for steg, knyttet til eksamensoppgavene H2019–H2025.
             Velg forklaringsnivå øverst eller på hvert felt, fra <b>5-åring</b> til <b>Teknisk</b>.</p>
         </div>
-        <!-- Fra plan/eksamensmonster.md § 2 (H2023–H2025). -->
+        <!-- Fra plan/eksamensmonster.md § 2 og § 7 (H2023–H2025). -->
         <dl class="a4-facts">
           <dt>Poeng</dt><dd>100</dd>
+          <dt>Tid</dt><dd>4 t (6 t i 2025)</dd>
           <dt>Hjelpemidler</dt><dd>alle trykte og skrevne</dd>
-          <dt>Oppbygning</dt><dd>modellering · SQL · normalisering</dd>
+          <dt>Oppbygning</dt><dd>lik siden 2023</dd>
         </dl>
       </header>
 
       <section class="a4-exam" aria-labelledby="eo-h">
         <h2 id="eo-h">Slik ser eksamen ut</h2>
-        <p class="muted">Under arbeid. Her kommer delene av eksamen, poengene og hvilke blokker oppgavene hører til.</p>
+        <div id="exam-flow"></div>
+        <p class="a4-legend">Lenkene åpner riktig fane.
+          <span class="a4-task a4-task-demo" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M3 1.25h4.1L9.5 3.65v7.1H3z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M4.6 6h3.3M4.6 8.2h3.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>H23</span></span>
+          går rett til en eksamensoppgave som er løst der. Pek på ikonet, eller tab til det, for å se hvilken.</p>
+      </section>
+
+      <section class="a4-temaer" aria-labelledby="eo-temaer">
+        <div class="a4-sechead">
+          <h2 id="eo-temaer">Temaene – hvor ofte de kommer</h2>
+          <p>Prikkene: hvor mange av de fem ordinære eksamenene (H2019, H2020, H2023–H2025) som hadde en egen oppgave om temaet.</p>
+        </div>
+        <div id="exam-topics" class="a4-topics"></div>
+      </section>
+
+      <section class="a4-rules" aria-labelledby="a4-rules-h">
+        <div class="a4-sechead">
+          <h2 id="a4-rules-h">Gjelder hele eksamen</h2>
+          <p>Øv på svarformen i <a href="07-normalisering.html#fane=svarform">Normalisering → Svarform</a> og
+            <a href="04-sql.html#fane=skriv-sql">SQL → Skriv SQL</a>.</p>
+        </div>
+        <ul>
+          <li><b>SQL skrives som tekst</b>, uten database å kjøre mot. Enkle syntaksfeil du ville funnet ved
+            kjøring, gir ikke trekk (H2023–H2025). Manglende tabeller, betingelser eller GROUP BY gir trekk.</li>
+          <li><b>Skriv antakelsene dine</b> som kommentar med <code>--</code>. Er oppgaveteksten uklar, godtar
+            sensor rimelige tolkninger.</li>
+          <li><b>Gjetteregelen avhenger av oppgaven.</b> Radantall gir +2 for riktig og −0,5 for galt, så gjett.
+            JA/NEI gir ±1, så la være når du er usikker.</li>
+          <li><b>Vis stegene.</b> Realisering: understrek kandidatnøkler, skriv fremmednøkler som
+            <code>T(A) -&gt; S(B)</code> og forklar valgene. Dekomponering: nøkler og FD-er for hver delrelasjon.</li>
+        </ul>
+      </section>
+
+      <section class="a4-kart" aria-labelledby="a4-kart-h">
+        <div class="a4-sechead">
+          <h2 id="a4-kart-h">Oppgavekart H2019–H2025</h2>
+          <p>Oppgavene i den rekkefølgen de kom, med nummer og poeng. Lenkene går rett til oppgaven.
+            <span class="tag a4-auto">auto</span> = rettet automatisk, ofte med minuspoeng. Det finnes ingen ordinær eksamen fra 2021 og 2022 i kildene.</p>
+        </div>
+        <div id="task-map" class="a4-map"></div>
       </section>
 
       <footer class="a4-foot">
@@ -39,8 +90,10 @@
           <h2>Slik bruker du siden</h2>
           <ol>
             <li><b>Velg nivå.</b> Bryteren øverst gjelder hele siden; hver forklaring og demo har sin egen.</li>
-            <li><b>Spill demoene</b> med <span class="kbd">←</span> <span class="kbd">→</span> eller Spill av.</li>
-            <li><b>Øv</b> med quiz, sant/usant og eksamensoppgaver med «Perfekt svar».</li>
+            <li><b>Spill demoene</b> med <span class="kbd">←</span> <span class="kbd">→</span> eller Spill av.
+              SQL vises klausul for klausul, med mellomtabellene.</li>
+            <li><b>Øv</b> med dra og sorter, «Bygg spørringen», «Skriv SQL» (rettes automatisk) og eksamenskortene
+              med løsning og sensorveiledning.</li>
           </ol>
         </div>
         <nav class="a4-blocks" aria-label="Blokkene">
@@ -56,15 +109,239 @@
     IN2090-guide · laget for eksamensøving · fungerer frakoblet (file://) og på GitHub Pages.
   </footer>
 
-  <script src="assets/js/core.js?v=20261125i"></script>
-  <script src="assets/js/symboler.js?v=20261125i"></script>
+  <script src="assets/js/core.js?v=20261125j"></script>
+  <script src="assets/js/symboler.js?v=20261125j"></script>
   <script>
   (function () {
     var IN = window.IN, el = IN.el;
     var ready = {}, pageHref = {};
     IN.PAGES.forEach(function (p) { ready[p.id] = p.ready; pageHref[p.id] = p.href; });
 
-    // Blokkene. tasks = antall eksamensoppgaver på siden (fylles når eksamensbanken bygges).
+    // Lenke til en fane – eller «snart» hvis blokken ikke er bygget ennå
+    function lnk(page, fane, text) {
+      if (ready[page]) return el("a", { href: pageHref[page] + (fane ? "#fane=" + fane : ""), text: text });
+      return el("span", { class: "a4-soon" }, [el("span", { text: text }), el("span", { class: "tag", text: "snart" })]);
+    }
+
+    // ===== Alle oppgavene H2019–H2025 =====
+    // [år, nr, tittel (som på eksamenskortet), poeng, blokk (= side), del av eksamen, 1 = rettet automatisk]
+    // Generert fra assets/js/eksamensbank/*.js (key, title, points, block, del1). Kortet har id «o-<key>».
+    var TASKS = [
+      ["H19", "1.1", "Kandidater og arbeidsgiver", 7, "er", "er"],
+      ["H19", "1.2", "Intervjuer (svak entitet og ternær relasjon)", 18, "er", "er"],
+      ["H19", "1.3", "Book, Author, Publisher og Chapter til relasjoner", 15, "realisering", "real"],
+      ["H19", "2.1", "Lovlig eller ulovlig? PK, FK, UNIQUE, CHECK og CASCADE", 10, "sql", "rad", 1],
+      ["H19", "2.2", "Band startet etter 2000 eller med «King» i navnet", 5, "sql", "sql"],
+      ["H19", "2.3", "Timer popmusikk fra band startet på 90-tallet", 5, "sql-videre", "sql"],
+      ["H19", "2.4", "Personer født på en startdato eller utgivelsesdato", 5, "sql-videre", "sql"],
+      ["H19", "2.5", "Band med færre enn 3 sanger (også 0)", 5, "sql-videre", "sql"],
+      ["H19", "2.6", "Slett album uten sanger", 5, "sql-videre", "sql"],
+      ["H19", "2.7", "VIEW med de 10 nyeste albumene", 5, "sql-videre", "sql"],
+      ["H19", "2.8", "Band med super-album (over én time)", 10, "sql-videre", "sql"],
+      ["H19", "3.1", "Tillukning av {A} og {B}, attributter i alle nøkler", 6, "fd", "norm", 1],
+      ["H19", "3.2", "Normalform for hver FD", 4, "normalisering", "norm", 1],
+      ["H20", "M1", "Brukere og kredittkort (1:1)", 5, "er", "er"],
+      ["H20", "M2", "Produkter, bestillinger og bestillingslinjer", 15, "er", "er"],
+      ["H20", "M3", "Ønskelister, anbefalinger (ternær) og anmeldelser", 10, "er", "er"],
+      ["H20", "M4", "Musikkalbum, band og sangere til relasjoner", 10, "realisering", "real"],
+      ["H20", "S1", "Hvilke tupler er med? LIKE og INNER JOIN", 5, "sql", "rad", 1],
+      ["H20", "S2", "Morgendagens værmelding for byer i Italia", 5, "sql", "sql"],
+      ["H20", "S3", "Sum nedbør og snittvind i romjulsuka per by", 5, "sql-videre", "sql"],
+      ["H20", "S4", "Byer uten regn og vind fra julaften ut året", 5, "sql-videre", "sql"],
+      ["H20", "S5", "VIEW Steder: byer og POIs med dagens vær (UNION)", 10, "sql-videre", "sql"],
+      ["H20", "S6", "Byen i Frankrike med opphold, minst 3 kaféer og flest museer", 10, "sql-videre", "sql"],
+      ["H20", "R1", "Finn alle kandidatnøkler i R(A, B, C, D)", 5, "fd", "norm", 1],
+      ["H20", "R2", "Normalform for R(A, B, C, D) (feil i oppgaveteksten)", 5, "normalisering", "norm"],
+      ["H20", "R3", "Dekomponer Student tapsfritt til BCNF", 10, "normalisering", "norm"],
+      ["H23", "1.1", "ER-modell for en bank", 15, "er", "er"],
+      ["H23", "1.2", "Les et «hemmelig» ER-diagram", 5, "er", "real", 1],
+      ["H23", "1.3", "Realiser nettavis-modellen", 10, "realisering", "real"],
+      ["H23", "2.1", "Hvor mange rader? (fem spørringer)", 10, "sql", "rad", 1],
+      ["H23", "2.2", "Vedlikeholdsdatoer i Oslo", 5, "sql", "sql"],
+      ["H23", "2.3", "Snittemperatur i Bærum ved regn eller vind", 5, "sql-videre", "sql"],
+      ["H23", "2.4", "Tre områder med færrest sensorer per km²", 5, "sql-videre", "sql"],
+      ["H23", "2.5", "VIEW som fyller inn manglende vind", 10, "sql-videre", "sql"],
+      ["H23", "2.6", "Område med høyest snittnedbør per dag i 2023", 10, "sql-videre", "sql"],
+      ["H23", "2.7", "Oppdater vedlikeholdsdato uten SQL-injection", 5, "sql-programmering", "sql"],
+      ["H23", "3.1", "Hvilke attributter er nøkkelattributter?", 5, "fd", "norm", 1],
+      ["H23", "3.2", "Fyll inn «?» ut fra FD-ene", 5, "fd", "norm", 1],
+      ["H23", "3.3", "Dekomponer R(A,B,C,D,E) tapsfritt til BCNF", 10, "normalisering", "norm"],
+      ["H24", "1.1", "ER-modell for et bibliotek", 11, "er", "er"],
+      ["H24", "1.2", "Les et ER-diagram (JA/NEI)", 5, "er", "real", 1],
+      ["H24", "1.3", "Realiser utleiebyrå-modellen", 12, "realisering", "real"],
+      ["H24", "2.1", "Hvor mange rader? (6 spørringer)", 12, "sql-videre", "rad", 1],
+      ["H24", "2.2", "Turer raskere enn 40 km/t", 5, "sql", "sql"],
+      ["H24", "2.3", "Standardsjåfør for mer enn én buss", 5, "sql-videre", "sql"],
+      ["H24", "2.4", "Skriv om UNION-spørringen uten UNION", 5, "sql", "sql"],
+      ["H24", "2.5", "VIEW: turer der sjåføren ikke var standardsjåfør", 8, "sql-videre", "sql"],
+      ["H24", "2.6", "Fyll tabellen overtid for oktober 2024", 10, "sql-videre", "sql"],
+      ["H24", "3.1", "Nøkkelattributter (JA/NEI)", 6, "fd", "norm", 1],
+      ["H24", "3.2", "Normalform per FD", 8, "normalisering", "norm", 1],
+      ["H24", "3.3", "Tapsfri dekomposisjon til BCNF", 13, "normalisering", "norm"],
+      ["H25", "1.1", "Fritidsbåt-firmaet: ER-modell", 18, "er", "er"],
+      ["H25", "1.2", "Fritidsbåt-firmaet: realisering", 7, "realisering", "real"],
+      ["H25", "1.3", "Relasjonsalgebra på båtskjemaet", 5, "relasjonsalgebra", "real"],
+      ["H25", "2.1", "Hvor mange rader? (5 spørringer)", 10, "sql", "rad", 1],
+      ["H25", "2.2", "Oppgaver med frist i dag", 5, "sql", "sql"],
+      ["H25", "2.3", "CREATE TABLE + INSERT i én transaksjon", 7, "sql", "sql"],
+      ["H25", "2.4", "UPDATE: ansvarlig = prosjektleder", 5, "sql-videre", "sql"],
+      ["H25", "2.5", "Lengden til store prosjekter", 7, "sql-videre", "sql"],
+      ["H25", "2.6", "VIEW prosjektstatus (prosent ferdig)", 8, "sql-videre", "sql"],
+      ["H25", "2.7", "Timeregnskap per ansatt (også 0)", 8, "sql-videre", "sql"],
+      ["H25", "3.1", "Bryter instansen FD-ene?", 4, "fd", "norm", 1],
+      ["H25", "3.2", "Kandidatnøkler og høyeste normalform", 5, "fd", "norm"],
+      ["H25", "3.3", "Første BCNF-steg og tapsfrihet", 6, "normalisering", "norm"],
+      ["H25", "3.4", "Legg til FD-er slik at R blir BCNF", 5, "normalisering", "norm"]
+    ];
+    var YEARS = ["H19", "H20", "H23", "H24", "H25"];
+    function fullYear(y) { return "H20" + y.slice(1); }
+    var ICON = '<svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">' +
+      '<path d="M3 1.25h4.1L9.5 3.65v7.1H3z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>' +
+      '<path d="M4.6 6h3.3M4.6 8.2h3.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>';
+
+    // Dyplenke: core.js finner kortet med id «o-<key>», bytter til fanen som har det, åpner det og ruller dit.
+    function taskHref(t) { return pageHref[t[4]] + "#fane=eksamen&oppg=o-" + (fullYear(t[0]) + "-" + t[1]).replace(/[^A-Za-z0-9_-]/g, "_"); }
+    function taskName(t) { return fullYear(t[0]) + " Oppgave " + t[1] + " – " + t[2]; }
+    // Lenke med oppgaveikon og verktøytips. content = synlig tekst (årstall eller tittel).
+    function taskLink(t, content, cls) {
+      if (!ready[t[4]]) return null;
+      var a = el("a", { class: cls, html: ICON, href: taskHref(t),
+        "aria-label": content + " – eksamensoppgave " + taskName(t) + ", " + t[3] + " poeng" },
+        el("span", { text: content }));
+      return el("span", { class: "a4-tw" }, [a, el("span", { class: "a4-tip", "aria-hidden": "true", text: taskName(t) + " (" + t[3] + " p)" })]);
+    }
+    function chip(t) { return taskLink(t, t[0], "a4-task"); }
+    // [side, fane, tekst, (valgfritt) oppgaver som ikoner] → lenke + oppgaveikoner
+    function links(list) {
+      var box = el("div", { class: "a4-links" });
+      list.forEach(function (l) {
+        var g = el("span", { class: "a4-lk" }, lnk(l[0], l[1], l[2]));
+        (l[3] || []).forEach(function (t) { var c = chip(t); if (c) g.appendChild(c); });
+        box.appendChild(g);
+      });
+      return box;
+    }
+    // Oppgavene i én del av eksamen fra H2023 (samme oppbygning som nå), eventuelt bare én blokk
+    function recent(part, block, auto) {
+      return TASKS.filter(function (t) {
+        return t[0] >= "H23" && t[5] === part && (!block || t[4] === block) && (auto == null || !!t[6] === auto);
+      });
+    }
+
+    // ===== Slik ser eksamen ut: delene i rekkefølge (H2023–H2025) =====
+    var FLOW = [
+      { key: "er", part: "Del 1, først", name: "Tegn ER-modellen", short: "ER-tegning", pts: "11–18 p", w: 15,
+        text: "En kravtekst skal bli et ER-diagram, tegnet på skisseark. Nesten alltid med en svak entitet, ofte med ternær relasjon, flerverdi- eller sammensatte attributter. Sensor trekker per punkt: kardinalitet og total deltakelse på feil side koster.",
+        links: [["er", "tekst-til-diagram", "Fra tekst til diagram", recent("er", "er")], ["er", "svake", "Svake entiteter"], ["er", "ternaere", "Ternære"], ["er", "notasjon", "Tegneguide"]] },
+      { key: "real", part: "Del 1, resten", name: "Les ER og realiser", short: "Realisering", pts: "12–17 p", w: 15,
+        text: "Realiser en gitt ER-modell til relasjoner med nøkler og fremmednøkler, og forklar valgene. I 2023 og 2024 kom også fem JA/NEI-påstander om et diagram, i 2025 to relasjonsalgebra-uttrykk.",
+        links: [["realisering", "algoritmen", "Realiseringsalgoritmen", recent("real", "realisering")], ["er", "lese", "Lese et diagram", recent("real", "er")], ["relasjonsalgebra", null, "Relasjonsalgebra"]] },
+      { key: "rad", part: "Del 2, først", name: "Hvor mange rader?", short: "Radantall", pts: "10–12 p", w: 11,
+        text: "5–6 spørringer på eksempeldataene: hvor mange rader gir hver? Rettes automatisk, +2 for riktig og −0,5 for galt. Testen er presis semantikk: DISTINCT, LIMIT/OFFSET, NULL, NOT EXISTS, NATURAL og FULL JOIN.",
+        links: [["sql-videre", "radantall", "Hvor mange rader?", recent("rad")], ["sql-videre", "null", "NULL"], ["sql", "distinct", "DISTINCT og ORDER BY"]] },
+      { key: "sql", part: "Del 2, resten", name: "Skriv 5–6 spørringer", short: "SQL-spørringer", pts: "33–40 p", w: 38,
+        text: "Først 2–3 enkle på 5 p (join, WHERE, ORDER BY), så 2–3 store på 7–10 p: VIEW hvert år, WITH og aggregat, «flest/høyest» med ORDER BY og LIMIT, «også de med 0» med LEFT JOIN. Alle bruker årets databaseskjema.",
+        links: [["sql", "skriv-sql", "Skriv SQL"], ["sql", "bygg", "Bygg spørringen"], ["sql-videre", "aggregering", "Aggregering"], ["sql-videre", "with", "WITH"], ["sql-videre", "ytre-join", "Ytre join"]],
+        anchor: "eo-temaer" },
+      { key: "norm", part: "Del 3", name: "FD og normalisering", short: "FD og NF", pts: "20–27 p", w: 21,
+        text: "1–3 korte oppgaver om kandidatnøkler, nøkkelattributter eller normalform per FD, ofte rettet automatisk. Så én tapsfri dekomposisjon til BCNF (6–13 p) med nøkler og FD-er for hver delrelasjon.",
+        links: [["fd", "tillukning", "Tillukning", recent("norm", "fd")], ["fd", "finn-kn", "Finn alle KN"], ["normalisering", "nf-per-fd", "NF per FD"], ["normalisering", "bcnf-dekomp", "BCNF-dekomposisjon", recent("norm", "normalisering", false)]] }
+    ];
+    var flowHost = IN.qs("#exam-flow");
+    var ruler = el("div", { class: "a4-ruler" });
+    var bar = el("div", { class: "a4-bar" });
+    var parts = el("ol", { class: "a4-parts" });
+    FLOW.forEach(function (f) {
+      var seg = el("a", { class: "a4-seg a4-" + f.key, href: "#eo-" + f.key, title: f.name + " · " + f.pts,
+        "aria-label": f.part + ": " + f.name + ", " + f.pts });
+      seg.style.flexGrow = f.w;
+      if (f.w >= 10) seg.appendChild(el("span", { text: f.short || f.name }));
+      bar.appendChild(seg);
+      var body = el("div", { class: "a4-pbody" }, el("p", { text: f.text }));
+      if (f.links) body.appendChild(links(f.links));
+      if (f.anchor) body.appendChild(el("div", { class: "a4-links" }, el("a", { href: "#" + f.anchor, text: "Se temaene under ↓" })));
+      parts.appendChild(el("li", { class: "a4-part a4-" + f.key, id: "eo-" + f.key }, [
+        el("div", { class: "a4-pname" }, [
+          el("span", { class: "a4-pk" }, [el("span", { text: f.part }), el("span", { class: "a4-pts", text: f.pts })]),
+          el("h3", { text: f.name })
+        ]),
+        body
+      ]));
+    });
+    ruler.appendChild(bar);
+    ruler.appendChild(el("div", { class: "a4-scale", "aria-hidden": "true" }));
+    ruler.appendChild(el("div", { class: "a4-scale-n", "aria-hidden": "true" }, [el("span", { text: "0" }), el("span", { text: "50" }), el("span", { text: "100 p" })]));
+    flowHost.appendChild(ruler);
+    flowHost.appendChild(parts);
+
+    // ===== Temaene =====
+    // Poeng per blokk og år fra plan/eksamensmonster.md § 4 (ordinære eksamener).
+    var TOPICS = [
+      { name: "SQL videregående", n: 5, pts: "28–35 p", often: "Alltid, størst",
+        items: "Aggregat og GROUP BY/HAVING, delspørringer, WITH, ytre join, mengdeoperatorer, VIEW. En VIEW-oppgave har vært med hvert år.",
+        tip: "Aggregat i WHERE i stedet for HAVING gir −2. «Også de med 0» krever LEFT JOIN og count(kolonne).",
+        links: [["sql-videre", "aggregering", "Aggregering"], ["sql-videre", "delsporringer", "Delspørringer"], ["sql-videre", "with", "WITH"], ["sql-videre", "ytre-join", "Ytre join"],
+                ["sql-videre", "null", "NULL"], ["sql-videre", "mengde", "Mengdeoperatorer"], ["sql-videre", "for-alle", "«For alle»"], ["sql-videre", "eksamen", "Eksamensoppgaver"]] },
+      { name: "ER-modellering", n: 5, pts: "16–30 p", often: "Alltid, først",
+        items: "Kravtekst til ER-diagram: entiteter, relasjoner, kardinalitet, total deltakelse, svake entiteter, ternære relasjoner. Fra 2023 også å lese et diagram.",
+        tip: "Gå gjennom kravteksten punkt for punkt. Kardinalitet på feil side koster −0,5, manglende −1.",
+        links: [["er", "notasjon", "Tegneguide"], ["er", "attributter", "Attributter"], ["er", "relasjoner", "Relasjoner"], ["er", "svake", "Svake entiteter"],
+                ["er", "ternaere", "Ternære"], ["er", "tekst-til-diagram", "Fra tekst til diagram"], ["er", "lese", "Lese et diagram"], ["er", "eksamen", "Eksamensoppgaver"]] },
+      { name: "SQL grunnleggende", n: 5, pts: "10–22 p", often: "Alltid",
+        items: "SELECT–FROM–WHERE, join, LIKE, ORDER BY, DISTINCT, CREATE TABLE med skranker, INSERT, UPDATE og DELETE. Radantall-oppgaven hører ofte hit.",
+        tip: "Join mot navnet, ikke hardkodede ID-er. LIKE uten % gir −2, = i stedet for LIKE −1.",
+        links: [["sql", "anatomi", "Spørringens anatomi"], ["sql", "join", "Join"], ["sql", "distinct", "DISTINCT og ORDER BY"], ["sql", "skranker", "CREATE TABLE"],
+                ["sql", "endring", "INSERT, UPDATE, DELETE"], ["sql", "skriv-sql", "Skriv SQL"], ["sql", "eksamen", "Eksamensoppgaver"]] },
+      { name: "Normalisering", n: 5, pts: "4–21 p", often: "Alltid",
+        items: "Normalform per FD eller for hele relasjonen, og tapsfri dekomposisjon til BCNF. I 2025 også å legge til FD-er så R blir BCNF.",
+        tip: "List nøkler og FD-er for hver delrelasjon. Uten forklaring trekkes det −3.",
+        links: [["normalisering", "normalformer", "Normalformer"], ["normalisering", "nf-per-fd", "NF per FD"], ["normalisering", "bcnf-dekomp", "BCNF-dekomposisjon"],
+                ["normalisering", "tapsfri", "Tapsfri"], ["normalisering", "svarform", "Svarform"], ["normalisering", "eksamen", "Eksamensoppgaver"]] },
+      { name: "Realisering", n: 5, pts: "7–15 p", often: "Alltid",
+        items: "Fra ER-diagram til relasjonsskjema: entiteter, svake entiteter, 1:1, 1:N, M:N, ternære og flerverdiattributter.",
+        tip: "Begrunn valget mellom fremmednøkkel og egen tabell, gjerne med færre NULL-verdier.",
+        links: [["realisering", "algoritmen", "Algoritmen"], ["realisering", "svake", "Svake entiteter"], ["realisering", "en-til-en", "1:1"], ["realisering", "en-til-mange", "1:N"],
+                ["realisering", "mange-til-mange", "M:N"], ["realisering", "flerverdi", "Flerverdi"], ["realisering", "hele", "Hele eksemplet"], ["realisering", "eksamen", "Eksamensoppgaver"]] },
+      { name: "FD og nøkler", n: 5, pts: "5–10 p", often: "Alltid, kort",
+        items: "Tillukning, kandidatnøkler og nøkkelattributter, og om en instans bryter FD-ene. Ofte JA/NEI med minuspoeng.",
+        tip: "Regn tillukningen systematisk. Med ±1 lønner det seg ikke å gjette.",
+        links: [["fd", "fd-begrep", "Hva er en FD?"], ["fd", "fd-instans", "FD-er og instanser"], ["fd", "tillukning", "Tillukning X⁺"], ["fd", "nokler", "Nøkler"],
+                ["fd", "finn-kn", "Finn alle KN"], ["fd", "eksamen", "Eksamensoppgaver"]] }
+    ];
+    var topicHost = IN.qs("#exam-topics");
+    TOPICS.forEach(function (tp) {
+      var dots = el("span", { class: "a4-dots", role: "img", "aria-label": tp.n + " av 5 eksamener" });
+      for (var d = 0; d < 5; d++) dots.appendChild(el("i", { class: d < tp.n ? "on" : null }));
+      topicHost.appendChild(el("div", { class: "a4-topic" }, [
+        el("div", { class: "a4-tname" }, [
+          el("h3", { text: tp.name }),
+          el("span", { class: "a4-freq" }, [dots, el("span", { text: tp.often })]),
+          el("span", { class: "a4-pts", text: tp.pts })
+        ]),
+        el("div", { class: "a4-tbody" }, [
+          el("p", {}, [tp.items + " ", el("span", { class: "a4-tip-txt" }, [el("b", { text: "Tips: " }), tp.tip])]),
+          links(tp.links)
+        ])
+      ]));
+    });
+    topicHost.appendChild(el("p", { class: "a4-rare", text: "Sjeldne: relasjonsalgebra (2025), SQL fra et program og SQL-injection (2023) og transaksjon (2025, inne i en DDL-oppgave). Indekser og lagring har aldri vært spurt om." }));
+
+    // ===== Oppgavekart =====
+    var mapHost = IN.qs("#task-map");
+    YEARS.forEach(function (y) {
+      var ol = el("ol");
+      TASKS.filter(function (t) { return t[0] === y; }).forEach(function (t) {
+        var name = taskLink(t, t[2], "a4-mlink") ||
+          el("span", { class: "a4-off" }, [t[2] + " ", el("span", { class: "tag", text: "snart" })]);
+        var kids = [el("span", { class: "a4-nr", text: t[1] }), name];
+        if (t[6]) kids.push(el("span", { class: "tag a4-auto", title: "Rettet automatisk", text: "auto" }));
+        kids.push(el("span", { class: "a4-p", text: t[3] }));
+        ol.appendChild(el("li", {}, kids));
+      });
+      mapHost.appendChild(el("div", { class: "a4-year" }, [el("h3", { text: fullYear(y) }), ol]));
+    });
+
+    // ===== Blokkene =====
     var BLOCKS = [
       { page: "begreper",          n: "0",  title: "Begreper og relasjonsmodellen", desc: "Database og DBMS, relasjon, tuppel, attributt, domene og nøkler." },
       { page: "er",                n: "1",  title: "ER-modellering",          desc: "Chen-notasjon: entiteter, relasjoner, attributter, kardinalitet, deltakelse, svake entiteter." },
@@ -80,12 +357,38 @@
     ];
     var blockHost = IN.qs("#block-cards");
     BLOCKS.forEach(function (b) {
+      var tasks = TASKS.filter(function (t) { return t[4] === b.page; }).length;
       var kids = [el("span", { class: "a4-bn", text: b.n }), el("span", { text: b.title })];
-      if (b.tasks > 0) kids.push(el("span", { class: "a4-bt", text: b.tasks + " oppg." }));
+      if (tasks > 0) kids.push(el("span", { class: "a4-bt", text: tasks + " oppg." }));
       if (!ready[b.page]) kids.push(el("span", { class: "tag", text: "snart" }));
       blockHost.appendChild(ready[b.page]
         ? el("a", { class: "a4-block", href: pageHref[b.page], title: b.desc }, kids)
         : el("span", { class: "a4-block a4-off", title: b.desc }, kids));
+    });
+
+    // ===== Verktøytips på oppgaveikonene: hold dem innenfor skjermen, Esc lukker =====
+    function placeTip(w) {
+      var tip = w.querySelector(".a4-tip");
+      w.classList.remove("a4-tipoff", "a4-below");
+      tip.style.setProperty("--a4-dx", "0px");
+      var r = tip.getBoundingClientRect();
+      if (!r.width) return;
+      var vw = document.documentElement.clientWidth, dx = 0;
+      if (r.left < 8) dx = 8 - r.left; else if (r.right > vw - 8) dx = vw - 8 - r.right;
+      if (dx) tip.style.setProperty("--a4-dx", Math.round(dx) + "px");
+      if (r.top < 96) w.classList.add("a4-below");   // ikke under den klebrige toppmenyen
+    }
+    var sheet = IN.qs(".a4-sheet");
+    sheet.addEventListener("mouseover", function (e) {
+      var w = e.target.closest && e.target.closest(".a4-tw");
+      if (w && !(e.relatedTarget && w.contains(e.relatedTarget))) placeTip(w);
+    });
+    sheet.addEventListener("focusin", function (e) {
+      var w = e.target.closest && e.target.closest(".a4-tw");
+      if (w) placeTip(w);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") IN.qsa(".a4-tw").forEach(function (w) { w.classList.add("a4-tipoff"); });
     });
   })();
   </script>
