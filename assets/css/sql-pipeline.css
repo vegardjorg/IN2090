@@ -80,6 +80,7 @@
 .spl-as { display: block; font-weight: 600; font-size: 11px; color: var(--color-primary); }
 .spl-selcap { margin: .1rem 0 0; }
 .spl-jop { align-self: center; font-size: 1.4rem; color: var(--color-on-surface-variant); padding: 0 .1rem; }
+.spl-jop-txt { font-family: var(--font-mono, monospace); font-size: .75rem; font-weight: 600; white-space: nowrap; }
 
 /* ---------- Kryssprodukt som rutenett ---------- */
 .spl-grid { border-collapse: collapse; font-size: 12px; background: var(--spl-bg); }

@@ -268,7 +268,7 @@
     },
     {
       id: "b5-12", blokk: 5, tittel: "Lånepoeng",
-      tekst: "<p>En låner får 2 poeng for hvert utlån og 3 ekstra poeng for hvert utlån som ikke er levert. Vis <code>navn</code> og <code>poeng</code> for alle lånere. De uten utlån får 0. Tips: lag poengradene med UNION ALL.</p>",
+      tekst: "<p>En låner får 2 poeng for hvert utlån og 3 ekstra poeng for hvert utlån som ikke er levert. Vis <code>navn</code> og <code>poeng</code> for alle lånere. De uten utlån skal stå med 0, ikke NULL. Tips: lag poengradene med UNION ALL, og gjør NULL om til 0 med <code>coalesce(sum(…), 0)</code>. coalesce står ikke i lysarkene, og på eksamen godtok sensor NULL i en lignende oppgave (H2025 2.7), men her krever vi 0.</p>",
       fasit: "WITH poengrader AS (\n  SELECT lid, 2 AS poeng FROM utlån\n  UNION ALL\n  SELECT lid, 3 AS poeng FROM utlån WHERE levert IS NULL\n)\nSELECT l.navn, coalesce(sum(p.poeng), 0) AS poeng\nFROM låner AS l\n  LEFT JOIN poengrader AS p ON (l.lid = p.lid)\nGROUP BY l.lid, l.navn;",
       hint: ["UNION fjerner like rader. To utlån gir to like rader <code>(lid, 2)</code>, og da forsvinner den ene. Bruk UNION ALL.", "<code>sum</code> av ingen rader er NULL. Bruk <code>coalesce(sum(…), 0)</code>."],
       tester: "to lånere heter Ada",

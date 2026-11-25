@@ -405,7 +405,8 @@
         "Båt identifiseres av båttype + eksemplar. Da er båt en svak entitet med eksemplar som delvis nøkkel, eid av båttype gjennom en identifiserende relasjon (dobbel rombe, total deltakelse og N på båtsiden, 1 på båttypesiden).",
         "Båttype har partiell deltakelse fordi det alltid finnes mange typer uten båter. Kunde har partiell deltakelse i ANSVARLIG (kunder uten båt er lov), mens båt er total.",
         "Bås–båt er 1-1 og partiell på begge sider: en båt trenger ikke ligge i havna, og en bås kan stå tom.",
-        "Båt 1–N arbeidsordre, total for arbeidsordre (gjelder alltid én båt). Arbeidsordre 1–1 faktura, total for faktura. Arbeidsordren finnes før fakturaen lages, så den siden er partiell.",
+        "Båt 1–N arbeidsordre, total for arbeidsordre (gjelder alltid én båt). Arbeidsordre 1–1 faktura, total for faktura.",
+        "Teksten sier at hver arbeidsordre gir «nøyaktig én faktura», og ordrett ville det betydd total deltakelse også for arbeidsordre. Vi leser det likevel som partiell deltakelse, fordi arbeidsordren opprettes før vedlikeholdet og fakturaen finnes først når arbeidet er ferdig. Sensors figur gjør det samme. Skriv tolkningen som kommentar.",
         "Den som betaler er ikke nødvendigvis eieren, så faktura må knyttes direkte til kunde med en egen relasjon (N–1). Datoen for utsending legges som attributt på denne relasjonen."
       ],
       tips: [
@@ -476,7 +477,11 @@
       avvik: null,
       losning: [
         "Bruk eksempeldataene: ansatt har 5 rader (Kari, Ole, Nasir, Bo, Berit) og prosjekt har 5 rader med lederne 2, 3, 5, 2, 3.",
-        "Kjør hver spørring for hånd og tell radene. Svarene er 3, 5, 0, 0 og 2, det samme som sensorveiledningen."
+        "Kjør hver spørring for hånd og tell radene. Svarene er 3, 5, 0, 0 og 2, det samme som sensorveiledningen.",
+        "1: navn med liten i er Kari, Nasir og Berit, altså 3.",
+        "2: NATURAL JOIN av prosjekt med seg selv joiner på alle kolonnene, så hver rad passer bare med seg selv. Svaret er 5, ikke 25 (det ville vært kryssproduktet).",
+        "3: navn != navn er aldri sann (og NULL om navn er NULL), altså 0. 4: OFFSET 5 hopper over alle de 5 radene, altså 0.",
+        "5: ansatte som ikke leder noe prosjekt er Kari og Bo, altså 2."
       ],
       tips: [
         "Med +2 for riktig og −0,5 for galt lønner det seg å svare selv om du er usikker.",
@@ -584,7 +589,7 @@
         "<code>NULL</code> som ansvarlig.</p>",
       avvik:
         "Oppgaven trenger kolonnen oppgave.prosjekt, som mangler i CREATE-skriptet, fordi skjemaet har feil. Vi bruker eksempeldataenes versjon (oppgave.prosjekt → prosjekt(pid)). " +
-        "Sensor godtar også løsninger som finner prosjektet via medlem.",
+        "Sensorveiledningen gir generelt full uttelling for å finne prosjektet via den ansvarliges medlemskap (medlem). Det kan ikke virke her, fordi oppgaven gjelder nettopp radene der ansvarlig er NULL.",
       losning: [
         "Bare rader med ansvarlig IS NULL skal endres. Det hører hjemme i WHERE-delen av UPDATE.",
         "Den nye verdien hentes med en delspørring som slår opp lederen til prosjektet som raden peker på. Delspørringen er korrelert, fordi den bruker kolonnen prosjekt fra raden som oppdateres.",
@@ -666,7 +671,7 @@
         "Eksempeldata: Kari 14, Ole 7 + 6 = 13, Nasir 7 + 8 = 15, Bo 7, Berit 7 + 2 = 9."
       ],
       tips: [
-        "INNER JOIN der ansatte med 0 timer skal med, har tidligere gitt −2.",
+        "INNER JOIN der rader med 0 skal med, ga −2 i H2019 (oppgave 2.5, band med 0 sanger). Her ville ansatte uten timer forsvunnet.",
         "Unngå å joine ansatt mot både oppgave (som ansvarlig) og prosjekt + oppgave (som leder) i én og samme FROM. Radene ganges da med hverandre, og summen blir for stor.",
         "Oppgaven godtar NULL for ansatte uten timer, så du trenger ingen funksjon som gjør NULL om til 0."
       ],
@@ -757,7 +762,7 @@
       losning: [
         "a) A og D står aldri på en høyreside, så de må være med i alle kandidatnøkler. Tillukningen {A, D}⁺ = {A, B, C, D} = R, så {A, D} er en supernøkkel. Den er minimal, fordi A⁺ = {A, B, C} og D⁺ = {D} ikke er hele R. Da er {A, D} eneste kandidatnøkkel.",
         "b) Ta FD-ene én for én. A → B: A er ikke supernøkkel (BCNF brytes), B er ikke nøkkelattributt (3NF brytes), og A er en ekte del av kandidatnøkkelen {A, D} (2NF brytes). R er derfor bare på 1NF.",
-        "B → C bryter 3NF (B er ikke en del av noen kandidatnøkkel), men ikke 2NF. Det er A → B som drar R ned til 1NF."
+        "B → C bryter 3NF, fordi B ikke er supernøkkel og C ikke er nøkkelattributt. 2NF holder for denne FD-en, fordi B ikke er en ekte del av noen kandidatnøkkel. Det er A → B som drar R ned til 1NF."
       ],
       tips: [
         "Huskeregelen for nøkler: et attributt som aldri står på en høyreside, er med i alle kandidatnøkler.",
@@ -783,10 +788,10 @@
         "Løsningsforslaget (og standardalgoritmen) gir R1(A, B, C), R2(A, D), fordi første del skal være tillukningen A⁺ = {A, B, C}. " +
         "Vårt svar følger algoritmen. Sensorens variant er også tapsfri, men den er ikke det standardalgoritmen gir.",
       losning: [
-        "a) A → B bryter BCNF fordi A⁺ = {A, B, C} ≠ R, så A er ikke supernøkkel. (B → C ville også fungert.)",
+        "a) A → B bryter BCNF fordi A⁺ = {A, B, C} ≠ R, så A er ikke supernøkkel. (B → C ville også fungert: B⁺ = {B, C} gir R1(B, C) og R2(A, B, D).)",
         "b) Algoritmen: med Y = A er Y⁺ = {A, B, C}. Del R i S₁(Y⁺) = R1(A, B, C) og S₂(Y ∪ (R − Y⁺)) = R2(A, D).",
         "R1 har kandidatnøkkel {A} og FD-ene A → B og B → C. R2 har kandidatnøkkel {A, D} og ingen ikke-trivielle FD-er.",
-        "c) Ja. Fellesattributtet er A, og A → B, C, altså bestemmer A hele R1. Ifølge Fagins teorem er dekomponeringen da tapsfri.",
+        "c) Ja. Fellesattributtet er A, og A → BC, altså bestemmer A hele R1. Ifølge Fagins teorem er dekomponeringen da tapsfri.",
         "Til info: R1 er ennå ikke på BCNF (B → C), så neste trinn ville delt R1 videre i (B, C) og (A, B)."
       ],
       tips: [
@@ -864,8 +869,9 @@
           "<li><b>ANSVARLIG</b>: 1 ved KUNDE (partiell, kunder uten båt er lov), N ved BÅT (total, hver båt har én ansvarlig).</li>" +
           "<li><b>BÅS</b>: Nummer (nøkkel), Bredde, Dybde. <b>LIGGER_I</b> er 1-1 og partiell på begge sider.</li>" +
           "<li><b>ARBEIDSORDRE</b>: Ordrenr (nøkkel), Beskrivelse. <b>VEDLIKEHOLD</b>: 1 ved BÅT (partiell), N ved ARBEIDSORDRE (total).</li>" +
-          "<li><b>FAKTURA</b>: Fakturanr (nøkkel), Beløp. <b>FOR</b> er 1-1: total ved FAKTURA, partiell ved ARBEIDSORDRE " +
-          "(fakturaen lages først når arbeidet er ferdig).</li>" +
+          "<li><b>FAKTURA</b>: Fakturanr (nøkkel), Beløp. <b>FOR</b> er 1-1: total ved FAKTURA, partiell ved ARBEIDSORDRE. " +
+          "Teksten sier «nøyaktig én faktura» per arbeidsordre, men vi leser det som partiell deltakelse, fordi arbeidsordren finnes før fakturaen " +
+          "(fakturaen lages først når arbeidet er ferdig). Sensors figur gjør det samme.</li>" +
           "<li><b>SENDT_TIL</b> mellom FAKTURA (N, partiell, fordi den ikke er sendt ennå) og KUNDE (1, partiell). Attributtet Dato står på relasjonen. " +
           "Betaleren kobles direkte, fordi det ikke trenger å være båtens eier.</li></ul>",
         er: ER_SVAR,
@@ -891,8 +897,9 @@
         "er 1-1, men arbeidsordren finnes før fakturaen, så bare fakturasiden er total. Betaleren er en egen relasjon til KUNDE, siden den kan " +
         "være en annen enn eieren. Sendedatoen er en egenskap ved selve utsendingen og legges derfor på relasjonen.</p>",
       teknisk:
-        "<p>Svak entitet brukes når den delvise nøkkelen (Eksemplar) bare er unik innenfor en eier (BÅTTYPE). Den identifiserende relasjonen " +
-        "har alltid total deltakelse og N på den svake siden, og 1 på eiersiden. At det «alltid finnes flere båttyper enn båter», er et hint om at " +
+        "<p>Svak entitet brukes når den delvise nøkkelen (Eksemplar) bare er unik innenfor en eier (BÅTTYPE). I den identifiserende relasjonen " +
+        "har den svake entiteten alltid total deltakelse, og det står 1 på eiersiden. At det står N på båtsiden, kommer av at én båttype kan ha mange båter. " +
+        "Det er vanlig for svake entiteter, men ingen regel. At det «alltid finnes flere båttyper enn båter», er et hint om at " +
         "BÅTTYPE har partiell deltakelse. Telefonnummeret er unikt og blir derfor en ekstra nøkkel. Porttelefonene er mange per kunde og blir et " +
         "flerverdiattributt. Adressene er sammensatte, så realiseringen kan beholde bladnodene. For 1-1-relasjoner er det deltakelsen som avgjør " +
         "realiseringen senere: FOR er total bare på fakturasiden, så fremmednøkkelen bør ligge i FAKTURA. Dato på SENDT_TIL kunne også stått på " +
@@ -929,7 +936,7 @@
         tekst:
           "<p>Realisert fra vår ER-modell i 1.1. Valgene våre:</p><ul>" +
           "<li>Sammensatte adresser flates ut til bladnodene med prefiks (Post_, Faktura_).</li>" +
-          "<li>Porttelefon (flerverdi) får egen relasjon, der begge attributtene utgjør nøkkelen.</li>" +
+          "<li>Porttelefon (flerverdi) får egen relasjon, der begge attributtene utgjør nøkkelen. Nummeret heter Porttelefonnr, så det ikke forveksles med hovednummeret Telefonnr i Kunde.</li>" +
           "<li>Båt (svak) får PN = Båttypens nøkkel + Eksemplar. TYPE realiseres ikke separat.</li>" +
           "<li>ANSVARLIG og VEDLIKEHOLD (1-N) blir FN på N-siden: Kundenr i Båt og (Kortnavn, Eksemplar) i Arbeidsordre. Båt og arbeidsordre er " +
           "total på N-siden, så disse FN-ene blir aldri NULL.</li>" +
@@ -941,8 +948,8 @@
         skjema:
           "Kunde(Kundenr, Navn, Telefonnr, Post_gatenavn, Post_gatenr, Post_postnr, Faktura_gatenavn, Faktura_gatenr, Faktura_postnr)\n" +
           "  KN: {Kundenr}, {Telefonnr}\n  PN: {Kundenr}\n\n" +
-          "Porttelefon(Kundenr, Telefonnr)\n" +
-          "  KN: {Kundenr, Telefonnr}\n  PN: {Kundenr, Telefonnr}\n  FN: Kundenr → Kunde(Kundenr)\n\n" +
+          "Porttelefon(Kundenr, Porttelefonnr)\n" +
+          "  KN: {Kundenr, Porttelefonnr}\n  PN: {Kundenr, Porttelefonnr}\n  FN: Kundenr → Kunde(Kundenr)\n\n" +
           "Båttype(Kortnavn, Modell, Typebetegnelse)\n" +
           "  KN: {Kortnavn}\n  PN: {Kortnavn}\n\n" +
           "Bås(Nummer, Bredde, Dybde)\n" +
@@ -1040,7 +1047,7 @@
         "<p>SELECT k FROM t WHERE u svarer til π<sub>k</sub>(σ<sub>u</sub>(t)). Theta-join R ⋈<sub>θ</sub> S er definert som σ<sub>θ</sub>(R × S), " +
         "så et svar med kryssprodukt og seleksjon er like riktig. «Minst én» uttrykkes med join (eksistens). Man trenger ikke telle, fordi π i relasjonsalgebra " +
         "gir en mengde. Naturlig join (⋈ uten betingelse) ville også fungert hvis Kundenr er det eneste felles attributtnavnet i Kunde og Båt. " +
-        "Det må du sjekke mot ditt eget skjema.</p>"
+        "Det må du sjekke mot ditt eget skjema. Kurset skriver naturlig join på to måter: ett lysark bruker ⋆, andre bruker ⋈ uten senket skrift. Begge betyr det samme.</p>"
     },
     sensor: {
       deler: [
@@ -1084,9 +1091,10 @@
       teknisk:
         "<p>Kolonnen ansvarlig kan være NULL. Med INNER JOIN gir ansvarlig = aid da NULL (ukjent), og raden forsvinner. Teksten sier «alle oppgaver», " +
         "og derfor bruker vi LEFT JOIN, som beholder oppgaven og fyller navn med NULL. Filteret står på oppgave (venstre tabell) og påvirker derfor " +
-        "ikke ytre-join-effekten. Hadde vi filtrert på en kolonne fra ansatt i WHERE, ville radene med NULL forsvunnet igjen.</p>"
+        "ikke ytre-join-effekten. Tilleggsfelle (står ikke i kursmaterialet): hadde vi filtrert på en kolonne fra ansatt i WHERE, ville radene med NULL forsvunnet igjen, " +
+        "og den ytre joinen ville virket som en indre join.</p>"
     },
-    sensor: { deler: [{ del: "Løsningsforslag", fasit: "", sql: SENSOR_SQL["2.2"], kriterier: SQL_GENERELT }], merknad: SQL_MERKNAD + " Løsningsforslaget bruker vanlig (indre) join, så begge variantene regnes som riktige." }
+    sensor: { deler: [{ del: "Løsningsforslag", fasit: "", sql: SENSOR_SQL["2.2"], kriterier: SQL_GENERELT }], merknad: SQL_MERKNAD + " Løsningsforslaget bruker vanlig (indre) join og tar altså ikke med oppgaver uten ansvarlig. Sensorveiledningen sier ikke noe om LEFT JOIN. Vårt svar bygger på tolkningen «alle oppgaver», som en kommentar i svaret bør nevne." }
   };
 
   IN.PERFEKT["H2025-2.3"] = {
@@ -1124,7 +1132,7 @@
         "avviser for korte ord. BEGIN starter transaksjonen og COMMIT lagrer alt på én gang. Feiler INSERT, finnes heller ikke tabellen etterpå.</p>",
       teknisk:
         "<p>En CHECK-skranke avviser bare rader der betingelsen blir FALSE. Er ord NULL, blir length(ord) &gt;= 3 NULL, og raden slipper gjennom. Derfor " +
-        "legger vi til NOT NULL. PostgreSQL har transaksjonell DDL, så CREATE TABLE kan rulles tilbake sammen med INSERT. CSS har lengde 3 og oppfyller " +
+        "legger vi til NOT NULL. I PostgreSQL kan også CREATE TABLE angres som en del av transaksjonen: feiler INSERT, forsvinner tabellen igjen. Ikke alle databasesystemer kan det. CSS har lengde 3 og oppfyller " +
         "kravet (&gt;= 3, ikke &gt; 3). Oppgave 1 og 2 finnes i eksempeldataene, så fremmednøkkelen er oppfylt.</p>"
     },
     sensor: { deler: [{ del: "Løsningsforslag", fasit: "", sql: SENSOR_SQL["2.3"], kriterier: SQL_GENERELT }], merknad: SQL_MERKNAD + " «fremmenøkkel» er en skrivefeil i oppgaveteksten og er beholdt." }
@@ -1371,7 +1379,7 @@
       {
         del: "c)",
         tekst:
-          "<p>Ja. Fellesattributtet er A, og A → B, C, altså bestemmer A hele R1 (A er nøkkel i R1). Etter Fagins teorem er dekomponeringen da tapsfri. " +
+          "<p>Ja. Fellesattributtet er A, og A → BC, altså bestemmer A hele R1 (A er nøkkel i R1). Etter Fagins teorem er dekomponeringen da tapsfri. " +
           "Det gjelder alle steg i BCNF-algoritmen.</p>",
         poeng: ["Tapsfri, fordi fellesattributtet A er nøkkel i R1 (2p)"]
       }

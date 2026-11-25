@@ -74,6 +74,9 @@
         ? "Trykk «Neste» og «Forrige» for å gå steg for steg."
         : "Hold musa over demoen: <span class=\"kbd\">←</span> <span class=\"kbd\">→</span> for steg · <span class=\"kbd\">mellomrom</span> spill/pause" });
     wrap.appendChild(el("div", { class: "sp-frame" }, [stage, el("div", { class: "sp-foot" }, [hint, counter])]));
+    // Mobil: aktiv kodelinje rett under scenen (vises bare under 620 px, se styles.css)
+    var pcLine = el("div", { class: "sp-pcline", hidden: "", "aria-hidden": "true" });
+    wrap.appendChild(pcLine);
 
     // Kontroller
     var bPrev = el("button", { class: "btn sm", type: "button", html: "← Forrige", onclick: function () { step(-1); } });
@@ -89,15 +92,94 @@
     if (opts.legend) {
       var lg = el("div", { class: "legend" });
       opts.legend.forEach(function (it) {
+        var word = legendWord(it), lab = String(it.label || "");
+        var txt = el("span");
+        var vm = word && /^([^\s:]{1,6}): (.+)$/.exec(lab);   // «k: minste så langt» → «Kandidat (k): minste så langt»
+        if (vm) {
+          txt.appendChild(el("span", { class: "lw", text: word + " (" + vm[1] + "): " }));
+          txt.appendChild(document.createTextNode(vm[2]));
+        } else if (word) {
+          txt.appendChild(el("span", { class: "lw", text: word + ": " }));
+          txt.appendChild(document.createTextNode(lowerFirst(dropWord(lab, word))));
+        } else txt.textContent = fixedFirst(it, lab);
         lg.appendChild(el("span", { class: "item" }, [
-          el("span", { class: "sw", style: "background:" + (it.color || cssVar(it.cls)) }),
-          el("span", { text: it.label })
+          it.cls === "tried" ? el("span", { class: "sw sw-tried" })
+                             : el("span", { class: "sw", style: "background:" + (it.color || cssVar(it.cls)) }),
+          txt
         ]));
       });
       wrap.appendChild(lg);
     }
 
     clear(host); host.appendChild(wrap);
+
+    /* Faste ord i fargeforklaringen (samme ord for samme farge, se ordboken i ui-revisjon-farger.md 3.2):
+       Nå (compare) · Ferdig (sorted) · Funnet (target, bare når det er et funn) · Ny (min) · Bytt / Feil (swap).
+       Ordet settes bare der det stemmer; ellers står forklaringen som før. it.word overstyrer (false = ingen). */
+    function legendWord(it) {
+      if (it.word === false) return null;
+      if (typeof it.word === "string") return it.word;
+      var l = String(it.label || ""), w = null;
+      if (it.color) return null;
+      if (it.cls === "compare") w = "Nå";
+      else if (it.cls === "sorted") w = /i bruk|kanten finnes|kan nås/i.test(l) ? null : "Ferdig";
+      else if (it.cls === "target") w = /svar/i.test(l) ? null : /funnet|duplikat|etterfølger/i.test(l) ? "Funnet" : null;
+      else if (it.cls === "min") w = /^(ny|satt inn|skrevet|legges inn)/i.test(l) ? "Ny" : /så langt/i.test(l) ? "Kandidat" : null;
+      else if (it.cls === "swap") w = /bytt/i.test(l) ? "Bytt" : /frigjort|fjern|roter|merke/i.test(l) ? null : "Feil";
+      if (!w) return null;
+      // Står ordet allerede først, trengs det ikke to ganger.
+      if (l.toLowerCase().indexOf(w.toLowerCase()) === 0) return null;
+      return w;
+    }
+    // Begynner forklaringen allerede med det faste ordet («byttet», «ferdig på plass»), får den stor forbokstav.
+    function fixedFirst(it, lab) {
+      var w = { compare: "nå", sorted: "ferdig", target: "funnet", min: "ny", swap: "bytt" }[it.cls];
+      return w && !it.color && lab.toLowerCase().indexOf(w) === 0 ? lab.charAt(0).toUpperCase() + lab.slice(1) : lab;
+    }
+    // Ordet står nå først, så det tas bort lenger ut: «Besøkt / ferdig» → «besøkt», «sammenlignes nå» → «sammenlignes».
+    function dropWord(lab, w) {
+      var out = lab.replace(new RegExp("\\s*/\\s*" + w + "(?![a-zæøå])", "i"), "")
+                   .replace(new RegExp("\\s+" + w + "(?![a-zæøå])(?=\\s*(\\(|$))", "i"), "");
+      return out || lab;
+    }
+    function lowerFirst(s) {
+      // «Gjeldende node» → «gjeldende node», men ikke «LCA», «A1[i]» eller «Free(D)».
+      return /^[A-ZÆØÅ]([a-zæøå]|\s[a-zæøå])/.test(s) && !/^[A-ZÆØÅ][a-zæøå]*\(/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+    }
+
+    /* Hendelsen i steget (F4): s.kind, ellers utledet fra søylemerkene eller stikkordet.
+       Gir en prikk foran stikkordet og en strek på aktiv kodelinje i samme farge. Uten treff: ingen. */
+    var KIND_RX = [
+      ["swap", /^(bytt(et)?( array)?$|bytte trengs|pivot plassert|høyrerotasjon|venstrerotasjon|ubalanse|ikke funnet|diamant|sykel!|feil\b|for skjev)/i],
+      ["target", /^(funnet|treff|par!|lca =|fant s)/i],
+      ["min", /^(ny node|satt inn|ny minste|nytt minste|mindre funnet|antatt minste|minste = |bedre vei)/i],
+      ["sorted", /^(ferdig|på plass|allerede på plass|står riktig|i orden|løkka ferdig|runde ferdig|rehash ferdig|sortert|delsortert)/i],
+      ["compare", /^(sammenlign|sjekk\b|midten)/i]
+    ];
+    function kindOf(s) {
+      if (s.kind) return s.kind;
+      var m = s.marks;
+      if (m && m.swap != null && !(Array.isArray(m.swap) && !m.swap.length)) return "swap";
+      var t = String(s.tag || "");
+      for (var i = 0; i < KIND_RX.length; i++) if (KIND_RX[i][1].test(t)) return KIND_RX[i][0];
+      return null;
+    }
+    var evRows = [];
+    function markRows(kind) {
+      evRows.forEach(function (r) { r.className = r.className.replace(/\s?ev-[a-z]+/g, ""); });
+      evRows = (IN.pseudo && IN.pseudo._hl) ? IN.pseudo._hl.slice() : [];
+      if (kind) evRows.forEach(function (r) { r.classList.add("ev-" + kind); });
+      // Mobil (F11): aktiv kodelinje som én linje under scenen
+      var r = evRows[0];
+      if (r) {
+        var ln = r.querySelector(".ln"), code = r.querySelector(".pc-txt") || r.querySelector(".code");
+        pcLine.innerHTML = "";
+        pcLine.appendChild(el("span", { class: "ln", text: "Linje " + (ln ? ln.textContent : "") + " ·" }));
+        pcLine.appendChild(el("span", { class: "code", html: code ? code.innerHTML : "" }));
+        pcLine.className = "sp-pcline" + (kind ? " ev-" + kind : "");
+        pcLine.hidden = false;
+      } else pcLine.hidden = true;
+    }
 
     function cssVar(cls) {
       var map = { compare: "--c-compare", min: "--c-min", swap: "--c-swap", sorted: "--c-sorted", target: "--c-target", "default": "--c-default" };
@@ -123,9 +205,12 @@
     function renderStep() {
       var s = steps[idx] || {};
       opts.render(s, { stage: stage, level: scope.get(), index: idx, total: steps.length });
+      if (IN.pseudo) IN.pseudo._hl = [];
       if (opts.pseudo && s.line != null) opts.pseudo.highlight(s.line);
       else if (opts.pseudo) opts.pseudo.clear();
-      paintExplain(s);
+      var kind = kindOf(s);
+      markRows(kind);
+      paintExplain(s, kind);
       counter.textContent = "Steg " + (idx + 1) + " av " + steps.length;
       // Flytt fokus før knappen blir deaktivert, så tastaturbrukere ikke havner øverst på siden
       var atStart = idx === 0, atEnd = idx >= steps.length - 1;
@@ -134,10 +219,16 @@
       bPrev.disabled = atStart;
       bNext.disabled = atEnd;
     }
-    function paintExplain(s) {
+    function paintExplain(s, kind) {
       clear(explain);
       var txt = IN.level.pick(s.text, scope.get());
-      if (s.tag) explain.appendChild(el("span", { class: "tagline", text: s.tag }));
+      if (kind === undefined) kind = kindOf(s);
+      if (s.tag) {
+        var tl = el("span", { class: "tagline" });
+        if (kind) tl.appendChild(el("span", { class: "vl-dot is-" + kind, "aria-hidden": "true" }));
+        tl.appendChild(document.createTextNode(s.tag));
+        explain.appendChild(tl);
+      }
       explain.appendChild(el("span", { html: txt || "" }));
       if (IN.symbolTips) IN.symbolTips(explain);
     }

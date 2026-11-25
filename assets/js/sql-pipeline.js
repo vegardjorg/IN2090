@@ -612,7 +612,7 @@
     var aNavn = esc(L.navn) + (L.alias !== L.navn.toLowerCase() ? " AS " + esc(L.alias) : "");
     var bNavn = esc(R.navn) + (R.alias !== R.navn.toLowerCase() ? " AS " + esc(R.alias) : "");
     var fa = tabell(row, inn(L, onL, aNavn), { compact: true });
-    row.appendChild(el("div", { class: "spl-jop", "aria-hidden": "true", text: J.type === "LEFT" ? "⟕" : "⋈" }));
+    row.appendChild(el("div", { class: J.type === "LEFT" ? "spl-jop spl-jop-txt" : "spl-jop", "aria-hidden": "true", text: J.type === "LEFT" ? "LEFT JOIN" : "⋈" }));   // ⟕ er ikke kursnotasjon (vranglaere.md)
     var fb = tabell(row, inn(R, onR, bNavn), { compact: true });
     wrap.appendChild(row);
     var onTxt = '<span class="mono">' + esc(J.type) + " JOIN … ON (" + esc(J.on[0]) + " = " + esc(J.on[1]) + ")</span>";

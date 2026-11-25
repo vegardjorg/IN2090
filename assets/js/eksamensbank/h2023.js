@@ -279,12 +279,18 @@
         ],
         tips: [
           "Med +1/−1 lønner det seg ikke å gjette. Hopp over en påstand du er usikker på.",
-          "Total deltakelse sier noe om entiteten på *den* siden streken er dobbel. AK har enkel strek mot RAB, så en AK trenger ingen BO.",
+          "Total deltakelse sier noe om entiteten på <i>den</i> siden streken er dobbel. AK har enkel strek mot RAB, så en AK trenger ingen BO.",
           "Et flerverdiattributt kan ha null verdier. Dobbel oval betyr «mange», ikke «minst én»."
         ],
         del1: {
           type: "janei",
           regel: { riktig: 1, feil: -1, blankt: 0, min: 0 },
+          /* Ordrett fra sensorveiledningsfila. */
+          sensor: {
+            fasit: "<p><b>Løsningsforslag</b></p><ol><li>JA</li><li>NEI</li><li>JA</li><li>JA</li><li>NEI</li></ol>",
+            kriterier: "<p>Automatisk rettet.</p>",
+            merknad: "Stemmer med våre svar."
+          },
           intro: "<p>Organisasjonen trenger hjelp til å vite hvilke av disse setningene er sanne i henhold til ER-diagrammet. Kryss av “JA” dersom du mener setningen er modellert av ER-diagrammet, og “NEI” hvis ikke.</p>",
           items: [
             { s: "En AK er unikt identifisert med dens Agn-verdi.", answer: true,
@@ -353,6 +359,17 @@
         del1: {
           type: "radantall",
           regel: { riktig: 2, feil: -0.5, blankt: 0, min: 0 },
+          /* Ordrett fra sensorveiledningsfila (tabellen med kryss). */
+          sensor: {
+            fasit: "<p><b>Løsningsforslag</b></p><table class=\"et-tab\"><thead><tr><th>Spørring</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead><tbody>" +
+              "<tr><td>1</td><td></td><td></td><td></td><td>X</td><td></td></tr>" +
+              "<tr><td>2</td><td></td><td></td><td></td><td>X</td><td></td></tr>" +
+              "<tr><td>3</td><td></td><td></td><td>X</td><td></td><td></td></tr>" +
+              "<tr><td>4</td><td></td><td>X</td><td></td><td></td><td></td></tr>" +
+              "<tr><td>5</td><td></td><td></td><td></td><td>X</td><td></td></tr></tbody></table>",
+            kriterier: "<p>Automatisk rettet.</p>",
+            merknad: "Stemmer med våre utregninger (3, 3, 2, 1, 3)."
+          },
           intro: "<p>Anta at databasen inneholder nøyaktig de dataene som er vist i eksempel-dataene i den vedlagte PDFen. For hver spørring under, oppgi hvor mange rader det er i resultatet. Hvert riktig svar gir 2 poeng, mens hvert uriktige svar gir -0.5 poeng. Blankt svar/ubesvart gir 0 poeng. Laveste poengsum på hele oppgaven er 0.</p>",
           items: [
             { q: "<p>1.</p>", sql: "SELECT DISTINCT oid\nFROM sensor\nWHERE sid >= 5;",
@@ -369,7 +386,7 @@
               explain: "<p>Spørringen finner områder uten sensorer. Sensorene ligger i områdene 1, 2, 3, 4 og 6. Bare Trondheim (oid 5) mangler sensor, så svaret er én rad.</p>" },
             { q: "<p>5.</p>", sql: "SELECT oid FROM sensor\nEXCEPT ALL\nSELECT oid FROM område;",
               options: ["0", "1", "2", "3", "4"], answer: 3,
-              explain: "<p>Venstre side er multimengden {1, 1, 1, 2, 3, 3, 6, 4}. Høyre side har hver oid 1–6 én gang. EXCEPT ALL fjerner én forekomst av hver verdi som finnes til høyre, og da blir {1, 1, 3} igjen. Det er tre rader. Uten ALL ville svaret vært 0.</p>" }
+              explain: "<p>Venstre side er multimengden {1, 1, 1, 2, 3, 3, 6, 4}. En multimengde er som en mengde, men samme verdi kan stå flere ganger, slik radene i en SQL-tabell kan. Høyre side har hver oid 1–6 én gang. EXCEPT ALL fjerner én forekomst av hver verdi som finnes til høyre, og da blir {1, 1, 3} igjen. Det er tre rader. Uten ALL ville svaret vært 0.</p>" }
           ]
         }
       },
@@ -475,7 +492,7 @@
           "Steg 1 (WITH): regn ut total nedbør per område per dag. Koble måling til sensor for å få oid, begrens til 2023, grupper på oid og tidspunkt::date, og behold med HAVING bare grupper med mer enn 10 målinger.",
           "Steg 2 (WITH): ta snittet av dagstotalene per område.",
           "Steg 3: koble til område for å få navnet, sorter synkende på snittet og ta første rad.",
-          "Oppgaven kan også leses som «områder med mer enn 10 dager med målinger». Sensor gir full uttelling for begge tolkningene, men skriv tolkningen din i en kommentar."
+          "Oppgaven kan også leses som «bare områder med mer enn 10 dager med målinger totalt». Sensor gir full uttelling for begge tolkningene, men skriv tolkningen din i en kommentar."
         ],
         tips: [
           "To nivåer med aggregering (sum per dag, så snitt per område) krever to steg. Du kan ikke skrive avg(sum(…)) i samme SELECT.",
@@ -503,7 +520,7 @@
         losning: [
           "Lag en UPDATE på sensor som setter vedlikeholdt = current_date for sensorene i området. Sensoren kjenner bare oid, så finn oid med en delspørring på område.navn.",
           "Send områdenavnet som parameter, ikke ved å lime det inn i strengen: %s i psycopg (Python) eller ? i en PreparedStatement (Java).",
-          "Kjør kommandoen og gjør commit, slik at endringen blir lagret."
+          "Kjør kommandoen og gjør commit, slik at endringen blir lagret. I Java (JDBC) er autocommit på som standard. Da lagres endringen med en gang, og et eget commit() kaster unntak."
         ],
         tips: [
           "Strengkonkatenering (\"… navn = '\" + omrade + \"'\") gjør koden sårbar for SQL-injection. Det er hele poenget med oppgaven.",
@@ -535,6 +552,14 @@
         del1: {
           type: "janei",
           regel: { riktig: 1, feil: -1, blankt: 0, min: 0 },
+          /* Ordrett fra sensorveiledningsfila (tabellen med kryss). */
+          sensor: {
+            fasit: "<p><b>Løsningsforslag</b></p><table class=\"et-tab\"><thead><tr><th>Attributt</th><th>JA</th><th>NEI</th></tr></thead><tbody>" +
+              "<tr><td>A</td><td>X</td><td></td></tr><tr><td>B</td><td>X</td><td></td></tr><tr><td>C</td><td>X</td><td></td></tr>" +
+              "<tr><td>D</td><td></td><td>X</td></tr><tr><td>E</td><td>X</td><td></td></tr></tbody></table>",
+            kriterier: "<p>Automatisk rettet.</p>",
+            merknad: "Stemmer med våre svar."
+          },
           intro: "<p>Er attributtet et nøkkelattributt i R? (R(A, B, C, D, E) med FD-ene A → B, B → C, C → A, C → D.)</p>",
           items: [
             { s: "A", answer: true, explain: "<p>AE⁺ = ABCDE, og verken A eller E alene er nok. AE er en kandidatnøkkel, så A er et nøkkelattributt.</p>" },
@@ -565,15 +590,32 @@
         losning: [
           "For hver «?»: finn en FD med det ukjente attributtet på høyresiden der venstresiden er kjent i raden.",
           "Let så etter en annen rad med samme venstreside. Da må høyresiden også være lik.",
-          "A: F → A, og F = 7 finnes også i rad 3 med A = 1. C: AB → C, og AB = (1,2) finnes i rad 1 med C = 5 (rad 3). D: B → D, og B = 2 gir D = 4. E: D → E, og D = 8 gir E = 9. B: E → B, og E = 5 gir B = 2."
+          "A: «?» står i rad 2 (F = 7). F → A, og rad 3 har også F = 7 med A = 1. C: «?» står i rad 1 (AB = (1, 2)). AB → C, og rad 3 har samme AB med C = 5. D: «?» står i rad 3 (B = 2), og rad 1 har B = 2 med D = 4. E: «?» står i rad 4 (D = 8), og rad 2 har D = 8 med E = 9. B: «?» står i rad 5 (E = 5), og rad 1 har E = 5 med B = 2."
         ],
         tips: [
-          "Velg en FD der *bare* høyresiden er ukjent. Venstresiden må være kjent i raden.",
+          "Velg en FD der <i>bare</i> høyresiden er ukjent. Venstresiden må være kjent i raden.",
           "Med +1/−0,5 lønner det seg å svare selv om du er litt usikker."
         ],
         del1: {
           type: "verdi",
           regel: { riktig: 1, feil: -0.5, blankt: 0, min: 0 },
+          /* Ordrett fra sensorveiledningsfila (løsningsforslag med begge tabellene). */
+          sensor: {
+            fasit: "<p><b>Løsningsforslag</b></p>" +
+              "<p>En funksjonell avhengighet uttrykker at for alle tupler/rader med like verdier i venstresidens attributter, så må også høyresidens attributter være like. F.eks. må derfor <i>A</i> sitt <code>?</code> ha verdien <code>1</code> fordi <i>F</i> → <i>A</i>, og <i>F</i> har verdi <code>7</code> hvor <i>A</i> har <code>?</code>, og i raden under har <i>F</i> også verdi <code>7</code> og der er <i>A</i>s verdi <code>1</code>.</p>" +
+              "<p>På denne måten kan vi derfor komme frem til følgende verdier:</p>" +
+              "<table class=\"et-tab\"><thead><tr><th>Attributt</th><th>Verdi</th></tr></thead><tbody>" +
+              "<tr><td>A</td><td>1</td></tr><tr><td>B</td><td>2</td></tr><tr><td>C</td><td>5</td></tr><tr><td>D</td><td>4</td></tr><tr><td>E</td><td>9</td></tr></tbody></table>" +
+              "<p>Altså ser hele tabellen slik ut:</p>" +
+              "<table class=\"et-tab\"><thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead><tbody>" +
+              "<tr><td>1</td><td>2</td><td>5</td><td>4</td><td>5</td><td>6</td></tr>" +
+              "<tr><td>1</td><td>3</td><td>4</td><td>8</td><td>9</td><td>7</td></tr>" +
+              "<tr><td>1</td><td>2</td><td>5</td><td>4</td><td>5</td><td>7</td></tr>" +
+              "<tr><td>3</td><td>3</td><td>5</td><td>8</td><td>9</td><td>1</td></tr>" +
+              "<tr><td>1</td><td>2</td><td>5</td><td>4</td><td>5</td><td>8</td></tr></tbody></table>",
+            kriterier: "<p>Automatisk rettet.</p>",
+            merknad: "Svarene (1, 2, 5, 4, 9) stemmer med våre. Den utfylte tabellen har A = 3 i fjerde rad, men arket har A = 2 der. Det er en skrivefeil i sensorveiledningen og er beholdt ordrett (se avvik)."
+          },
           intro: "<p>Altså, for hvert attributt, angi verdien som dens <code>?</code> må erstattes med for at relasjonen skal være riktig i henhold til de funksjonelle avhengighetene:</p>",
           items: [
             { q: "<p>A</p>", options: ["1", "2", "3", "4", "5", "6", "7", "8", "9"], answer: 0,
@@ -816,7 +858,7 @@
       eli5: "<p>Først legger vi sammen all nedbøren i hvert område for hver dag, men bare de dagene det ble målt ofte nok. Så finner vi ut hvor mye det i snitt regnet per dag i hvert område. Til slutt peker vi på området som kom høyest.</p>",
       normal: "<p>Oppgaven har to nivåer med aggregering. Først blir det sum per (område, dag), deretter snitt av disse summene per område. Det kan ikke gjøres i én SELECT, så vi bruker to WITH-delspørringer. Kravet «mer enn 10 målinger» gjelder hver gruppe (område + dag) og står derfor i HAVING. Til slutt kobler vi til område for å få navnet og sorterer synkende.</p>",
       teknisk: "<p>Hvis du skriver avg(sum(nedbør)), får du en feil, fordi aggregater ikke kan nøstes i samme gruppering. WITH gjør det mulig å gruppere to ganger. Måling må kobles til sensor fordi oid bare står der. Grupperingen på m.tidspunkt::date gjør hver kalenderdag til én gruppe. Året avgrenses med et halvåpent intervall. Sammenligner du med «&lt;= '2023-12-31'», blir datoen tolket som midnatt, og målinger senere på nyttårsaften faller bort.</p>" +
-        "<p>Oppgaven er tvetydig: «områder og dager som har mer enn 10 målinger» kan også bety at et område totalt må ha mer enn 10 målinger. Sensor godtar begge tolkningene. Vi velger «mer enn 10 målinger per område per dag» og skriver det i en kommentar. LIMIT 1 velger ett område ved likt snitt. Vil du ha med alle, kan du sammenligne med max i en egen delspørring.</p>"
+        "<p>Oppgaven er tvetydig: «områder og dager som har mer enn 10 målinger» kan også bety at bare områder med mer enn 10 dager med målinger totalt skal være med. Sensorveiledningen sier at begge tolkningene gir full uttelling. Vi velger «mer enn 10 målinger per område per dag» og skriver det i en kommentar. LIMIT 1 velger ett område ved likt snitt. Vil du ha med alle, kan du sammenligne med max i en egen delspørring.</p>"
     },
     sensor: {
       deler: [
@@ -837,13 +879,13 @@
         poeng: ["Riktig UPDATE med current_date", "Delspørring/join for å finne oid fra navn", "Parametrisert spørring (%s + tuppel)", "commit"] },
       { del: "Java (JDBC), alternativ",
         tekst: "<p>Samme idé med PreparedStatement og ?.</p>",
-        sql: "void vedlikeholdt(Connection conn, String omrade) throws SQLException {\n    String sql = \"UPDATE sensor \"\n               + \"SET vedlikeholdt = current_date \"\n               + \"WHERE oid IN (SELECT oid FROM område WHERE navn = ?);\";\n    PreparedStatement ps = conn.prepareStatement(sql);\n    ps.setString(1, omrade);   // verdien bindes, ikke limes inn\n    ps.executeUpdate();\n    conn.commit();           // trengs hvis autocommit er av\n}",
-        poeng: ["PreparedStatement med ?", "setString(1, omrade)", "executeUpdate/execute", "commit"] }
+        sql: "void vedlikeholdt(Connection conn, String omrade) throws SQLException {\n    String sql = \"UPDATE sensor \"\n               + \"SET vedlikeholdt = current_date \"\n               + \"WHERE oid IN (SELECT oid FROM område WHERE navn = ?);\";\n    PreparedStatement ps = conn.prepareStatement(sql);\n    ps.setString(1, omrade);   // verdien bindes, ikke limes inn\n    ps.executeUpdate();\n    // JDBC har autocommit på som standard, og da kaster commit() et unntak.\n    if (!conn.getAutoCommit()) {\n        conn.commit();       // bare når programmet har slått av autocommit\n    }\n}",
+        poeng: ["PreparedStatement med ?", "setString(1, omrade)", "executeUpdate/execute", "commit bare når autocommit er av"] }
     ],
     hvorfor: {
       eli5: "<p>Hvis du skriver det brukeren sier rett inn i kommandoen til databasen, kan en lur bruker skrive inn en ekstra kommando i stedet for et stedsnavn. Derfor gir vi databasen kommandoen og stedsnavnet hver for seg. Da blir stedsnavnet alltid lest som tekst og aldri som en ordre.</p>",
       normal: "<p>Sensor-tabellen har bare oid, så vi finner oid for området med en delspørring på navn og oppdaterer alle sensorer med den oid-en. Områdenavnet kommer fra brukeren, og derfor bruker vi en parametrisert spørring: %s i Python eller ? i Java. Databasedriveren sender verdien separat, så tegn som ' eller ; i navnet kan ikke endre selve SQL-kommandoen. Til slutt gjør vi commit, slik at endringen blir lagret.</p>",
-      teknisk: "<p>Med strengkonkatenering kunne omrade = \"x'; DROP TABLE sensor; --\" ført til at en helt annen kommando ble kjørt. Med parametrisert spørring blir verdien bundet som en literal etter at spørringen er tolket, og strukturen kan ikke endres. Vi bruker IN i stedet for =, fordi navn ikke er UNIQUE i område. Hvis to områder heter det samme, ville «= (SELECT …)» gitt kjøretidsfeil. I psycopg må parameterlisten være en tuppel eller liste, derfor (omrade,). Kurset viser commit eksplisitt. I psycopg er autocommit av som standard, så uten commit forsvinner endringen når tilkoblingen lukkes.</p>"
+      teknisk: "<p>Med strengkonkatenering kunne omrade = \"x'; DROP TABLE sensor; --\" ført til at en helt annen kommando ble kjørt. Med parametrisert spørring blir verdien bundet som en literal etter at spørringen er tolket, og strukturen kan ikke endres. Vi bruker IN i stedet for =, fordi navn ikke er UNIQUE i område. Hvis to områder heter det samme, ville «= (SELECT …)» gitt kjøretidsfeil. I psycopg må parameterlisten være en tuppel eller liste, derfor (omrade,). Kurset viser commit eksplisitt. I psycopg er autocommit av som standard, så uten commit forsvinner endringen når tilkoblingen lukkes. I JDBC er det motsatt: autocommit er på som standard, og hver kommando lagres med en gang. Kaller du da conn.commit(), kaster PostgreSQL-driveren et SQLException. Java-svaret sjekker derfor getAutoCommit() før commit.</p>"
     },
     sensor: {
       deler: [
@@ -854,7 +896,7 @@
           sql: "void vedlikeholdt(Connection conn, String omrade) throws SQLException {\n      PreparedStatement stmt = conn.prepareStatement(\n            \"UPDATE sensor \" +\n            \"SET vedlikeholdt = current_date \" +\n            \"WHERE oid = (SELECT oid FROM område WHERE navn = ?);\"\n      );\n      stmt.setString(1, omrade);\n      stmt.execute();\n      conn.commit();\n}",
           kriterier: SQL_GENERELT }
       ],
-      merknad: "Sensorveiledningen har ingen egne punkter for 2.7. Den generelle listen for SQL-delen er tatt med. Sensors løsning bruker «oid = (SELECT …)». Det feiler hvis to områder har samme navn, og derfor bruker vårt svar IN."
+      merknad: "Sensorveiledningen har ingen egne punkter for 2.7. Den generelle listen for SQL-delen er tatt med. Sensors løsning bruker «oid = (SELECT …)». Det feiler hvis to områder har samme navn, og derfor bruker vårt svar IN. Java-løsningen kaller conn.commit() uten å slå av autocommit. JDBC har autocommit på som standard, og da kaster commit() et unntak. Vårt Java-svar committer derfor bare når autocommit er av."
     }
   };
 

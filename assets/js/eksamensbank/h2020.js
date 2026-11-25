@@ -282,7 +282,7 @@
         ],
         tips: [
           "«Unikt innen samme bestilling» er signalordet for svak entitet. Marker både entiteten og den identifiserende relasjonen, for sensor trekker for hver markering som mangler.",
-          "«Nøyaktig én» betyr både kardinalitet 1 og total deltakelse på den andre siden.",
+          "«Hver linje har nøyaktig ett produkt» gir to markeringer: 1 ved PRODUKT (en linje knyttes til høyst ett produkt) og dobbel strek fra BESTILLINGSLINJE (hver linje må ha et produkt, altså total deltakelse). Det samme gjelder leverandøren.",
           "En sammensatt del av et sammensatt attributt (Gateadresse) tegnes med egne ovaler ut fra delen.",
           "Skriv som kommentar at modellen ikke kan sikre at leverandøren på linjen faktisk selger produktet. Det viser at du har tenkt over det."
         ],
@@ -500,7 +500,8 @@
         tips: [
           "Sensor delte poengene i tre: 4 for byene med opphold og kaféer, 3 for å finne flest museer og 3 for å sette det sammen. Selv en halv løsning gir altså poeng.",
           "ORDER BY … DESC LIMIT 1 godtas, men gir bare én by ved uavgjort. max()-varianten gir alle.",
-          "Filtrer museene i et eget steg (WITH) før LEFT JOIN. En betingelse på museumstypen i WHERE etter en LEFT JOIN gjør den om til en indre join.",
+          "Filtrer museene i et eget steg (WITH) før LEFT JOIN, slik kurset gjør. Tilleggsfelle (står ikke i kursmaterialet): en betingelse på museumstypen i WHERE etter LEFT JOIN fjerner NULL-radene, så byer uten museer forsvinner. Den ytre joinen virker da som en indre join.",
+          "Oppgaven kan også leses slik at «flest museer» gjelder alle byer i Frankrike, ikke bare dem med opphold og minst 3 kaféer. Sensors løsningsforslag har en egen alternativ løsning for den tolkningen.",
           "Eksempeldataene har ingen 'Museum'. Sensor godtok 'Kulturminne' i stedet."
         ],
         del1: null
@@ -518,7 +519,7 @@
         avvik: "På arket er dette 15 avkrysningsbokser der flere kan være riktige. Her er hver boks en JA/NEI-påstand (JA = kryss av). " +
           "Etter sensorveiledningen gir hvert riktig kryss +1,67 og hvert galt kryss −1,67. Boksene du lar stå tomme, gir 0.",
         losning: [
-          "Alle fire attributtene står på en høyreside, så ingen av dem er med i alle nøkler for sikkert. Vi må regne tillukning, fra de minste mengdene og opp.",
+          "Alle fire attributtene står på høyresiden i minst én FD. Snarveien «et attributt som aldri står på en høyreside, er med i alle kandidatnøkler» gir oss derfor ingenting her. Vi må regne tillukning, fra de minste mengdene og opp.",
           "{A}⁺: A -&gt; BC gir B og C, og B -&gt; D gir D. {A}⁺ = {A, B, C, D}, så A er en kandidatnøkkel.",
           "{B}⁺ = {B, D} og {D}⁺ = {B, D}. {C}⁺ = {C}. Ingen av disse er nøkler alene.",
           "{B, C}⁺: BC -&gt; A gir A, og B -&gt; D gir D. Hele R, og verken B eller C alene er nøkkel, så BC er en kandidatnøkkel.",
@@ -596,7 +597,7 @@
           "T2 har nøkkel {id, oppgave} og FD-ene oppgave -&gt; veileder og oppgave -&gt; institutt. oppgave er ikke supernøkkel, så T2 bryter BCNF.",
           "Regn {oppgave}⁺ = {oppgave, veileder, institutt} og del T2 i T21(oppgave, veileder, institutt) og T22(id, oppgave).",
           "T21 har nøkkel oppgave og er på BCNF. T22 har ingen ikke-trivielle FD-er, nøkkelen er {id, oppgave}, og den er på BCNF.",
-          "Hver deling er tapsfri, fordi de felles attributtene (id, så oppgave) er nøkkel i den ene delen."
+          "Hver deling er tapsfri etter Fagins teorem: de felles attributtene (først id, så oppgave) bestemmer resten av den ene delen, altså er de nøkkel i den delen."
         ],
         tips: [
           "Bruk tillukningen av venstresiden til å lage den ene tabellen: X⁺ og resten pluss X. Da er tapsfriheten automatisk.",
@@ -651,7 +652,7 @@
     hvorfor: {
       eli5: "<p>En bestilling er som en handlelapp med nummererte linjer. Linje 1 og linje 2 gir bare mening på akkurat den lappen, og derfor henger linjene fast i bestillingen. På hver linje står ett produkt, én butikk som selger det, og hvor mange du vil ha.</p>",
       normal: "<p>Linjenummeret er bare unikt innen én bestilling, så bestillingslinjen er en svak entitet. Den kan ikke identifiseres uten bestillingsnummeret. «Ingen bestilling uten bruker» og «en eller flere linjer» blir total deltakelse. «Nøyaktig ett produkt og nøyaktig én leverandør» blir N:1-relasjoner med total deltakelse for linjen.</p>",
-      teknisk: "<p>Den svake entiteten har alltid total deltakelse i den identifiserende relasjonen. Her har også eieren total deltakelse, fordi en bestilling har minst én linje. Leveringsadressen er et sammensatt attributt i to nivåer. Epost-adressene til en leverandør er en mengde enkle verdier, altså et flerverdiattributt. SELGER (M:N) og koblingene fra linjen er uavhengige relasjoner, så ER-modellen kan ikke uttrykke at paret produkt–leverandør på linjen må finnes i SELGER. Den slags skranker skriver vi som kommentar. Alternativet, å koble linjen til SELGER gjennom aggregering, er utenfor pensum.</p>"
+      teknisk: "<p>Den svake entiteten har alltid total deltakelse i den identifiserende relasjonen. Her har også eieren total deltakelse, fordi en bestilling har minst én linje. Leveringsadressen er et sammensatt attributt i to nivåer. Epost-adressene til en leverandør er en mengde enkle verdier, altså et flerverdiattributt. SELGER (M:N) og koblingene fra linjen er uavhengige relasjoner, så ER-modellen kan ikke uttrykke at paret produkt–leverandør på linjen må finnes i SELGER. Den slags skranker skriver vi som kommentar. Det finnes en utvidelse av ER der en hel relasjon (her SELGER) kan behandles som en enhet som linjen kobles til. Den kalles også aggregering, men har ingenting med aggregering i SQL (sum, count) å gjøre, og den er utenfor pensum.</p>"
     },
     sensor: {
       kilde: skilde("Modellering", 2),
@@ -833,7 +834,7 @@
     hvorfor: {
       eli5: "<p>Vi lager to lister, en over byer med land og vær og en over severdigheter med adresse og byens vær. Så stifter vi listene sammen til én. Severdigheter uten adresse lar vi ligge.</p>",
       normal: "<p>UNION stabler resultatet av to spørringer med samme antall kolonner. Første del gir byene, andre del POI-ene, som arver været fra byen sin via bid. IS NOT NULL fjerner POI-ene uten adresse, og viewet lagrer det hele under navnet steder.</p>",
-      teknisk: "<p>Kolonnenavnene i en UNION kommer fra første del, så det er der posisjon må navngis. POI-delen trenger ikke tabellen by, fordi poi.bid kan joines rett mot værmelding.bid. Testen adresse != NULL gir NULL (ukjent) for alle rader og ville fjernet alle POI-ene, så vi må bruke IS NOT NULL. UNION ALL beholder duplikater og slipper sorteringen UNION gjør. Her kan en by og en POI i prinsippet ha like rader, og da er det riktig at begge vises. current_date gjør at viewet alltid viser dagens vær.</p>"
+      teknisk: "<p>Kolonnenavnene i en UNION kommer fra første del, så det er der posisjon må navngis. POI-delen trenger ikke tabellen by, fordi poi.bid kan joines rett mot værmelding.bid. Testen adresse != NULL gir NULL (ukjent) for alle rader og ville fjernet alle POI-ene, så vi må bruke IS NOT NULL. UNION ALL beholder duplikater, mens UNION må sammenligne radene for å fjerne dem, så UNION ALL gjør mindre arbeid. Sensor godtar begge. Her kan en by og en POI i prinsippet ha like rader, og da er det riktig at begge vises. current_date gjør at viewet alltid viser dagens vær.</p>"
     },
     sensor: {
       kilde: skilde("SQL", 5),
@@ -863,7 +864,7 @@
     hvorfor: {
       eli5: "<p>Vi siler i flere omganger. Først byene i Frankrike med oppholdsvær i morgen, så de av dem med minst tre kaféer. Deretter teller vi museene i hver by som er igjen, og velger byen med flest.</p>",
       normal: "<p>Oppgaven har flere betingelser oppå hverandre, og WITH lar oss ta dem én om gangen med et navn på hvert steg. Kafékravet er en telling, så det trenger GROUP BY og HAVING. Til slutt sammenligner vi med det største antallet museer for å finne vinneren.</p>",
-      teknisk: "<p>Kaféer og museer må telles i hvert sitt steg. Joiner vi begge inn samtidig, ganges radene og tellingene blir feil. LEFT JOIN mot et forhåndsfiltrert museum-steg med count(m.pid) gir 0 for byer uten museer i stedet for å miste dem. Filteret på type står i WITH-steget, fordi det i WHERE etter en LEFT JOIN ville fjernet NULL-radene. Sammenligningen med max() gir alle byer ved uavgjort, mens ORDER BY … LIMIT 1 velger én tilfeldig. Begge godtas. «Minst 3» blir &gt;= 3.</p>"
+      teknisk: "<p>Kaféer og museer må telles i hvert sitt steg. Joiner vi begge inn samtidig, ganges radene og tellingene blir feil. LEFT JOIN mot et forhåndsfiltrert museum-steg med count(m.pid) gir 0 for byer uten museer i stedet for å miste dem. Filteret på type står i WITH-steget. Som tilleggsfelle (ikke fra kursmaterialet): i WHERE etter en LEFT JOIN ville filteret fjernet NULL-radene, og byer uten museer ville forsvunnet som ved en indre join. Sammenligningen med max() gir alle byer ved uavgjort, mens ORDER BY … LIMIT 1 velger én tilfeldig. Sensors løsningsforslag bruker selv begge variantene (LIMIT 1 i hovedløsningen, max() i alternativet). «Minst 3» blir &gt;= 3.</p>"
     },
     sensor: {
       kilde: skilde("SQL", 6),
@@ -898,7 +899,7 @@
     hvorfor: {
       eli5: "<p>Først sjekker vi hvem som egentlig er «sjefer» i tabellen, altså kandidatnøklene. Det viser seg at A er sjef helt alene. Så går vi gjennom hver regel og spør hvor ille den er. Den verste regelen bestemmer karakteren til hele tabellen.</p>",
       normal: "<p>Normalformalgoritmen spør tre ting for hver FD: er venstresiden en supernøkkel, er høyresiden et nøkkelattributt, og er venstresiden en ekte del av en kandidatnøkkel? Svaret avhenger av hvilke nøkler vi har. Derfor regner vi tillukning først og oppdager at A alene er nøkkel. Med nøklene A og C bryter D -&gt; B og B -&gt; D 3NF, men ikke 2NF.</p>",
-      teknisk: "<p>Et nøkkelattributt er et attributt som er med i minst én kandidatnøkkel. Med de riktige nøklene A og C er B og D ikke-nøkkelattributter, og B og D er ikke delmengder av noen kandidatnøkkel. Da er D -&gt; B og B -&gt; D transitive avhengigheter (brudd på 3NF), men ingen partiell avhengighet. R er derfor på 2NF. Under oppgavens premiss (AB og C) blir B et nøkkelattributt. Da tilfredsstiller D -&gt; B 3NF, mens B -&gt; D blir en partiell avhengighet av nøkkelen AB, og R havner på 1NF. Sensor godtok begge svarene fordi feilen ble opplyst sent.</p>"
+      teknisk: "<p>Et nøkkelattributt er et attributt som er med i minst én kandidatnøkkel. Med de riktige nøklene A og C er B og D ikke-nøkkelattributter, og B og D er ikke delmengder av noen kandidatnøkkel. Da bryter D -&gt; B og B -&gt; D 3NF, fordi venstresiden ikke er en supernøkkel og høyresiden ikke er et nøkkelattributt. 2NF holder likevel, fordi venstresiden ikke er en ekte delmengde av noen kandidatnøkkel (ingen partiell avhengighet). R er derfor på 2NF. Under oppgavens premiss (AB og C) blir B et nøkkelattributt. Da tilfredsstiller D -&gt; B 3NF, mens B -&gt; D blir en partiell avhengighet av nøkkelen AB, og R havner på 1NF. Sensor godtok begge svarene fordi feilen ble opplyst sent.</p>"
     },
     sensor: {
       kilde: skilde("Relasjonsmodellen og normalformer", 2),
@@ -940,14 +941,14 @@
         "T21(oppgave, veileder, institutt)\n  KN: {oppgave}\n  FD: oppgave -> veileder, oppgave -> institutt\n  BCNF: ja\n\n" +
         "T22(id, oppgave)\n  KN: {id, oppgave}\n  FD: ingen ikke-trivielle\n  BCNF: ja\n\n" +
         "Resultat: T1(id, navn), T21(oppgave, veileder, institutt), T22(id, oppgave)",
-      etter: "<p>Dekomposisjonen er tapsfri fordi hver deling skjer langs en FD X -&gt; Y der X er felles for de to delene og X er nøkkel i den ene delen " +
+      etter: "<p>Dekomposisjonen er tapsfri etter Fagins teorem: hver deling skjer langs en FD X -&gt; Y der X er felles for de to delene og X er nøkkel i den ene delen " +
         "(id i T1, oppgave i T21). En naturlig join av delene gir derfor nøyaktig den opprinnelige relasjonen tilbake.</p>",
       poeng: ["første dekomponering med nøkler og FD-er (6p)", "andre dekomponering med nøkler og FD-er (4p)", "forklaring underveis"]
     }],
     hvorfor: {
       eli5: "<p>Tabellen blander opplysninger om studenten (navnet) med opplysninger om oppgaven (veileder og institutt). Vi flytter studentnavnene til én tabell og oppgaveopplysningene til en annen. Igjen står en liten tabell som bare sier hvilken student som har hvilken oppgave.</p>",
       normal: "<p>BCNF krever at alle venstresider er supernøkler. id -&gt; navn og oppgave -&gt; veileder, institutt har venstresider som bare er en del av nøkkelen. Vi trekker hver av dem ut i en egen tabell med venstresiden som nøkkel. Fordi delingen skjer langs FD-ene, kan vi joine tabellene sammen igjen uten å miste eller finne på rader.</p>",
-      teknisk: "<p>Algoritmen: finn en FD X -&gt; Y som bryter BCNF, regn X⁺, og del R i R1 = X⁺ og R2 = X ∪ (R − X⁺). De felles attributtene er X, og X er supernøkkel i R1, så delingen er tapsfri. Etter hver deling må vi finne hvilke FD-er som gjelder i hver del (bare de med alle attributtene i delen) og nye kandidatnøkler. T22 har ingen ikke-trivielle FD-er, og en relasjon uten slike er alltid på BCNF. Rekkefølgen spiller ingen rolle her. Starter vi med oppgave -&gt; veileder, institutt, ender vi med de samme tre tabellene.</p>"
+      teknisk: "<p>Algoritmen: finn en FD X -&gt; Y som bryter BCNF, regn X⁺, og del R i R1 = X⁺ og R2 = X ∪ (R − X⁺). De felles attributtene er X, og X er supernøkkel i R1, så delingen er tapsfri etter Fagins teorem. Etter hver deling må vi finne hvilke FD-er som gjelder i hver del (bare de med alle attributtene i delen) og nye kandidatnøkler. T22 har ingen ikke-trivielle FD-er, og en relasjon uten slike er alltid på BCNF. Rekkefølgen spiller ingen rolle her. Starter vi med oppgave -&gt; veileder, institutt, ender vi med de samme tre tabellene.</p>"
     },
     sensor: {
       kilde: skilde("Relasjonsmodellen og normalformer", 3),

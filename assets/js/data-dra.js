@@ -156,13 +156,15 @@
         explain: "<p>Helt til slutt kuttes svaret. Det gir bare mening etter sorteringen, ellers vet du ikke hvilke rader du får.</p>" },
       { id: "where", html: m("WHERE") + ' <span class="muted">filtrer rader</span>',
         explain: "<p>Én rad om gangen, og bare rader der betingelsen er TRUE beholdes. Gruppene finnes ikke ennå, så aggregater kan ikke stå her.</p>" },
+      { id: "distinct", html: m("DISTINCT") + ' <span class="muted">fjern like rader</span>',
+        explain: "<p>Rett etter SELECT: først må radene i svaret finnes, så fjernes duplikatene. Derfor kan " + m("SELECT DISTINCT") + " bare sortere på kolonner som står i SELECT.</p>" },
       { id: "order", html: m("ORDER BY"),
         explain: "<p>Etter SELECT, så SELECT-navnene finnes og kan brukes her.</p>" },
       { id: "group", html: m("GROUP BY"),
         explain: "<p>Radene som overlevde WHERE, deles i grupper med lik verdi i gruppekolonnene. Så regnes aggregatene per gruppe.</p>" }
     ],
-    answer: ["from", "where", "group", "having", "select", "order", "limit"],
-    oppsummering: "<p>Logisk: " + m("FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT") + ". Skriverekkefølgen er en annen: " + m("WITH, SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET") + ". Lysarkene gir skriverekkefølgen og navnereglene. Den logiske lista er vår oppsummering av dem.</p>",
+    answer: ["from", "where", "group", "having", "select", "distinct", "order", "limit"],
+    oppsummering: "<p>Logisk: " + m("FROM → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT") + ". Skriverekkefølgen er en annen: " + m("WITH, SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET") + ". Lysarkene gir skriverekkefølgen og navnereglene. Den logiske lista er vår oppsummering av dem.</p>",
     kilde: [K("F09-02 lysark 12–13 (rekkefølge og navneregler)")]
   };
 
@@ -237,7 +239,7 @@
       { id: "a-levert", html: "Lånere der alle lånene er levert", explain: "<p>«Alle». Skriv det som «det finnes ikke et lån som ikke er levert»: " + m("NOT EXISTS (… AND u.levert IS NULL)") + ". Et filter på " + m("levert IS NOT NULL") + " gir lånere med <i>minst ett</i> levert lån.</p>" },
       { id: "a-ulevert", html: "Lånere med minst ett lån som ikke er levert", explain: "<p>«Minst ett» er finnes: en join med " + m("WHERE u.levert IS NULL") + " og DISTINCT, eller EXISTS.</p>" },
       { id: "a-tort", html: "Byer med minst én dag uten nedbør", explain: "<p>Finnes. Det holder at én rad har " + m("nedbør = 0") + ".</p>" },
-      { id: "a-ingen", html: "Forfattere der ingen av bøkene har over 500 sider", explain: "<p>«Ingen» betyr «for alle bøkene: ikke over 500». Bruk " + m("NOT EXISTS") + " med betingelsen " + m("sider > 500") + " inni, eller " + m("NOT IN") + ".</p>" },
+      { id: "a-ingen", html: "Forfattere der ingen av bøkene har over 500 sider", explain: "<p>«Ingen» betyr «for alle bøkene: ikke over 500». Bruk " + m("NOT EXISTS") + " med betingelsen " + m("sider > 500") + " inni, eller " + m("NOT IN") + ". Med NOT IN må delspørringen ikke kunne gi NULL: én NULL i lista gjør at ingen rader kommer med.</p>" },
       { id: "a-ibsen1", html: "Lånere som har lånt en bok av Ibsen", explain: "<p>Én bok holder. Finnes: join mot utlån, bok og forfatter.</p>" },
       { id: "a-regn", html: "Byer der det aldri har regnet", explain: "<p>«Aldri» = «for alle dager: ingen nedbør». Å filtrere på " + m("nedbør = 0") + " gir byer med minst én tørr dag, som er nettopp feilen sensor trakk for.</p>" },
       { id: "a-ibsen", html: "Lånere som har lånt alle bøkene til Ibsen", explain: "<p>Dobbel negasjon i to nivåer: det finnes ingen Ibsen-bok som låneren ikke har lånt. Eller tell: " + m("count(DISTINCT b.bid)") + " lik antall Ibsen-bøker.</p>" },
@@ -326,26 +328,27 @@
   /* ================================================================
      Blokk 7 · Normalisering
      ================================================================ */
-  var NF_ATTR = ["A", "B", "C", "D", "E", "F"];
-  var NF_FDS = ["AB → C", "C → D", "D → B", "A → E", "E → F"];
+  // Egen relasjon, ikke den samme som det løste eksempelet på 07 (Bokstaver).
+  var NF_ATTR = ["P", "Q", "S", "T", "U", "V", "W"];
+  var NF_FDS = ["PQV → W", "PQ → S", "S → P", "Q → T", "T → U"];
   var NF_IDS = ["f1", "f2", "f3", "f4", "f5"];
   var NF_FD = {
     id: "nf-per-fd", mode: "bucket", tittel: "Høyeste normalform per FD",
-    intro: "<p>Kursets algoritme stiller tre spørsmål til hver FD " + m("X → A") + ": Er X en supernøkkel? Er A et nøkkelattributt? Er X en ekte del av en kandidatnøkkel? Svarene gir BCNF, 3NF, 2NF eller 1NF. Samme format som avkrysningsoppgavene i H2019 og H2024.</p>",
-    prompt: "<p>" + m("R(A, B, C, D, E, F)") + " med FD-ene under. Hvilken høyeste normalform tillater hver FD?</p>" +
-      '<details class="grense"><summary>Hint: kandidatnøklene</summary><p>A står aldri til høyre, og F bare til høyre. ' + m("A⁺ = {A, E, F}") + ", mens AB, AC og AD gir alt. KN = " + m("{A, B}") + ", " + m("{A, C}") + ", " + m("{A, D}") + ". Nøkkelattributter: A, B, C, D.</p></details>",
+    intro: "<p>Kursets algoritme stiller tre spørsmål til hver FD " + m("X → Y") + ": Er X en supernøkkel? Er Y et nøkkelattributt? Er X en ekte del av en kandidatnøkkel? Svarene gir BCNF, 3NF, 2NF eller 1NF. Samme format som avkrysningsoppgavene i H2019 og H2024.</p>",
+    prompt: "<p>" + m("R(P, Q, S, T, U, V, W)") + " med FD-ene under. Hvilken høyeste normalform tillater hver FD?</p>" +
+      '<details class="grense"><summary>Hint: kandidatnøklene</summary><p>Q og V står aldri til høyre, så de er med i hver KN. ' + m("QV⁺ = {Q, T, U, V}") + ", så vi trenger P eller S i tillegg. KN = " + m("{P, Q, V}") + " og " + m("{Q, S, V}") + ". Nøkkelattributter: P, Q, S, V.</p></details>",
     zones: [
       { id: "BCNF", label: "BCNF", hint: "X er SN" },
-      { id: "3NF", label: "3NF", hint: "ikke SN, A nøkkelattributt" },
+      { id: "3NF", label: "3NF", hint: "ikke SN, høyresiden er nøkkelattributt" },
       { id: "2NF", label: "2NF", hint: "ikke 3NF, X ikke del av KN" },
       { id: "1NF", label: "1NF", hint: "X ekte del av en KN" }
     ],
     items: [
-      { id: "f4", html: m("A → E"), explain: "<p>" + m("A⁺ = {A, E, F}") + ", ikke SN. E er ikke-nøkkel. A er en ekte del av KN-en " + m("{A, B}") + ", så 2NF er brutt: 1NF.</p>" },
-      { id: "f1", html: m("AB → C"), explain: "<p>AB er en KN, altså en SN. BCNF.</p>" },
-      { id: "f5", html: m("E → F"), explain: "<p>" + m("E⁺ = {E, F}") + ", ikke SN. F er ikke-nøkkel. E er ikke med i noen KN, så 2NF holder: 2NF.</p>" },
-      { id: "f3", html: m("D → B"), explain: "<p>" + m("D⁺ = {B, D}") + ", ikke SN. Men B er et nøkkelattributt (med i " + m("{A, B}") + "): 3NF.</p>" },
-      { id: "f2", html: m("C → D"), explain: "<p>" + m("C⁺ = {B, C, D}") + ", ikke SN. D er et nøkkelattributt (med i " + m("{A, D}") + "), så 3NF-unntaket slår inn: 3NF.</p>" }
+      { id: "f4", html: m("Q → T"), explain: "<p>" + m("Q⁺ = {Q, T, U}") + ", ikke SN. T er ikke-nøkkel. Q er en ekte del av KN-en " + m("{P, Q, V}") + ", så 2NF er brutt: 1NF.</p>" },
+      { id: "f1", html: m("PQV → W"), explain: "<p>PQV er en KN, altså en SN. BCNF.</p>" },
+      { id: "f5", html: m("T → U"), explain: "<p>" + m("T⁺ = {T, U}") + ", ikke SN. U er ikke-nøkkel. T er ikke med i noen KN, så 2NF holder: 2NF.</p>" },
+      { id: "f3", html: m("S → P"), explain: "<p>" + m("S⁺ = {P, S}") + ", ikke SN. Men P er et nøkkelattributt (med i " + m("{P, Q, V}") + "): 3NF.</p>" },
+      { id: "f2", html: m("PQ → S"), explain: "<p>" + m("PQ⁺ = {P, Q, S, T, U}") + ", ikke SN, for V mangler. S er et nøkkelattributt (med i " + m("{Q, S, V}") + "), så 3NF-unntaket slår inn: 3NF.</p>" }
     ],
     answer: medMotor(
       { f1: "BCNF", f2: "3NF", f3: "3NF", f4: "1NF", f5: "2NF" },
@@ -355,7 +358,7 @@
         r.rows.forEach(function (row) { out[NF_IDS[row.fd.src]] = row.nf; });
         return out;
       }),
-    oppsummering: "<p>Relasjonen er på den laveste normalformen blant FD-ene: <b>1NF</b>, på grunn av " + m("A → E") + ". Husk å splitte høyresidene og finne alle KN-ene før du starter.</p>",
+    oppsummering: "<p>Relasjonen er på den laveste normalformen blant FD-ene: <b>1NF</b>, på grunn av " + m("Q → T") + ". Husk å splitte høyresidene og finne alle KN-ene før du starter.</p>",
     kilde: [K("F08-01 lysark 2–5 (normalform per FD)"), K("Eksamen H2019 oppgave 3.2 og H2024 oppgave 3.2 (samme oppgavetype)")]
   };
 

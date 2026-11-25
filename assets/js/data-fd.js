@@ -479,7 +479,8 @@
     h2024_31: mkRel("R", "ABCDEF", ["AC → CE", "B → F", "D → B", "DE → A"]),
     h2025: mkRel("R", "ABCD", ["A → B", "B → C"]),
     trening: mkRel("Trening", ["utøver", "øvelse", "trener"], ["utøver, øvelse → trener", "trener → øvelse"]),
-    nfEks3: mkRel("R", "ABCDE", ["AB → E", "B → D", "BC → D", "D → E"]),
+    // KN = {A, B} (A og B står aldri til høyre, AB⁺ = ABCDE). Før: AB → E, som ga eneste KN = {A, B, C}.
+    nfEks3: mkRel("R", "ABCDE", ["AB → C", "B → D", "BC → D", "D → E"]),
     h2024_32: mkRel("R", "ABCDEF", ["DE → F", "ACE → B", "B → A", "B → D"]),
     h2019_32: mkRel("R", "ABCDEF", ["A → C", "B → D", "AB → F", "AD → E"]),
     h2020_R2: mkRel("R", "ABCD", ["D → B", "C → AD", "B → D", "A → C"]),
@@ -734,7 +735,7 @@
           eli5: "Klipp ut alt regelen styrer, og la limet (Y) ligge igjen i begge bitene.",
           normal: "S₁ får hele tillukningen. S₂ får Y pluss alt som ikke er i Y⁺. Karlsen skriver S₂(Y, X/Y⁺).",
           teknisk: "Snittet er Y, og Y → Y⁺ = S₁. Etter Fagins teorem er steget tapsfritt.",
-          grense: { q: "Hvorfor S₁(Y⁺) og ikke bare S₁(Y, A)?", a: "Algoritmen tar med hele tillukningen. Det gir færrest tabeller. Med bare (Y, A) trengs flere steg." } },
+          grense: { q: "Hvorfor S₁(Y⁺) og ikke bare S₁(Y, A)?", a: "Algoritmen tar med hele tillukningen. Med bare (Y, A) trengs ofte flere steg." } },
         { code: "F₁, F₂ ← FD-ene i F som ligger helt inne i S₁ og S₂", indent: 1,
           normal: "En FD blir med bare hvis alle attributtene dens er med i delrelasjonen. Finn så KN på nytt.",
           teknisk: "Kursets forenkling. I eksemplene her gir den samme svar som en full projeksjon (kontrollert)." },

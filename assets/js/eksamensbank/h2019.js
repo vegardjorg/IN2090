@@ -247,6 +247,7 @@
           "INTERVJU har total deltakelse i DELTAR_PÅ, og det står 1 ved KANDIDAT (hvert intervju har én kandidat).",
           "EMNE får Navn som nøkkel og Test som flerverdiattributt. INTERVJUER får Ansatt_id som nøkkel og Telefonnr som flerverdiattributt.",
           "Punkt 3 beskriver en ternær relasjon der alle tre sidene er «mange»: HOLDT_AV_OM med N, M og K.",
+          "Sensor godtok også en alternativ modell uten ternær relasjon: en svak entitet DELINTERVJU (én rad per kombinasjon) med tre identifiserende relasjoner til INTERVJU, INTERVJUER og EMNE, med 1 på hver eierside.",
           "Sertifisering er M:N mellom INTERVJUER og EMNE med attributtene Dato og Utsteder. Hver intervjuer er sertifisert på minst ett emne, så INTERVJUER har total deltakelse.",
           "Ansvar er 1:1: hvert emne har nøyaktig én ansvarlig (total deltakelse for EMNE og 1 ved INTERVJUER), og en intervjuer er ansvarlig for høyst ett emne (1 ved EMNE, partiell for INTERVJUER)."
         ],
@@ -300,7 +301,8 @@
           "eller ulovlige i henhold til databaseskjemaet over (altså kommandoen feiler og gir error).</p>",
         avvik: null,
         losning: [
-          "Vurder hver kommando for seg mot startdataene (kommandoene kjøres ikke etter hverandre).",
+          "Antakelse: hver kommando vurderes for seg mot startdataene. Oppgaveteksten sier ikke om kommandoene kjøres etter hverandre, men sensors fasit vurderer dem hver for seg (den lister dem til og med i en annen rekkefølge enn arket).",
+          "Kjøres de i arkets rekkefølge, endres bare ett svar: etter UPDATE dyr SET mor_til = 3 WHERE did = 0 peker Doglas på Princess (did 3), så DELETE FROM dyr WHERE did = 3 feiler da på fremmednøkkelen.",
           "Sjekk skrankene én etter én: PRIMARY KEY (ny did/aid?), NOT NULL, CHECK på type, UNIQUE på mor_til, og fremmednøklene mor_til → dyr(did) og aid → art(aid).",
           "Brukte mor_til-verdier er 0 (Plutina) og 1 (Caterine). Det avgjør UNIQUE-spørsmålene.",
           "Ved DELETE: blir raden referert fra en annen rad? Uten ON DELETE CASCADE gir det error.",
@@ -325,7 +327,7 @@
             { q: "<p><code>UPDATE dyr SET mor_til = 4 WHERE mor_til IS NULL;</code></p>", options: ["Ulovlig", "Lovlig"], answer: 0,
               explain: "<p>Ulovlig. Tre rader (did 0, 1 og 3) har mor_til NULL og ville alle fått verdien 4. Det bryter UNIQUE på mor_til.</p>" },
             { q: "<p><code>DELETE FROM dyr WHERE did = 3;</code></p>", options: ["Ulovlig", "Lovlig"], answer: 1,
-              explain: "<p>Lovlig. Ingen rad har mor_til = 3, så ingen fremmednøkkel peker på Princess.</p>" },
+              explain: "<p>Lovlig mot startdataene, som sensor bruker: ingen rad har mor_til = 3, så ingen fremmednøkkel peker på Princess. Merk: Kjører du kommandoene etter hverandre, har UPDATE-en over satt mor_til = 3 for Doglas, og da blir denne slettingen ulovlig.</p>" },
             { q: "<p><code>INSERT INTO art VALUES (4, 'Flue', 'Innsekt');</code></p>", options: ["Ulovlig", "Lovlig"], answer: 0,
               explain: "<p>Ulovlig. 'Innsekt' er ikke en av de tre verdiene CHECK-skranken tillater.</p>" },
             { q: "<p><code>INSERT INTO dyr VALUES (7, 'Mona', 1, 0);</code></p>", options: ["Ulovlig", "Lovlig"], answer: 0,
@@ -345,7 +347,7 @@
         losning: [
           "Bare tabellen band trengs.",
           "To betingelser der én av dem holder: koble dem med OR.",
-          "«Etter år 2000» tolker vi som startet fra og med 2001-01-01. Sensor godtok også >= '2000-01-01'.",
+          "Sensors løsning bruker startet >= '2000-01-01'. Sensor godtok også den strengere tolkningen startet >= '2001-01-01' (fra og med 2001), som vi bruker. Skriv tolkningen din.",
           "Delstrengen 'King' hvor som helst i navnet: LIKE '%King%'."
         ],
         tips: [
@@ -413,7 +415,7 @@
         tips: [
           "count(*) teller også NULL-radene fra LEFT JOIN, slik at band uten sanger får 1. Det gir −1.",
           "INNER JOIN mister bandene med 0 sanger (−2).",
-          "Begge LEFT JOIN-ene må være ytre. Er den andre en INNER JOIN, forsvinner band med tomme album igjen."
+          "Begge joinene må være LEFT JOIN. Er den andre (album–sang) en INNER JOIN, forsvinner band uten album og band med tomme album igjen."
         ],
         del1: null
       },
@@ -430,9 +432,9 @@
           "På eksempeldataene har alle album sanger, så ingen rader slettes."
         ],
         tips: [
-          "DROP i stedet for DELETE gir −1. Joins i FROM gir −2, og inner join med en NOT NULL-sjekk gir −4.",
+          "DROP i stedet for DELETE gir −1. Å finne de tomme albumene med en (ytre) join mot sang i stedet for en delspørring i WHERE gir −2, selv om svaret ellers er riktig. En indre join mot sang med en NOT NULL-sjekk gir −4, fordi den aldri finner album uten sanger.",
           "NOT EXISTS er tryggest. NOT IN gir tomt resultat hvis delspørringen inneholder NULL (her kan sang.albumID i prinsippet være NULL).",
-          "Sensor ga full uttelling for å tilpasse forrige oppgave riktig, også om den var feil (ingen følgefeil)."
+          "Sensor ga full uttelling (5 poeng) for å bygge riktig videre på spørringen fra forrige oppgave, også om den spørringen var feil. Det gis altså ikke følgefeil."
         ],
         del1: null
       },
@@ -635,7 +637,7 @@
           "<li>3 for ER_ANSVARLIG_FOR med kardinaliteter</li>" +
           "<li>3 for ER_SERTIFISERT_PÅ med kardinaliteter</li></ul>"
       }],
-      merknad: "Løsningsforslaget er en figur og er ikke gjengitt. Det viser også en alternativ modellering som sensor godtar. Alternativet modellerer hver kombinasjon som en svak entitet DELINTERVJU eid av INTERVJU, med binære relasjoner til INTERVJUER og EMNE."
+      merknad: "Løsningsforslaget er en figur og er ikke gjengitt. Det viser også en alternativ modellering som sensor godtar. Alternativet modellerer hver kombinasjon som en svak entitet DELINTERVJU med tre identifiserende relasjoner (FOR, AV og OM, alle dobbel rombe) til INTERVJU, INTERVJUER og EMNE, med 1 på eiersidene."
     }
   };
 
@@ -665,7 +667,7 @@
     hvorfor: {
       eli5: "<p>Vi gjør tegningen om til tabeller etter en fast oppskrift. Hver boks blir en tabell. Et kapittel får bokas nummer på seg, siden «kapittel 3» bare gir mening sammen med boka. Forbindelser der hver bok har høyst én av noe, blir en ekstra kolonne i boktabellen, mens «mange til mange» trenger sin egen tabell.</p>",
       normal: "<p>Algoritmen går i en fast rekkefølge. Vanlige entiteter blir relasjoner med nøklene sine, og den svake entiteten Chapter arver bokas nøkkel. 1:1 og 1:N løses med en fremmednøkkel på riktig side for å unngå ekstra tabeller, mens M:N og flerverdiattributter alltid blir egne relasjoner. Valgene for 1:1 og 1:N må forklares, og målet er færrest mulig tabeller og NULL-verdier.</p>",
-      teknisk: "<p>For 1:1 uten total deltakelse på noen side kan vi ikke slå sammen, for da må én av entitetene finnes for at den andre kan lagres. Vi velger siden der fremmednøkkelen oftest har en verdi (Book), så NULL-verdiene blir færrest. Fremmednøkkelen blir bare kandidatnøkkel når den siden har total deltakelse. Ved 1:N gir FN på N-siden én verdi per rad, og relasjonsattributtet følger med. Den svake entiteten får PN = eierens PN + delvis nøkkel, og eierens PN blir samtidig FN, så CONTAINS er allerede uttrykt. I M:N-tabellene er relasjonsattributter som Amount aldri del av nøkkelen, fordi én kontrakt per par forfatter–forlag er det modellen sier.</p>"
+      teknisk: "<p>HAS_MAIN_CONTACT er 1:1 uten total deltakelse på noen side, så Book og Author kan ikke slås sammen til én tabell. En forfatter som ikke er kontakt for noen bok, måtte da lagres med NULL i alle bokkolonnene, og en bok uten kontaktperson med NULL i alle forfatterkolonnene. Vi velger siden der fremmednøkkelen oftest har en verdi (Book), så NULL-verdiene blir færrest. Fremmednøkkelen blir bare kandidatnøkkel når den siden har total deltakelse. Ved 1:N gir FN på N-siden én verdi per rad, og relasjonsattributtet følger med. Den svake entiteten får PN = eierens PN + delvis nøkkel, og eierens PN blir samtidig FN, så CONTAINS er allerede uttrykt. I M:N-tabellene er relasjonsattributter som Amount aldri del av nøkkelen, fordi én kontrakt per par forfatter–forlag er det modellen sier.</p>"
     },
     sensor: {
       deler: [{
@@ -701,7 +703,7 @@
     hvorfor: {
       eli5: "<p>Vi blar gjennom bandlisten og tar med alle band som enten er nye nok eller har «King» et sted i navnet. Det holder at ett av kravene stemmer.</p>",
       normal: "<p>«Enten … eller» betyr at en rad skal med når minst én av betingelsene er sann, og det er nettopp OR. LIKE '%King%' finner strengen hvor som helst i navnet fordi % står for en vilkårlig tekst, også tom.</p>",
-      teknisk: "<p>WHERE beholder rader der betingelsen er sann. Med OR holder det at ett ledd er sant. Datoer i formatet 'ÅÅÅÅ-MM-DD' kan sammenlignes direkte med en dato-kolonne. Grensen 2001-01-01 tar med alt fra og med 2001, som er den strenge tolkningen av «etter år 2000». LIKE skiller mellom store og små bokstaver, så mønsteret må ha stor K slik oppgaven skriver det.</p>"
+      teknisk: "<p>WHERE beholder rader der betingelsen er sann. Med OR holder det at ett ledd er sant. Datoer i formatet 'ÅÅÅÅ-MM-DD' kan sammenlignes direkte med en dato-kolonne. Grensen 2001-01-01 tar med alt fra og med 2001, som er den strenge tolkningen av «etter år 2000». Sensors egen løsning bruker '2000-01-01', og sensorveiledningen sier at 2001-grensen også er greit. LIKE skiller mellom store og små bokstaver, så mønsteret må ha stor K slik oppgaven skriver det.</p>"
     },
     sensor: {
       deler: [{
@@ -777,7 +779,7 @@
     hvorfor: {
       eli5: "<p>Vi skriver opp alle band, også de som ikke har laget noe ennå. Ved siden av hvert band teller vi sangene. Et band uten sanger får en tom plass, og tomme plasser teller som null. Til slutt beholder vi bandene med under tre sanger.</p>",
       normal: "<p>LEFT JOIN beholder alle band selv når de mangler album eller sanger, og fyller da inn NULL. count(s.sangID) teller bare verdier som ikke er NULL, så slike band får 0. HAVING filtrerer på antallet etter grupperingen.</p>",
-      teknisk: "<p>Etter de to ytre joinene har et band uten album én rad der alle album- og sangkolonnene er NULL. count(*) ville telt den raden som 1, mens count(s.sangID) gir 0. Betingelsen «færre enn 3» gjelder et aggregat og må derfor stå i HAVING: WHERE filtrerer rader før grupperingen og kan ikke se tellingen. Andre LEFT JOIN må også være ytre. Ellers fjerner den radene med NULL i albumID, og band med tomme album forsvinner igjen.</p>"
+      teknisk: "<p>Etter de to ytre joinene har et band uten album én rad der alle album- og sangkolonnene er NULL. count(*) ville telt den raden som 1, mens count(s.sangID) gir 0. Betingelsen «færre enn 3» gjelder et aggregat og må derfor stå i HAVING: WHERE filtrerer rader før grupperingen og kan ikke se tellingen. Den andre joinen (mot sang) må også være LEFT JOIN. En INNER JOIN der ville fjerne radene uten treff i sang, og da forsvinner band uten album og band med tomme album igjen.</p>"
     },
     sensor: {
       deler: [{

@@ -2,14 +2,15 @@
 <html lang="nb">
 <head>
   <meta charset="utf-8">
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blokk 7 · Normalisering · IN2090</title>
   <meta name="description" content="Normalisering i IN2090: anomalier, normalformene 1NF–BCNF, kursets tre spørsmål per FD, hele relasjonens normalform, BCNF-dekomposisjon med S₁(Y⁺) og S₂(Y ∪ (X − Y⁺)), tapsfrihet og Fagins teorem, og svarmalen sensor vil se – med stegspillere, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261125j">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261125j">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261125j">
-  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261125j">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125l">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125l">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261125l">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261125l">
 </head>
 <body data-page="normalisering">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -109,7 +110,7 @@
     <section data-panel="nf-per-fd">
       <h3>Normalform per FD</h3>
       <div class="callout begrep"><span class="lbl">Begrep</span>
-        <b>Forberedelse:</b> splitt høyresidene (<span class="mono">X → A, B</span> blir <span class="mono">X → A</span> og <span class="mono">X → B</span>), fjern overflødige FD-er, og finn <b>alle</b> kandidatnøkler (<a href="06-fd.html#fane=finn-kn">blokk 6</a>) og dermed alle nøkkelattributter.
+        <b>Forberedelse:</b> splitt høyresidene (<span class="mono">X → A, B</span> blir <span class="mono">X → A</span> og <span class="mono">X → B</span>), og finn <b>alle</b> kandidatnøkler (<a href="06-fd.html#fane=finn-kn">blokk 6</a>) og dermed alle nøkkelattributter.
         <p><b>For hver FD <span class="mono">X → A</span>:</b></p>
         <ol>
           <li>Er X en supernøkkel (<span class="mono">X⁺ = R</span>)? <b>Ja:</b> BCNF. <b>Nei:</b> BCNF er brutt, gå til 2.</li>
@@ -271,13 +272,13 @@
         <details class="grense"><summary>Hvorfor kan ikke én instans bevise tapsfrihet?</summary>
           <p>Som med FD-er: én instans uten falske rader viser bare at akkurat de dataene gikk bra.</p></details>
         <ul>
-          <li><b>Kort begrunnelse som gir poeng:</b> «Fellesattributtet Y er en nøkkel i S₁ (<span class="mono">Y → Y⁺</span>), så etter Fagins teorem er dekomposisjonen tapsfri.» Det var svaret som ga 2 p i H2025 3.3c.</li>
+          <li><b>Kort begrunnelse som gir poeng:</b> «Fellesattributtet Y er en supernøkkel i S₁ (<span class="mono">Y → Y⁺</span>), så etter Fagins teorem er dekomposisjonen tapsfri.» Det var svaret som ga 2 p i H2025 3.3c.</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
           <li>H2025 3.3c (2 p): «Er denne dekomposisjonen tapsfri? Begrunn kort.»</li>
-          <li>Alle dekomposisjonsoppgavene sier «dekomponer tapsfritt». Algoritmen gir tapsfrihet, men det gir pluss å nevne Fagin i forklaringen.</li>
+          <li>Alle dekomposisjonsoppgavene sier «dekomponer tapsfritt». Algoritmen gir tapsfrihet. Nevn Fagins teorem i forklaringen, så viser du hvorfor.</li>
         </ul></div>
 
       <h4>Test deg selv</h4>
@@ -360,23 +361,23 @@ R er på den laveste av disse: …NF.</pre></div>
 
   <footer class="footer">IN2090-guide · Blokk 7 · Normalisering · <a href="06-fd.html">Forrige: blokk 6, funksjonelle avhengigheter</a></footer>
 
-  <script src="assets/js/core.js?v=20261125j"></script>
-  <script src="assets/js/symboler.js?v=20261125j"></script>
-  <script src="assets/js/sql-lang.js?v=20261125j"></script>
-  <script src="assets/js/pseudocode.js?v=20261125j"></script>
-  <script src="assets/js/stepplayer.js?v=20261125j"></script>
-  <script src="assets/js/varline.js?v=20261125j"></script>
-  <script src="assets/js/viz-relation.js?v=20261125j"></script>
-  <script src="assets/js/viz-er.js?v=20261125j"></script>
-  <script src="assets/js/data-fd.js?v=20261125j"></script>
-<script src="assets/js/dra.js?v=20261125j"></script>
-<script src="assets/js/data-dra.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261125j"></script>
-  <script src="assets/js/bank.js?v=20261125j"></script>
+  <script src="assets/js/core.js?v=20261125l"></script>
+  <script src="assets/js/symboler.js?v=20261125l"></script>
+  <script src="assets/js/sql-lang.js?v=20261125l"></script>
+  <script src="assets/js/pseudocode.js?v=20261125l"></script>
+  <script src="assets/js/stepplayer.js?v=20261125l"></script>
+  <script src="assets/js/varline.js?v=20261125l"></script>
+  <script src="assets/js/viz-relation.js?v=20261125l"></script>
+  <script src="assets/js/viz-er.js?v=20261125l"></script>
+  <script src="assets/js/data-fd.js?v=20261125l"></script>
+<script src="assets/js/dra.js?v=20261125l"></script>
+<script src="assets/js/data-dra.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125l"></script>
+  <script src="assets/js/bank.js?v=20261125l"></script>
   <script>
   (function () {
     "use strict";
@@ -393,7 +394,7 @@ R er på den laveste av disse: …NF.</pre></div>
       "ex-nf-per-fd": {
         eli5: "<p>Tre ja/nei-spørsmål til hver regel, som en sjekkliste hos legen. Første «nei» sier hvor sunn regelen <i>ikke</i> er, og neste spørsmål avgjør hvor ille det er.</p>",
         normal: "<p>Spørsmålene kommer i fast rekkefølge, fra strengeste til svakeste krav. Hver FD får nivået der den stoppet: BCNF (ja på 1), 3NF (nei på 1, ja på 2), 2NF (nei på 1, 2 og 3) eller 1NF (nei på 1 og 2, ja på 3). Du må ha alle KN-ene først, ellers kan du ikke svare på spørsmål 2 og 3.</p>",
-        teknisk: "<p>Spørsmål 1 er SN-testen med tillukning. Spørsmål 2 bruker unionen av alle KN-er. Spørsmål 3 spør om <span class=\"mono\">X ⊂ K</span> for en KN K. X kan ikke være lik K, for da hadde X vært en SN.</p><p>Er X en blanding av nøkkelattributter og ikke-nøkkelattributter, er den ikke en delmengde av noen KN, og 2NF holder. FD-ene må være splittet og uten overflødige deler, ellers kan algoritmen gi feil nivå. Er KN oppgitt (H2024-formatet), er X en SN nøyaktig når X inneholder en av dem.</p>"
+        teknisk: "<p>Spørsmål 1 er SN-testen med tillukning. Spørsmål 2 bruker unionen av alle KN-er. Spørsmål 3 spør om <span class=\"mono\">X ⊂ K</span> for en KN K. X kan ikke være lik K, for da hadde X vært en SN.</p><p>Er X en blanding av nøkkelattributter og ikke-nøkkelattributter, er den ikke en delmengde av noen KN, og 2NF holder. Bruk FD-ene slik de er oppgitt, med høyresiden splittet. Er KN oppgitt (H2024-formatet), er X en SN nøyaktig når X inneholder en av dem.</p>"
       },
       "ex-nf-relasjon": {
         eli5: "<p>En kjetting er ikke sterkere enn det svakeste leddet. Én dårlig regel drar hele tabellen ned.</p>",

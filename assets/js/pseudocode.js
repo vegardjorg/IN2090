@@ -213,12 +213,12 @@
     // Hover-forklaring (på som standard; av i linjeforklareren som alt har sidepanel).
     if (opts.tooltips !== false) attachTooltips(box, lines);
 
-    return {
+    var handleObj = {
       el: box,
       lines: lines,
       highlight: function (n) {
         IN.qsa(".pc-line.is-active", box).forEach(function (r) { r.classList.remove("is-active"); });
-        var r = rowByNo(n); if (r) r.classList.add("is-active");
+        var r = rowByNo(n); if (r) { r.classList.add("is-active"); if (IN.pseudo._hl) IN.pseudo._hl.push(r); }
       },
       select: function (n) {
         IN.qsa(".pc-line.sel", box).forEach(function (r) { r.classList.remove("sel"); });
@@ -228,7 +228,85 @@
       onLineClick: function (fn) { clickHandlers.push(fn); },
       rowByNo: rowByNo
     };
+    // Demoens pseudokode huskes, så linjeforklareren kan bruke den i stedet for å vise koden to ganger (F10).
+    if (!opts.interactive) REG.push({ algo: algo, box: box, handle: handleObj });
+    return handleObj;
   };
+  var REG = [];
+
+  /* Linjeforklaring rett på demoens pseudokode: klikk en linje, forklaringen står under koden.
+     Brukes når samme algoritme allerede står i en demo på samme fane. */
+  function attachNotes(entry, algo) {
+    var box = entry.box, lines = entry.handle.lines;
+    if (box._notes) return;
+    box._notes = true;
+    box.classList.add("pc-clickable");
+    var hint = el("p", { class: "pc-notes-hint", text: "Klikk en kodelinje for forklaring." });
+    var panel = el("div", { class: "pc-notes", hidden: "" });
+    var after = box.nextSibling;
+    box.parentNode.insertBefore(hint, after);
+    box.parentNode.insertBefore(panel, after);
+    var sel = 0;
+    function paint() {
+      if (!sel) return;
+      var l = lines[sel - 1];
+      var e = l.proc ? PROC_TEXT : { eli5: l.eli5, normal: l.normal, teknisk: l.teknisk };
+      var txt = IN.level.pick(e);
+      clear(panel);
+      var head = el("div", { class: "pc-notes-head" }, [
+        el("span", { class: "tag", text: "Linje " + sel }),
+        el("button", { class: "btn sm ghost pc-notes-x", type: "button", text: "Lukk", "aria-label": "Lukk forklaringen",
+          onclick: function () { sel = 0; panel.hidden = true; hint.hidden = false;
+            IN.qsa(".pc-line.sel", box).forEach(function (r) { r.classList.remove("sel"); }); } })
+      ]);
+      panel.appendChild(head);
+      panel.appendChild(el("p", { html: txt || "Ingen egen forklaring for denne linja." }));
+      if (l.grense) panel.insertAdjacentHTML("beforeend", grenseHTML(l.grense, IN.level.get ? IN.level.get() : undefined));
+      if (IN.symbolTips) IN.symbolTips(panel);
+      panel.hidden = false; hint.hidden = true;
+      entry.handle.select(sel);
+    }
+    IN.qsa(".pc-line", box).forEach(function (row) {
+      var n = +row.getAttribute("data-line");
+      row.tabIndex = 0;
+      row.setAttribute("role", "button");
+      row.setAttribute("aria-label", "Linje " + n + ": vis forklaring");
+      row.addEventListener("click", function () { sel = n; paint(); });
+      row.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); sel = n; paint(); }
+      });
+    });
+    IN.level.onChange(paint);
+  }
+  function findDemoBox(host, algo) {
+    if (host.closest(".examtask")) return null;
+    var panel = host.closest("[data-panel]"), sub = host.closest("[data-sub]");
+    if (!panel) return null;
+    for (var i = REG.length - 1; i >= 0; i--) {
+      var e = REG[i];
+      if (e.algo !== algo || !e.box.isConnected) continue;
+      if (e.box.closest(".examtask") || e.box.closest(".pc-explainer")) continue;
+      if (e.box.closest("[data-panel]") !== panel || e.box.closest("[data-sub]") !== sub) continue;
+      return e;
+    }
+    return null;
+  }
+  // Skjul overskriften «Koden, linje for linje» / <details> når alle forklarerne under den er flyttet til demoen.
+  function hideEmptyWrapper(host) {
+    var det = host.closest("details");
+    if (det && /linje for linje/i.test((det.querySelector("summary") || {}).textContent || "")) {
+      var hosts = IN.qsa("[data-exp-host]", det);
+      if (hosts.length && hosts.every(function (h) { return h.hidden; })) det.hidden = true;
+      return;
+    }
+    function part(x) { return x && (x.hasAttribute("data-exp-host") || x.tagName === "H5"); }
+    var h = host.previousElementSibling;
+    while (part(h)) h = h.previousElementSibling;
+    if (!h || h.tagName !== "H4" || !/linje for linje/i.test(h.textContent)) return;
+    var all = [], n = h.nextElementSibling;
+    while (part(n)) { if (n.hasAttribute("data-exp-host")) all.push(n); n = n.nextElementSibling; }
+    if (all.length && all.every(function (x) { return x.hidden; })) h.hidden = true;
+  }
 
   /* ---------- Big-O-boks ---------- */
   IN.pseudo.bigO = function (algo, opts) {
@@ -246,6 +324,7 @@
       ]));
     }
     cell("Best", b.best); cell("Snitt", b.avg); cell("Verst", b.worst); cell("Minne", b.space);
+    if (IN.oTrappIn) IN.oTrappIn(grid, ".bigo-val");
     box.appendChild(grid);
     if (b.stable != null || b.inplace != null) {
       var flags = el("div", { class: "pills", style: "margin:.5rem 0" });
@@ -263,32 +342,29 @@
   };
 
   /* Kompakt variant: ligger rett under pseudokoden, så kjøretiden er synlig mens man øver.
-     Én rad med Best/Snitt/Verst/Minne, egenskaper som piller, og «Hvorfor?» sammenfoldet. */
+     Én linje (F9): «Kjøretid og minne · Best O(n) · Snitt … · Verst … · Minne … · stabil ja · in-place ja · Hvorfor?».
+     O-trappen (F5) står foran rene O-klasser. «Hvorfor?» er en tekstknapp som folder ut begrunnelsen under linja. */
   function bigOCompact(b) {
     var box = el("div", { class: "bigo bigo-compact" });
-    var head = el("div", { class: "bigo-head" }, [el("span", { class: "bigo-title", text: "Kjøretid og minne" })]);
-    if (b.stable != null || b.inplace != null) {
-      var flags = el("div", { class: "pills" });
-      if (b.stable != null)  flags.appendChild(el("span", { class: "pill", html: '<span class="k">stabil</span> ' + (b.stable ? "ja" : "nei") }));
-      if (b.inplace != null) flags.appendChild(el("span", { class: "pill", html: '<span class="k">in-place</span> ' + (b.inplace ? "ja" : "nei") }));
-      head.appendChild(flags);
-    }
-    box.appendChild(head);
-    var grid = el("div", { class: "bigo-grid" });
+    var line = el("div", { class: "bigo-line" }, [el("span", { class: "bigo-title", text: "Kjøretid og minne" })]);
     [["Best", b.best], ["Snitt", b.avg], ["Verst", b.worst], ["Minne", b.space]].forEach(function (p) {
       if (p[1] == null) return;
-      grid.appendChild(el("div", { class: "bigo-cell" }, [
-        el("div", { class: "bigo-lbl", text: p[0] }),
-        el("div", { class: "bigo-val", html: p[1] })
-      ]));
+      var v = el("span", { class: "bigo-val", html: p[1] });
+      var k = IN.oKlasse ? IN.oKlasse(v.textContent) : 0;
+      if (k) v.insertAdjacentHTML("afterbegin", IN.oTrapp(k));
+      line.appendChild(el("span", { class: "bigo-item" }, [el("span", { class: "bigo-lbl", text: p[0] }), v]));
     });
-    box.appendChild(grid);
+    if (b.stable != null)  line.appendChild(el("span", { class: "bigo-item bigo-flag", html: '<span class="bigo-lbl">stabil</span> ' + (b.stable ? "ja" : "nei") }));
+    if (b.inplace != null) line.appendChild(el("span", { class: "bigo-item bigo-flag", html: '<span class="bigo-lbl">in-place</span> ' + (b.inplace ? "ja" : "nei") }));
+    box.appendChild(line);
     if (b.why) {
-      var det = el("details", { class: "bigo-why" });
-      var body = el("div");
-      det.appendChild(el("summary", { text: "Hvorfor?" }));
-      det.appendChild(body);
-      box.appendChild(det);
+      var body = el("div", { class: "bigo-why", hidden: "" });
+      var btn = el("button", { class: "bigo-whybtn", type: "button", "aria-expanded": "false", text: "Hvorfor?" });
+      btn.addEventListener("click", function () {
+        var open = body.hidden; body.hidden = !open; btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      line.appendChild(btn);
+      box.appendChild(body);
       var paint = function () { body.innerHTML = IN.level.pick(b.why); if (IN.symbolTips) IN.symbolTips(body); };
       paint(); IN.level.onChange(paint);
     }
@@ -296,9 +372,31 @@
   }
 
   /* ---------- Nivåstyrt linjeforklarer ---------- */
+  var PROC_TEXT = {
+    eli5: "Dette er starten på oppskriften. Vi gir den et navn og sier hva den trenger å få inn for å virke.",
+    normal: "Prosedyrens signatur: navnet og parameteren den tar inn.",
+    teknisk: "Prosedyredeklarasjon. Input/Output står over; kjøretiden oppgis i Big-O-boksen."
+  };
   IN.pseudo.explainer = function (host, algo, opts) {
     if (typeof host === "string") host = IN.qs(host);
     opts = opts || {};
+    host.setAttribute("data-exp-host", "");
+    // Står samme algoritme allerede i en demo på fanen? Da forklarer vi linjene der i stedet (F10).
+    function tryDedupe() {
+      var demo = findDemoBox(host, algo);
+      if (!demo) return false;
+      attachNotes(demo, algo);
+      clear(host); host.hidden = true;
+      var t = host.previousElementSibling;   // egen undertittel (flere prosedyrer i samme <details>)
+      if (t && t.tagName === "H5") t.hidden = true;
+      hideEmptyWrapper(host);
+      return true;
+    }
+    if (opts.dedupe !== false) {
+      if (host.isConnected) { if (tryDedupe()) return null; }
+      // Bygges forklareren før demoen er satt inn i siden, avgjør vi det når alt er på plass.
+      else setTimeout(function () { if (host.isConnected) tryDedupe(); }, 0);
+    }
     clear(host);
     var wrap = el("div", { class: "pc-explainer" });
     var left = el("div");
@@ -313,11 +411,7 @@
     right.appendChild(head); right.appendChild(body);
 
     var sel = opts.start || 1;
-    var procText = {
-      eli5: "Dette er starten på oppskriften. Vi gir den et navn og sier hva den trenger å få inn for å virke.",
-      normal: "Prosedyrens signatur: navnet og parameteren den tar inn.",
-      teknisk: "Prosedyredeklarasjon. Input/Output står over; kjøretiden oppgis i Big-O-boksen."
-    };
+    var procText = PROC_TEXT;
     function expl(n) {
       var l = handle.lines[n - 1];
       if (l.proc) return procText;
@@ -327,7 +421,7 @@
       var lvl = scope.get();
       clear(head);
       head.appendChild(el("span", { class: "tag", text: "Linje " + sel }));
-      head.appendChild(scope.el);
+      if (opts.levelSwitch) head.appendChild(scope.el);
       var e = expl(sel);
       var txt = IN.level.pick(e, lvl);
       clear(body);

@@ -211,13 +211,18 @@
     opts = opts || {};
     var block = el("div", { class: "explain-block" });
     var scope = IN.levelScope({ initial: opts.initial || null });
-    // noSwitch: ingen lokal nivåbryter, teksten følger nivået øverst på siden (brukes i eksamenskortet)
+    // Standard: ingen lokal nivåbryter, teksten følger nivået øverst på siden (regel 5: én global, høyst én
+    // lokal per demo). Lokal bryter bare når kallet ber om det med noSwitch: false.
+    var withSwitch = opts.noSwitch === false;
+    // «Nivå:» var bare en merkelapp for bryteren; uten bryter sier den ingenting.
+    var label = opts.label && !(withSwitch === false && /^nivå:?$/i.test(String(opts.label).trim())) ? opts.label : null;
     var bar = el("div", { class: "explain-bar" }, [
-      opts.label ? el("span", { class: "explain-label", text: opts.label }) : null,
-      opts.noSwitch ? null : scope.el
+      label ? el("span", { class: "explain-label", text: label }) : null,
+      withSwitch ? scope.el : null
     ]);
     var bodyEl = el("div", { class: "explain-body" });
-    block.appendChild(bar); block.appendChild(bodyEl);
+    if (label || withSwitch) block.appendChild(bar);
+    block.appendChild(bodyEl);
     function paint() {
       var v = IN.level.pick(variants, scope.get());
       clear(bodyEl);
@@ -352,6 +357,14 @@
         // Uten fane= i lenken (eller med feil fane): bytt til fanen som faktisk inneholder kortet.
         var pan = t.closest && t.closest("[data-panel]");
         if (pan && pan.hidden && panels.indexOf(pan) >= 0) activate(pan.getAttribute("data-panel"), false);
+        // Ligger målet i et skjult underpanel (<div data-subs="navn"> … <div data-sub="id" hidden>),
+        // trykker vi på den tilhørende veksleknappen ([data-switch="navn"] button[data-sub="id"]).
+        for (var sp = t.closest && t.closest("[data-sub]"); sp; sp = sp.parentElement && sp.parentElement.closest("[data-sub]")) {
+          var grp = sp.parentElement && sp.parentElement.closest("[data-subs]");
+          if (!sp.hidden || !grp) continue;
+          var sb = qs('[data-switch="' + grp.getAttribute("data-subs") + '"] button[data-sub="' + sp.getAttribute("data-sub") + '"]');
+          if (sb) sb.click();
+        }
         var card = t.matches && t.matches("details") ? t : t.querySelector("details.examtask");
         if (card) {
           card.open = true;
@@ -1689,7 +1702,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261125j";
+  IN.VERSION = "20261125l";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
@@ -1729,8 +1742,64 @@
     setInterval(function () { if (document.visibilityState === "visible") check(); }, 30 * 60000);
   }
 
+  /* ---------- O-trapp (F5) ----------
+     Seks små grå trinn foran en O-klasse: O(1) < O(log n) < O(n) < O(n log n) < O(n²) < O(2ⁿ).
+     Bare rene klasser får trapp; sammensatte uttrykk (O(|V| + |E|), O(d(N + n))) får ingen. Ingen farge. */
+  IN.oKlasse = function (txt) {
+    var t = String(txt || "").toLowerCase().replace(/forventet|amortisert/g, "").replace(/[\s  ]+/g, "");
+    var m = /^o\((.*)\)$/.exec(t); if (m) t = m[1];
+    return { "1": 1, "logn": 2, "n": 3, "nlogn": 4, "n²": 5, "n^2": 5, "2ⁿ": 6, "2^n": 6 }[t] || 0;
+  };
+  IN.oTrapp = function (txt) {
+    var k = typeof txt === "number" ? txt : IN.oKlasse(txt);
+    if (!k) return "";
+    return '<span class="otr" data-o="' + k + '" aria-hidden="true" title=""><i></i><i></i><i></i><i></i><i></i><i></i></span>';
+  };
+  // Legg trapp foran hver celle/etikett i root som bare inneholder én O-klasse.
+  IN.oTrappIn = function (root, sel) {
+    qsa(sel, root || document).forEach(function (c) {
+      if (c.querySelector(".otr")) return;
+      var k = IN.oKlasse(c.textContent);
+      if (k) c.insertAdjacentHTML("afterbegin", IN.oTrapp(k));
+    });
+  };
+
+  /* ---------- «Husk»-lister (F1b) ----------
+     Tre eller flere callouts rett etter hverandre blir én nøytral liste med små merkelapper.
+     Alt innhold beholdes: merkelappen blir en liten etikett + uthevet tittel, teksten står uendret. */
+  var HUSK_T = { felle: "Felle", sensor: "Sensor", begrep: "Begrep", snarvei: "Vårt råd", uni: "Teknisk", eli5: "5-åring", eksempel: "Eksempel" };
+  var HUSK_STRIP = /^(vanlig\s+felle|felle|universitetsnivå|teknisk|snarvei på eksamen|snarvei|vårt råd|eksempel|5-åring|som for en 5-åring)\s*[:·–-]?\s*/i;
+  IN.huskLists = function (root) {
+    var seen = [];
+    qsa(".callout", root || document).forEach(function (c) {
+      if (seen.indexOf(c) >= 0 || c.closest(".examtask, .husk")) return;
+      var run = [c], n = c.nextElementSibling;
+      while (n && n.classList.contains("callout")) { run.push(n); n = n.nextElementSibling; }
+      run.forEach(function (x) { seen.push(x); });
+      if (run.length < 3) return;
+      var ul = el("ul");
+      run.forEach(function (x) {
+        var kind = Object.keys(HUSK_T).filter(function (k) { return x.classList.contains(k); })[0] || "eksempel";
+        var li = el("li", { class: kind });
+        if (x.id) li.id = x.id;
+        var lbl = x.querySelector(":scope > .lbl");
+        var title = lbl ? lbl.textContent.replace(HUSK_STRIP, "").trim() : "";
+        if (lbl) lbl.parentNode.removeChild(lbl);
+        li.appendChild(el("span", { class: "t " + (kind === "snarvei" ? "raad" : kind), text: HUSK_T[kind] }));
+        if (title) li.appendChild(el("b", { text: title.charAt(0).toUpperCase() + title.slice(1) + (/[.?!:]$/.test(title) ? " " : ". ") }));
+        while (x.firstChild) li.appendChild(x.firstChild);
+        ul.appendChild(li);
+      });
+      var box = el("div", { class: "husk" }, [el("h4", { text: "Husk" }), ul]);
+      c.parentNode.insertBefore(box, c);
+      run.forEach(function (x) { x.parentNode.removeChild(x); });
+    });
+  };
+
   /* ---------- Oppstart ---------- */
   function boot() {
+    IN.huskLists(document);
+    IN.oTrappIn(document, ".cmp-table td");
     buildNav();
     buildLevelBar();
     IN.tabs(document);

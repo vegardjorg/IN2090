@@ -116,7 +116,7 @@
       sql: S("SELECT f.navn, b.tittel, count(*)",
         "FROM forfatter AS f",
         "  INNER JOIN bok AS b ON (f.fid = b.fid)",
-        "GROUP BY f.navn;"),
+        "GROUP BY f.fid, f.navn;"),
       fase: "semantikk", utfall: "feil", sjekk: "gruppering", merk: "b.tittel",
       pg: 'ERROR:  column "b.tittel" must appear in the GROUP BY clause or be used in an aggregate function',
       norsk: "Kolonnen «b.tittel» må stå i GROUP BY eller i en aggregatfunksjon.",
@@ -128,10 +128,10 @@
       ],
       hvorfor: {
         eli5: "Du har lagt bøkene i én haug per forfatter og vil skrive én lapp per haug. På lappen skal det stå én tittel. Men Ibsen-haugen har to bøker. Hvilken skal du skrive? Det vet ingen, så databasen nekter.",
-        normal: "Etter GROUP BY blir hver gruppe til én rad. Hver kolonne i SELECT må derfor ha <em>én</em> verdi per gruppe. <span class=\"mono\">f.navn</span> har det, for det er det vi grupperer på. <span class=\"mono\">count(*)</span> har det, for det regnes ut per gruppe. Men gruppen Ibsen har to titler, og databasen kan ikke velge. Regelen sjekkes før kjøring, så den gjelder selv om alle gruppene tilfeldigvis hadde én tittel.",
+        normal: "Etter GROUP BY blir hver gruppe til én rad. Hver kolonne i SELECT må derfor ha <em>én</em> verdi per gruppe. <span class=\"mono\">f.navn</span> har det, for det er det vi grupperer på. <span class=\"mono\">count(*)</span> har det, for det regnes ut per gruppe. Men gruppen Ibsen har to titler, og databasen kan ikke velge. Regelen sjekkes før kjøring, så den gjelder selv om alle gruppene tilfeldigvis hadde én tittel. Rettingen grupperer også på <span class=\"mono\">f.fid</span>: to forfattere med samme navn blir ellers slått sammen til én gruppe.",
         teknisk: "GROUP BY-regelen sjekkes ut fra spørringen, ikke ut fra dataene: hver kolonne utenfor aggregat må være gruppert. PostgreSQL har ett unntak. Grupperer du på primærnøkkelen, kan du bruke de andre kolonnene i samme tabell, fordi de da er bestemt av nøkkelen. Sensor gir ikke trekk for det (H23, H25). Velg <span class=\"mono\">GROUP BY f.navn, b.tittel</span>, et aggregat som <span class=\"mono\">max(b.tittel)</span> eller ta kolonnen ut."
       },
-      rettet: S("SELECT f.navn, count(*)", "FROM forfatter AS f", "  INNER JOIN bok AS b ON (f.fid = b.fid)", "GROUP BY f.navn;"),
+      rettet: S("SELECT f.navn, count(*)", "FROM forfatter AS f", "  INNER JOIN bok AS b ON (f.fid = b.fid)", "GROUP BY f.fid, f.navn;"),
       sensor: "−2 for manglende GROUP BY (H20, H25). Ingen trekk for å gruppere på primærnøkkelen."
     },
     {

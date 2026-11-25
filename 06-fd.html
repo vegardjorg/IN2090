@@ -2,14 +2,15 @@
 <html lang="nb">
 <head>
   <meta charset="utf-8">
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blokk 6 · FD · IN2090</title>
   <meta name="description" content="Funksjonelle avhengigheter i IN2090: hva en FD er, instanser som bryter FD-er, tillukning X⁺, supernøkkel, kandidatnøkkel og nøkkelattributt, og kursets metode for å finne alle kandidatnøkler – med stegspillere, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261125j">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261125j">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261125j">
-  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261125j">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125l">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125l">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261125l">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261125l">
 </head>
 <body data-page="fd">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -70,7 +71,7 @@
         <ul>
           <li><span class="mono">konsert → artist</span> er en FD: alle rader for samme konsert har samme artist. Det motsatte, <span class="mono">artist → konsert</span>, er <b>ikke</b> en FD, fordi én artist kan holde flere konserter.</li>
           <li><span class="mono">billettnr → konsert</span> og <span class="mono">konsert → artist</span> gir <span class="mono">billettnr → artist</span> (transitivitet).</li>
-          <li><span class="mono">konsert → scene</span> gir <span class="mono">konsert, kjøper → scene</span> (utvidet venstreside). Den skal ikke listes, fordi den er overflødig.</li>
+          <li><span class="mono">konsert → scene</span> gir <span class="mono">konsert, kjøper → scene</span> (utvidet venstreside). Den trenger ikke listes, fordi den følger av en FD vi allerede har.</li>
           <li>FD2 splittet: <span class="mono">konsert → artist</span>, <span class="mono">konsert → scene</span>, <span class="mono">konsert → dato</span>.</li>
         </ul></div>
 
@@ -82,7 +83,7 @@
         <details class="grense"><summary>Hvorfor står FD-en bare én vei?</summary>
           <p><span class="mono">konsert → artist</span> sier ingenting om <span class="mono">artist → konsert</span>. En FD er en enveisregel. Toveis gjelder bare når begge FD-ene er oppgitt, som <span class="mono">A → B</span> og <span class="mono">B → A</span>.</p></details>
         <details class="grense"><summary>Hvorfor tar vi ikke med <span class="mono">konsert, kjøper → artist</span>?</summary>
-          <p>Den følger allerede av <span class="mono">konsert → artist</span>. Kurset krever at slike overflødige FD-er er fjernet før normalformalgoritmen brukes.</p></details>
+          <p>Den følger allerede av <span class="mono">konsert → artist</span> og gir ingen ny informasjon. Vi lister FD-ene slik de er oppgitt, med høyresiden splittet.</p></details>
         <details class="grense"><summary>Hvorfor kan vi ikke finne FD-ene ved å se på dataene?</summary>
           <p>Dataene viser bare én tilstand. FD-ene er regler for alle tilstander og må oppgis. I eksempelet over holder <span class="mono">scene → artist</span> i radene, men det er ikke en regel.</p></details>
         <ul>
@@ -114,7 +115,8 @@
       <h4>Eksempel B: fyll inn ?</h4>
       <div class="callout eksempel"><span class="lbl">Oppgave</span>
         <span class="mono">R(A, B, C, D, E)</span> med <span class="mono">AB → C</span>, <span class="mono">C → D</span>, <span class="mono">D → A</span> og <span class="mono">E → B</span>.
-        Hver <span class="mono">?</span> skal erstattes med den eneste verdien som gjør at instansen oppfyller FD-ene. Svar: A = 1, B = 2, C = 3, D = 8.
+        Hver <span class="mono">?</span> skal erstattes med den eneste verdien som gjør at instansen oppfyller FD-ene.
+        <details class="grense"><summary>Vis svaret</summary><p>A = 1, B = 2, C = 3, D = 8.</p></details>
         Velg «H2023 3.2» for å se eksamensoppgaven regnet på samme måte.</div>
       <div id="sp-fyll"></div>
 
@@ -159,7 +161,7 @@
 
       <h4>Flere tillukninger i Billett</h4>
       <div class="table-wrap"><table class="cmp-table">
-        <thead><tr><th>X</th><th>X⁺</th><th>SN?</th></tr></thead>
+        <thead><tr><th>X</th><th>X⁺</th><th>Supernøkkel (SN), X⁺ = R?</th></tr></thead>
         <tbody>
           <tr><td class="mono">{billettnr}</td><td>alle åtte</td><td>ja</td></tr>
           <tr><td class="mono">{konsert}</td><td class="mono">{konsert, artist, scene, dato}</td><td>nei</td></tr>
@@ -284,6 +286,7 @@
         <details class="grense"><summary>Hvorfor er ABC ikke en KN selv om <span class="mono">(ABC)⁺ = R</span>?</summary>
           <p>Den inneholder AC, så den er ikke minimal.</p></details>
         <ul>
+          <li><b>Triviell del av høyresiden.</b> H2024 3.1 har <span class="mono">AC → CE</span>. C står på begge sider, så FD-en sier bare <span class="mono">AC → E</span>. Stryk C fra høyresiden før du sorterer: C står da aldri til høyre og er med i alle KN.</li>
           <li><b>Tom «alltid med»-gruppe?</b> Da finnes det likevel en KN, fordi R selv er en SN. Start med enkeltattributter.</li>
           <li><b>Minuspoeng på avkrysning.</b> H2020 R1 ga ±1,67 per kryss. Ett feil kryss spiser opp et riktig ett.</li>
         </ul></div>
@@ -324,23 +327,23 @@
 
   <footer class="footer">IN2090-guide · Blokk 6 · Funksjonelle avhengigheter · <a href="07-normalisering.html">Neste: blokk 7, normalisering</a></footer>
 
-  <script src="assets/js/core.js?v=20261125j"></script>
-  <script src="assets/js/symboler.js?v=20261125j"></script>
-  <script src="assets/js/sql-lang.js?v=20261125j"></script>
-  <script src="assets/js/pseudocode.js?v=20261125j"></script>
-  <script src="assets/js/stepplayer.js?v=20261125j"></script>
-  <script src="assets/js/varline.js?v=20261125j"></script>
-  <script src="assets/js/viz-relation.js?v=20261125j"></script>
-  <script src="assets/js/viz-er.js?v=20261125j"></script>
-  <script src="assets/js/data-fd.js?v=20261125j"></script>
-<script src="assets/js/dra.js?v=20261125j"></script>
-<script src="assets/js/data-dra.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261125j"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261125j"></script>
-  <script src="assets/js/bank.js?v=20261125j"></script>
+  <script src="assets/js/core.js?v=20261125l"></script>
+  <script src="assets/js/symboler.js?v=20261125l"></script>
+  <script src="assets/js/sql-lang.js?v=20261125l"></script>
+  <script src="assets/js/pseudocode.js?v=20261125l"></script>
+  <script src="assets/js/stepplayer.js?v=20261125l"></script>
+  <script src="assets/js/varline.js?v=20261125l"></script>
+  <script src="assets/js/viz-relation.js?v=20261125l"></script>
+  <script src="assets/js/viz-er.js?v=20261125l"></script>
+  <script src="assets/js/data-fd.js?v=20261125l"></script>
+<script src="assets/js/dra.js?v=20261125l"></script>
+<script src="assets/js/data-dra.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125l"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125l"></script>
+  <script src="assets/js/bank.js?v=20261125l"></script>
   <script>
   (function () {
     "use strict";

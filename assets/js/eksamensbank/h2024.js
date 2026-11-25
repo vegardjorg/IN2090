@@ -146,7 +146,7 @@
   var ER_BIBLIOTEK_SVAR = {
     entiteter: [
       { id: "FORFATTER", navn: "FORFATTER", svak: false, pos: [0, 0],
-        attr: [ { navn: "NavnFødt", nokkel: true, deler: [ { navn: "Navn" }, { navn: "Fødselsår" } ] }, { navn: "Dødsår" } ] },
+        attr: [ { navn: "NavnOgFødt", nokkel: true, deler: [ { navn: "Navn" }, { navn: "Fødselsår" } ] }, { navn: "Dødsår" } ] },
       { id: "BOK", navn: "BOK", svak: true, pos: [0, 2],
         attr: [ { navn: "TittelUtgave", delvisNokkel: true, deler: [ { navn: "Tittel" }, { navn: "Utgave" } ] },
                 { navn: "Utgivelsesår" }, { navn: "AntallSider" } ] },
@@ -174,7 +174,7 @@
       { id: "LANT_FOR", navn: "LÅNT_FØR", identifiserende: false, pos: [3, 2],
         ledd: [ { entitet: "EKSEMPLAR", kard: "N", total: false }, { entitet: "MEDLEM", kard: "M", total: false } ], attr: [] }
     ],
-    merknad: "Antakelser: «året eller dødsfallet» i punkt 1 tolkes som dødsåret (kan være NULL). Navnet til medlemmet er en sammensatt nøkkel med fornavn og etternavn som enkle strenger. EKSEMPLAR er en vanlig entitet fordi biblioteksnummeret er unikt alene."
+    merknad: "Antakelser: «året eller dødsfallet» i punkt 1 tolkes som dødsåret (kan være NULL). Navnet til medlemmet er en sammensatt nøkkel med fornavn og etternavn som enkle strenger. EKSEMPLAR er en vanlig entitet fordi biblioteksnummeret er unikt alene. Navnet NavnOgFødt på den sammensatte nøkkelen er hentet fra figuren i sensorveiledningen. TittelUtgave er vårt eget navn (sensorfiguren kaller den svake nøkkelen Forside)."
   };
 
   /* ================================================================ oppgaver */
@@ -249,6 +249,12 @@
     del1: {
       type: "janei",
       regel: { riktig: 1, feil: -1, blankt: 0, min: 0 },
+      /* Ordrett fra sensorveiledningsfila. */
+      sensor: {
+        fasit: "<p><b>Løsningsforslag</b></p><ol><li>JA</li><li>NEI</li><li>JA</li><li>JA</li><li>JA</li></ol>",
+        kriterier: "<p>Automatisk rettet.</p>",
+        merknad: "Sensorfila nummererer påstandene slik: 1 «Boh har en nøkkel eller svak nøkkel.», 2 «Alu har en attributt WWW (via relasjon P).», 3 «En Cet er unikt identifisert med dens XXX, YYY and ZZZ verdier (sammen).», 4 «Hver Cet har minst en Alu R-relatert til det.», 5 «Dersom det finnes en Boh i databasen, vil det også finnes en Alu.» Kortet viser dem i en annen rekkefølge, og sensors nummer står i hver forklaring. Svarene stemmer med våre."
+      },
       intro: "<p>Er setningen modellert av ER-diagrammet?</p>",
       items: [
         { s: "Hver Cet har minst en Alu R-relatert til det.", answer: true,
@@ -315,6 +321,19 @@
     del1: {
       type: "radantall",
       regel: { riktig: 2, feil: -0.5, blankt: 0, min: 0 },
+      /* Ordrett fra sensorveiledningsfila (tabellen med kryss og fotnoten). */
+      sensor: {
+        fasit: "<p><b>Løsningsforslag</b></p><table class=\"et-tab\"><thead><tr><th>Spørring</th><th>&lt;2</th><th>2</th><th>3</th><th>4</th><th>5</th><th>&gt;5</th></tr></thead><tbody>" +
+          "<tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td>X</td></tr>" +
+          "<tr><td>2</td><td>X</td><td></td><td></td><td></td><td></td><td></td></tr>" +
+          "<tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td>X</td></tr>" +
+          "<tr><td>4*</td><td></td><td></td><td></td><td>X</td><td>X</td><td></td></tr>" +
+          "<tr><td>5</td><td>X</td><td></td><td></td><td></td><td></td><td></td></tr>" +
+          "<tr><td>6</td><td></td><td></td><td></td><td></td><td>X</td><td></td></tr></tbody></table>" +
+          "<p>(*) For spørring 4 er både svar 4 og 5 akseptert som riktig.</p>",
+        kriterier: "<p>Automatisk rettet.</p>",
+        merknad: "Stemmer med våre utregninger. Sensorveiledningen sier ikke hvorfor 5 også godtas på spørring 4."
+      },
       intro: "<p>Hvor mange rader vil spørringen returnere?</p>",
       items: [
         { q: "<p>Hvor mange rader vil spørringen returnere?</p>",
@@ -332,7 +351,7 @@
         { q: "<p>Hvor mange rader vil spørringen returnere?</p>",
           sql: "SELECT bid\nFROM buss\nWHERE modell = 'Mercedes'\nUNION\nSELECT bid\nFROM buss\nWHERE Year(vedlikeholdt) < 2024;",
           options: RADVALG, answer: 3, godta: [4],
-          explain: "<p>Mercedes gir buss 4 og 5. Vedlikeholdt før 2024 gir buss 1, 2 og 4. Buss 6 har NULL, og sammenligningen gir NULL (ukjent), så den kommer ikke med. UNION fjerner den doble 4-eren: {1, 2, 4, 5}, altså 4 rader. Sensor godtok også svaret 5.</p>" },
+          explain: "<p>Mercedes gir buss 4 og 5. Vedlikeholdt før 2024 gir buss 1, 2 og 4. Buss 6 har NULL, og sammenligningen gir NULL (ukjent), så den kommer ikke med. UNION fjerner den doble 4-eren: {1, 2, 4, 5}, altså 4 rader. Sensorveiledningen godtok også 5: «For spørring 4 er både svar 4 og 5 akseptert som riktig.»</p>" },
         { q: "<p>Hvor mange rader vil spørringen returnere?</p>",
           sql: "SELECT count(*) AS c\nFROM busstur\nGROUP BY sid\nORDER BY c\nLIMIT 3\nOFFSET 2;",
           options: RADVALG, answer: 0,
@@ -421,7 +440,7 @@
     losning: [
       "Hver tur (busstur) joines med bussen sin (buss) på bid, slik at turens sjåfør og bussens standardsjåfør står på samme rad.",
       "Behold radene der de to er forskjellige.",
-      "Tenk på NULL: har bussen ingen standardsjåfør (standardsid er NULL), gir sid != standardsid NULL (ukjent), og turen forsvinner. Vi tolker en slik tur som «ikke standardsjåfør» og tar den med med en egen IS NULL-test.",
+      "Tenk på NULL: har bussen ingen standardsjåfør (standardsid er NULL), gir sid != standardsid NULL (ukjent), og turen forsvinner. Det samme skjer med turer der busstur.sid er NULL (sid kan være NULL i skjemaet). Vi tolker en slik tur som «ikke standardsjåfør» og tar den med med en egen IS NULL-test.",
       "Pakk spørringen inn i CREATE VIEW navn AS. På eksempeldataene gir viewet de 4 turene med buss 1, der sjåfør 1 kjører en buss som har sjåfør 8 som standardsjåfør."
     ],
     tips: [
@@ -481,6 +500,14 @@
     del1: {
       type: "janei",
       regel: { riktig: 1, feil: -1, blankt: 0, min: 0 },
+      /* Ordrett fra sensorveiledningsfila (tabellen med kryss). */
+      sensor: {
+        fasit: "<p><b>Løsningsforslag</b></p><table class=\"et-tab\"><thead><tr><th>Attributt</th><th>JA</th><th>NEI</th></tr></thead><tbody>" +
+          "<tr><td><i>A</i></td><td>X</td><td></td></tr><tr><td><i>B</i></td><td></td><td>X</td></tr><tr><td><i>C</i></td><td>X</td><td></td></tr>" +
+          "<tr><td><i>D</i></td><td>X</td><td></td></tr><tr><td><i>E</i></td><td>X</td><td></td></tr><tr><td><i>F</i></td><td></td><td>X</td></tr></tbody></table>",
+        kriterier: "<p>Automatisk rettet.</p>",
+        merknad: "Stemmer med våre svar."
+      },
       intro: "<p>Er attributtet et nøkkelattributt i R?</p>",
       items: [
         { s: "E", answer: true, explain: "<p>E er med i kandidatnøkkelen CDE (CDE⁺ = R fordi DE → A).</p>" },
@@ -516,6 +543,16 @@
     del1: {
       type: "normalform",
       regel: { riktig: 2, feil: -0.5, blankt: 0, min: 0 },
+      /* Ordrett fra sensorveiledningsfila (tabellen med kryss). */
+      sensor: {
+        fasit: "<p><b>Løsningsforslag</b></p><table class=\"et-tab\"><thead><tr><th>FD</th><th>1NF</th><th>2NF</th><th>3NF</th><th>BCNF</th></tr></thead><tbody>" +
+          "<tr><td><i>ACE</i> → <i>B</i></td><td></td><td></td><td></td><td>X</td></tr>" +
+          "<tr><td><i>B</i> → <i>A</i></td><td></td><td></td><td>X</td><td></td></tr>" +
+          "<tr><td><i>B</i> → <i>D</i></td><td>X</td><td></td><td></td><td></td></tr>" +
+          "<tr><td><i>DE</i> → <i>F</i></td><td></td><td>X</td><td></td><td></td></tr></tbody></table>",
+        kriterier: "<p>Automatisk rettet.</p>",
+        merknad: "Stemmer med våre svar. Kortet viser FD-ene i en annen rekkefølge."
+      },
       intro: "<p>Hvilken normal form er FDen (alene) i?</p>",
       items: [
         { q: "<p>DE → F</p>", options: NF, answer: 1,
@@ -646,7 +683,8 @@
         poeng: [
           "Leietaker, Agent, Eiendom og Eieren med riktige attributter og nøkler (1p hver)",
           "Leie, Eie, Administrere og Visning med riktige FN-er og kandidatnøkler (1,5p hver)",
-          "Flerverdiattributtene email og Tlfnr (Eieren) i egne relasjoner",
+          "Flerverdiattributtene email og Tlfnr (Eieren) i egne relasjoner (ingen egne poeng i sensorveiledningen)",
+          "Merk: 4 × 1 + 4 × 1,5 = 10, men oppgaven gir 12 poeng. Sensorveiledningen sier ikke hvordan de siste 2 poengene fordeles.",
           "Trekk på 0,5 for hvert manglende attributt, manglende KN/PN- eller FN-markering og manglende forklaring"
         ] }
     ],
@@ -659,7 +697,7 @@
       deler: [ { del: "",
         fasit: "<p>Hele skjemaet blir da:</p><pre>Leietaker(Navn, Tlfnr)\n- KN, PN: {Navn}\n\nAgent(Navn, Tlfnr)\n- KN, PN: {Navn}\n\nEiendom(Postnummer, By, Linje1, Linje2, Pris, NSoverom)\n- KN, PN: {Postnummer, By, Linje1, Linje2}\n\nEieren(Navn, Postnummer, By, Linje1, Linje2)\n- KN: {Navn}, {Postnummer, By, Linje1, Linje2}\n- PN: {Navn}\n- FN: (Postnummer, By, Linje1, Linje2) -&gt; Eiendom(Postnummer, By, Linje1, Linje2)\n\nLeie(Ltaker, Postnummer, By, Linje1, Linje2, Fra)\n- KN: {Ltaker}, {Postnummer, By, Linje1, Linje2}\n- PN: {Ltaker}\n- FN: (Ltaker) -&gt; Leietaker(Navn)\n      (Postnummer, By, Linje1, Linje2) -&gt; Eiendom(Postnummer, By, Linje1, Linje2)\n\nAdministrere(Agnt, Postnummer, By, Linje1, Linje2)\n- KN, PN: {Postnummer, By, Linje1, Linje2}\n- FN: (Agnt) -&gt; Agent(Navn)\n      (Postnummer, By, Linje1, Linje2) -&gt; Eiendom(Postnummer, By, Linje1, Linje2)\n\nVisning(Ltaker, Agnt, Postnummer, By, Linje1, Linje2, Dato)\n- KN, PN: {Ltaker, Agnt, Postnummer, By, Linje1, Linje2)\n- FN: (Ltaker) -&gt; Leietaker(Navn)\n      (Agnt) -&gt; Agent(Navn)\n      (Postnummer, By, Linje1, Linje2) -&gt; Eiendom(Postnummer, By, Linje1, Linje2)\n\nTlf(Eir, Tlfnr)\n- KN, PN: {Eir, Tlfnr}\n- FN: (Eir) -&gt; Eieren(Navn)\n\nEml(Ltaker, email)\n- KN, PN: {Ltaker, email}\n- FN: (Ltaker) -&gt; Leietaker(Navn)</pre>",
         kriterier: "<ul><li>1 poeng for hver entitet</li><li>1.5 for hver relasjon</li></ul><p>Trekk:</p><ul><li>-0.5 for manglende attributt</li><li>-0.5 for manglende markering av kandidatnøkler og primærnøkkel</li><li>-0.5 for manglende fremmednøkkelmarkering</li><li>-0.5 for manglende forklaring på valg</li></ul>" } ],
-      merknad: "To feil i veiledningens skjema. (1) Administrere har KN, PN {Agnt} i gjennomgangen, men {Postnummer, By, Linje1, Linje2} i oppsummeringen. Etter figuren (1 ved Eiendom) er {Agnt} riktig. Adressen er ikke en nøkkel, fordi en eiendom kan ha mange agenter (M). (2) Eieren får adressen som ekstra kandidatnøkkel, men med M ved Eieren kan én eiendom ha flere eiere. Adressen er derfor ikke en kandidatnøkkel der. Veiledningen begrunner også Leie som egen relasjon med at den har et attributt. Den egentlige grunnen er partiell deltakelse på begge sider (færre NULL-verdier)."
+      merknad: "To feil i veiledningens skjema. (1) Administrere har KN, PN {Agnt} i gjennomgangen, men {Postnummer, By, Linje1, Linje2} i oppsummeringen. Etter figuren (1 ved Eiendom) er {Agnt} riktig. Adressen er ikke en nøkkel, fordi en eiendom kan ha mange agenter (M). (2) Eieren får adressen som ekstra kandidatnøkkel, men med M ved Eieren kan én eiendom ha flere eiere. Adressen er derfor ikke en kandidatnøkkel der. Veiledningen begrunner også Leie som egen relasjon med at den har et attributt. Den egentlige grunnen er partiell deltakelse på begge sider (færre NULL-verdier). Poengene summerer til 10 av 12 (4 entiteter × 1 og 4 relasjoner × 1,5) hvis «relasjon» betyr relasjonene i ER-figuren. Veiledningen sier ikke om flerverdiattributtene gir de siste 2 poengene."
     }
   };
 
@@ -723,7 +761,7 @@
     ],
     hvorfor: {
       eli5: "<p>Å lage to lister og så slå dem sammen er det samme som å gå gjennom bussene én gang og ta med hver buss som passer med minst én av reglene.</p>",
-      normal: "<p>σ₁(buss) ∪ σ₂(buss) er det samme som σ_{1 ∨ 2}(buss). I SQL betyr det WHERE betingelse1 OR betingelse2. UNION fjerner duplikater, og det gjør DISTINCT også. Siden bid er primærnøkkel, kan ingen bid uansett komme to ganger fra samme tabell.</p>",
+      normal: "<p>I relasjonsalgebra er π<sub>bid</sub>(σ<sub>modell = 'Mercedes'</sub>(buss)) ∪ π<sub>bid</sub>(σ<sub>Year(vedlikeholdt) &lt; 2024</sub>(buss)) det samme som π<sub>bid</sub>(σ<sub>modell = 'Mercedes' ∨ Year(vedlikeholdt) &lt; 2024</sub>(buss)). I SQL betyr det WHERE betingelse1 OR betingelse2. UNION fjerner duplikater, og det gjør DISTINCT også. Siden bid er primærnøkkel, kan ingen bid uansett komme to ganger fra samme tabell.</p>",
       teknisk: "<p>Spørringene er likeverdige på alle forekomster. En rad kommer med i unionen hvis minst én av betingelsene er sann. OR er sann når minst én av sidene er sann. Er den ene siden NULL (ukjent) og den andre usann, blir OR NULL, og raden filtreres bort, akkurat som den ville blitt borte fra begge delspørringene. Duplikater: unionen er en mengde. I én spørring kan samme bid bare komme flere ganger hvis bid ikke er unik. Den er PK, så DISTINCT er strengt tatt overflødig, men den gjør likeverdigheten opplagt.</p>"
     },
     sensor: {
@@ -748,14 +786,14 @@
     ],
     hvorfor: {
       eli5: "<p>Hver buss har en fast sjåfør. Vi går gjennom alle turene og legger merke til dem der noen andre enn den faste sjåføren kjørte. Et VIEW er en lagret spørring som oppfører seg som en tabell.</p>",
-      normal: "<p>Sjåføren for turen står i busstur, og standardsjåføren står i buss. Vi joiner derfor på bid og sammenligner. Med CREATE VIEW kan andre spørringer bruke resultatet som en tabell. Hvis standardsid er NULL, gir sid != standardsid NULL (ukjent), og WHERE kaster raden. Vil vi ha med turer på busser uten standardsjåfør, må vi legge til IS NULL.</p>",
+      normal: "<p>Sjåføren for turen står i busstur, og standardsjåføren står i buss. Vi joiner derfor på bid og sammenligner. Med CREATE VIEW kan andre spørringer bruke resultatet som en tabell. Hvis standardsid er NULL, gir sid != standardsid NULL (ukjent), og WHERE kaster raden. Vil vi ha med turer på busser uten standardsjåfør, må vi legge til IS NULL. Turer der busstur.sid er NULL (ingen sjåfør registrert), faller også bort, fordi sid != standardsid da gir NULL. De er ikke med i vårt view heller. Vil du ha dem med, legger du til «OR bt.sid IS NULL» og skriver det i en kommentar.</p>",
       teknisk: "<p>WHERE beholder bare rader der betingelsen er sann. Sammenligning med NULL gir NULL, så uten IS NULL-delen forsvinner turer på busser som mangler standardsjåfør. Vi tolker «sjåføren var ikke standardsjåfør» slik at de skal med. Begge tolkninger bør kommenteres. Vi velger kolonnene fra busstur eksplisitt, slik at viewet ikke får to kolonner med samme navn. Sensors løsning unngår det med USING (bid). På eksempeldataene gir viewet de fire turene med buss 1 (sjåfør 1, standardsjåfør 8).</p>"
     },
     sensor: {
       deler: [ { del: "", fasit: "",
         sql: "CREATE VIEW ikke_standard AS\nSELECT *\nFROM busstur AS bt JOIN buss AS b USING (bid)\nWHERE bt.sid != b.standardsid;",
         kriterier: DELT_SENSOR_2X } ],
-      merknad: "Sensors løsning tar ikke med turer på busser der standardsid er NULL. Det er en gyldig tolkning, men den bør kommenteres."
+      merknad: "Sensors løsning tar ikke med turer på busser der standardsid er NULL, og heller ikke turer der busstur.sid er NULL. Begge gir NULL i sammenligningen og faller bort. Det er en gyldig tolkning, men den bør kommenteres."
     }
   };
 
