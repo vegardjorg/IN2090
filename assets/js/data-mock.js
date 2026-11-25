@@ -316,6 +316,7 @@
       type: "mock",
       svar: [
         { del: "Skjema",
+          fig: { draw: function (h) { IN.mockFig.skjema13(h); }, cap: "Skjemaet tegnet: én boks per relasjon, primærnøkkelen understreket, og en pil fra hver fremmednøkkel til nøkkelen den viser til. Eksamen krever bare tekstformen under." },
           skjema: "Kursholder(Ansattnr, Navn)\n  KN, PN: {Ansattnr}\n\nEpost(Ansattnr, Epost)\n  KN, PN: {Ansattnr, Epost}\n  FN: Ansattnr → Kursholder(Ansattnr)\n\n" +
             "Kurs(Kode, Tittel, Pris, Ansvarlig)\n  KN, PN: {Kode}\n  FN: Ansvarlig → Kursholder(Ansattnr)\n\n" +
             "Rom(Romnr, Plasser, Styrer)\n  KN: {Romnr}, {Styrer}\n  PN: {Romnr}\n  FN: Styrer → Kursholder(Ansattnr)\n\n" +
@@ -623,6 +624,7 @@
       type: "mock",
       intro: "<p>Kandidatnøkkel for S: A og D står aldri på en høyreside, og (AD)⁺ = {A, D, B, C, E, F} = S. Eneste KN er <b>{A, D}</b>. FD-ene A → B, B → C og E → F bryter BCNF, fordi venstresidene ikke er supernøkler.</p>",
       svar: [
+        { del: "Oversikt", fig: { draw: function (h) { IN.mockFig.tre33(h); }, cap: "Hele dekomposisjonen som et tre. Stegene under forklarer hver deling." } },
         { del: "Steg 1", tekst: "<p>Del på <span class=\"mono\">A → B</span>. A⁺ = {A, B, C}.</p>" +
             "<ul><li><span class=\"mono\">S₁(A, B, C)</span> med FD-ene A → B og B → C. KN: {A}.</li>" +
             "<li><span class=\"mono\">S₂(A, D, E, F)</span> med FD-ene AD → E og E → F. KN: {A, D}.</li></ul>",

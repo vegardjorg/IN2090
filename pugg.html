@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Puggekort · IN2090</title>
+  <meta name="description" content="Puggekort i IN2090: ER-symboler, lesing av kardinalitet og deltagelse, realisering, relasjonsalgebra-tegn, FD og normalformer og SQL-regler. Kortene du kan forsvinner, de andre kommer igjen til de sitter.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126b">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126b">
+  <style>
+    /* Puggekort: sidespesifikt */
+    .pg { max-width: 760px; outline: none; }
+    .pg [hidden] { display: none !important; }
+    .pg-intro { margin-bottom: .6rem; }
+    .pg-tools { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between; margin: .4rem 0; }
+    .pg-dir { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .pg-dir .btn[aria-pressed="true"] { background: var(--color-primary-container); border-color: var(--color-primary); font-weight: 600; }
+    .pg-status { font-size: .92rem; color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
+    .pg-bar { height: 6px; border-radius: 3px; background: var(--color-surface-container-high, var(--color-surface-container)); overflow: hidden; margin-bottom: .8rem; }
+    .pg-bar > span { display: block; height: 100%; width: 0; background: var(--color-tone-ok, var(--color-primary)); transition: width .25s; }
+    .pg-kort { border: 1px solid var(--color-outline-variant); border-radius: 14px; background: var(--color-surface-container-lowest); color: var(--color-on-surface);
+      padding: 1rem 1.1rem; min-height: 9rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .pg-side { overflow-wrap: anywhere; }
+    .pg-tekst { font-size: 1.05rem; line-height: 1.55; }
+    .pg-tekst p { margin: .3rem 0; }
+    .pg-tekst ol { margin: .3rem 0 .3rem 1.3rem; padding: 0; }
+    .pg-etter { font-size: .95rem; color: var(--color-on-surface-variant); margin-top: .4rem; }
+    .pg-fig { margin: .2rem 0; }
+    .pg-fig .exam-fig-h svg { max-width: 100%; height: auto; }
+    .pg-pre { font-family: var(--font-mono, ui-monospace, monospace); font-size: 14px; line-height: 1.5; padding: .55rem .75rem; margin: .3rem 0;
+      border-radius: 8px; background: var(--color-surface-container); border: 1px solid var(--color-outline-variant); overflow-x: auto; white-space: pre; }
+    .pg-skille { border-top: 2px dashed var(--color-outline-variant); margin: .8rem 0; }
+    .pg-tegn { font-family: var(--font-mono, ui-monospace, monospace); font-size: 1.7rem; display: inline-block; padding: .4rem 0; }
+    .pg-tegn sub { font-size: .55em; }
+    .pg-kilde { margin: .6rem 0 0; }
+    .pg-knapper { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0 .3rem; }
+    .pg-knapper .btn { min-height: 44px; min-width: 8.5rem; font-size: 1rem; }
+    .pg-kan { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-color: transparent; font-weight: 600; }
+    .pg-mer { font-weight: 600; }
+    .pg-hint { margin: .2rem 0 .8rem; }
+    .pg-ferdig { border: 1px solid var(--color-outline-variant); border-radius: 14px; padding: 1rem 1.1rem; background: var(--color-surface-container-lowest); }
+    .pg-ferdig-t { margin-top: 0; }
+    .pg-bunn { margin: .6rem 0; }
+    .pg-liste { margin: .4rem 0 1rem; }
+    .pg-liste > summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
+    .pg-liste-ul { list-style: none; padding: 0; margin: .3rem 0; }
+    .pg-liste-ul li { display: flex; gap: .6rem; align-items: center; justify-content: space-between; padding: .35rem .2rem; border-bottom: 1px solid var(--color-outline-variant); font-size: .93rem; }
+    .pg-li-kan .pg-li-t { color: var(--color-on-surface-variant); }
+    .pg-li-t code, .pg-li-t .pg-tegn { font-size: 1em; padding: 0; }
+  </style>
+</head>
+<body data-page="pugg">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Puggekort</h1>
+      <p class="lead">Øv i volum til figurene og tegnene sitter. Se på kortet, svar i hodet eller på papir, og snu. Kortene du kan, merker du, så forsvinner de. De andre kommer igjen og igjen til de sitter.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Kortstokker">
+      <button data-tab="er-symboler">ER-symboler</button>
+      <button data-tab="er-lesing">Les ER-figuren</button>
+      <button data-tab="realisering">Realisering</button>
+      <button data-tab="ra-tegn">Relasjonsalgebra</button>
+      <button data-tab="fd">FD og normalformer</button>
+      <button data-tab="sql-regler">SQL-regler</button>
+      <button data-tab="om">Slik virker det</button>
+    </div>
+
+    <section data-panel="er-symboler"><div id="pugg-er-symboler"></div></section>
+    <section data-panel="er-lesing" hidden><div id="pugg-er-lesing"></div></section>
+    <section data-panel="realisering" hidden><div id="pugg-realisering"></div></section>
+    <section data-panel="ra-tegn" hidden><div id="pugg-ra-tegn"></div></section>
+    <section data-panel="fd" hidden><div id="pugg-fd"></div></section>
+    <section data-panel="sql-regler" hidden><div id="pugg-sql-regler"></div></section>
+    <section data-panel="om" hidden>
+      <h3>Slik virker puggekortene</h3>
+      <ul>
+        <li><b>Vis svaret</b> (eller mellomrom) snur kortet. Svar før du snur, ellers lurer du bare deg selv.</li>
+        <li><b>✓ Kan den</b> (J) tar kortet ut av bunken. Det huskes i denne nettleseren til du nullstiller.</li>
+        <li><b>↻ Øv mer</b> (F) legger kortet tilbake noen plasser lenger ned, så det kommer igjen snart.</li>
+        <li><b>Nullstill kortstokken</b> tar alle kortene inn igjen. Under «Alle kortene i stokken» kan du også ta tilbake enkeltkort.</li>
+        <li>Stokkene med to retninger (ER-symboler, relasjonsalgebra) husker hver retning for seg. Øv begge veier: på eksamen skal du <i>tegne</i>, ikke bare kjenne igjen.</li>
+        <li>Blir et kort rettet eller endret, kommer det tilbake i bunken av seg selv.</li>
+      </ul>
+      <p>Notasjonen følger kurset (Chen-notasjon slik den er tegnet i lysarkene og ER-notatet). ISA er utelatt fordi lysarkene ikke viser noe fast symbol for den. Mer forklaring står på sidene
+        <a href="01-er.html">ER-modellering</a>, <a href="02-realisering.html">Realisering</a>, <a href="03-relasjonsalgebra.html">Relasjonsalgebra</a>,
+        <a href="06-fd.html">FD</a>, <a href="07-normalisering.html">Normalisering</a> og <a href="04-sql.html">SQL</a>.</p>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Puggekort</footer>
+
+  <script src="assets/js/core.js?v=20261126b"></script>
+  <script src="assets/js/symboler.js?v=20261126b"></script>
+  <script src="assets/js/viz-er.js?v=20261126b"></script>
+  <script src="assets/js/pugg.js?v=20261126b"></script>
+  <script src="assets/js/data-pugg.js?v=20261126b"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN;
+    if (!IN || !IN.pugg || !IN.PUGG) return;
+    IN.PUGG.forEach(function (deck) {
+      var h = document.getElementById("pugg-" + deck.id);
+      if (h) IN.pugg(h, deck, { side: "pugg" });
+    });
+  })();
+  </script>
+</body>
+</html>

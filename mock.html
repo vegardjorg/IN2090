@@ -7,9 +7,9 @@
   <title>Mock-eksamen · IN2090</title>
   <meta name="description" content="En prøveeksamen i IN2090 i samme form som H2023–H2025: modellering (30 p), SQL (50 p) og FD og normalisering (20 p) på 4 timer, med tidtaker, selvretting etter eksamensreglene og fullpoengssvar med poengfordeling.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261125p">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261125p">
-  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261125p">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126b">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126b">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261126b">
   <style>
     /* ---------- Mock-eksamen (bare denne siden) ---------- */
     .mock-regler { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 12px 0 20px; }
@@ -74,6 +74,18 @@
     body.mock-skjul .mock-fasitknapp,
     body.mock-skjul .mock-auto .qz-foot { display: none; }
     .mock-skjult-merk { display: none; }
+    .mfig { display: block; width: 100%; max-width: 480px; height: auto; margin: 0 auto; font-family: var(--font); }
+    .mfig-boks { fill: var(--color-surface-container-lowest); stroke: var(--color-on-surface); stroke-width: 1.3; }
+    .mfig-hode { fill: var(--color-primary-container); stroke: var(--color-on-surface); stroke-width: 1.3; }
+    .mfig-ok { fill: var(--color-tone-ok, var(--color-tertiary-container)); }
+    .mfig-navn { font-size: 13px; font-weight: 700; fill: var(--color-on-surface); }
+    .mfig-attr { font-size: 12.5px; fill: var(--color-on-surface); font-family: var(--font-mono, monospace); }
+    .mfig-pk { text-decoration: underline; font-weight: 700; }
+    .mfig-merk { font-size: 11px; fill: var(--color-on-surface-variant); }
+    .mfig-fd { font-size: 11.5px; font-weight: 600; fill: var(--color-primary); paint-order: stroke; stroke: var(--color-surface-container-lowest); stroke-width: 5px; stroke-linejoin: round; }
+    .mfig-fn { fill: none; stroke: var(--color-primary); stroke-width: 1.5; }
+    .mfig-pilhode { fill: var(--color-primary); }
+    .mfig-gren { stroke: var(--color-on-surface-variant); stroke-width: 1.4; }
     body.mock-skjul .mock-skjult-merk { display: block; }
 
     @media (max-width: 560px) {
@@ -133,11 +145,11 @@
 
       <h3>Modus</h3>
       <div class="mock-modus" role="group" aria-label="Velg modus">
-        <button class="btn" type="button" data-mock-modus="eksamen" aria-pressed="true">Eksamensmodus</button>
-        <button class="btn" type="button" data-mock-modus="ovelse" aria-pressed="false">Øvingsmodus</button>
+        <button class="btn" type="button" data-mock-modus="ovelse" aria-pressed="true">Øvingsmodus</button>
+        <button class="btn" type="button" data-mock-modus="eksamen" aria-pressed="false">Eksamensmodus</button>
       </div>
       <p class="small mock-status" data-mock-status></p>
-      <p class="small muted">I eksamensmodus er fanen «Løsning», «Vis fasit» og rettingen av avkrysningsoppgavene skjult til du leverer. I øvingsmodus kan du sjekke hver oppgave underveis. «Kjør» og «Sjekk» på SQL-oppgavene virker i begge modusene.</p>
+      <p class="small muted"><b>Øvingsmodus</b> er standard: JA/NEI og flervalg viser riktig eller galt med en gang du krysser (bryteren «Vis svar med en gang» slår det av), og «Løsning» med figurer, fullpoengssvar og poengliste er åpen i hver oppgave. Vil du prøve deg under eksamensforhold, velger du <b>eksamensmodus</b>: da er løsningen, «Vis fasit» og rettingen skjult til du leverer. «Kjør» og «Sjekk» på SQL-oppgavene virker i begge modusene.</p>
 
       <h3>Tidtaker</h3>
       <div id="mock-klokke"></div>
@@ -206,16 +218,16 @@
 
   <footer class="footer">IN2090-guide · Mock-eksamen</footer>
 
-  <script src="assets/js/core.js?v=20261125p"></script>
-  <script src="assets/js/symboler.js?v=20261125p"></script>
-  <script src="assets/js/sql-lang.js?v=20261125p"></script>
-  <script src="assets/js/pseudocode.js?v=20261125p"></script>
-  <script src="assets/js/viz-relation.js?v=20261125p"></script>
-  <script src="assets/js/viz-er.js?v=20261125p"></script>
-  <script src="assets/js/data-mock.js?v=20261125p"></script>
-  <script src="assets/js/sql-motor.js?v=20261125p"></script>
-  <script src="assets/js/sql-oppgave.js?v=20261125p"></script>
-  <script src="assets/js/side-mock.js?v=20261125p"></script>
+  <script src="assets/js/core.js?v=20261126b"></script>
+  <script src="assets/js/symboler.js?v=20261126b"></script>
+  <script src="assets/js/sql-lang.js?v=20261126b"></script>
+  <script src="assets/js/pseudocode.js?v=20261126b"></script>
+  <script src="assets/js/viz-relation.js?v=20261126b"></script>
+  <script src="assets/js/viz-er.js?v=20261126b"></script>
+  <script src="assets/js/data-mock.js?v=20261126b"></script>
+  <script src="assets/js/sql-motor.js?v=20261126b"></script>
+  <script src="assets/js/sql-oppgave.js?v=20261126b"></script>
+  <script src="assets/js/side-mock.js?v=20261126b"></script>
   <script>
   (function () {
     "use strict";

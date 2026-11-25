@@ -6,7 +6,7 @@
 
    Lagring (alt med prefiks in2090:):
      in2090:mock:tid          { start: ms | null, brukt: ms }      tidtakeren
-     in2090:mock:modus        "eksamen" | "ovelse"                 skjul fasit til innlevering?
+     in2090:mock:modus        "ovelse" (standard) | "eksamen"     skjul fasit til innlevering?
      in2090:mock:levert       "1" når prøven er levert
      in2090:mock:svar:<key>   fritekstsvaret
      in2090:mock:poeng:<key>  egne poeng (selvvurdering)
@@ -25,7 +25,8 @@
 
   /* ---------------- Modus: skjul fasit til prøven er levert ---------------- */
   function levert() { return store("levert") === "1"; }
-  function modus() { return store("modus") === "ovelse" ? "ovelse" : "eksamen"; }
+  /* Øvingsmodus er standard: svar med en gang og åpen løsning. Eksamensmodus må velges. */
+  function modus() { return store("modus") === "eksamen" ? "eksamen" : "ovelse"; }
   function oppdaterModus() {
     var skjul = modus() === "eksamen" && !levert();
     document.body.classList.toggle("mock-skjul", skjul);
@@ -50,6 +51,7 @@
     stoppKlokke();
     Object.keys(auto).forEach(function (k) { var a = auto[k]; if (a.h && !a.sjekket()) a.h.check(); });
     oppdaterModus();
+    tegnAutoPaaNytt();
     tegnResultat();
     if (IN.tabs && location.hash !== "#fane=resultat") location.hash = "fane=resultat";
   }
@@ -175,9 +177,13 @@
   /* ---------------- Oppgavekortene ---------------- */
   function sjekketNaa(host) { return !!host.querySelector(".qz-item.is-right, .qz-item.is-wrong, .qz-item.is-blank"); }
 
-  function autoDel(o, host) {
-    var r = o.auto.regel, holder = el("div", { class: "mock-auto" });
-    host.appendChild(holder);
+  /* Eksamensmodus (og levert prøve): ingen tilbakemelding før «Rett denne oppgaven», og svarene låses.
+     Øvingsmodus: følger den felles bryteren «Vis svar med en gang» (standard på), ingen lås.
+     Bytter du modus, tegnes avkrysningsoppgavene på nytt; svarene ligger lagret og blir med. */
+  function strengt() { return modus() === "eksamen" || levert(); }
+  function autoDel(o, host, holder) {
+    var r = o.auto.regel;
+    if (!holder) { holder = el("div", { class: "mock-auto" }); host.appendChild(holder); }
     function resultat(c) {
       var p = c.right * r.riktig + c.wrong * r.feil, sum = Math.max(r.min || 0, p);
       send("in:mock-poeng");
@@ -190,18 +196,26 @@
     var h;
     if (o.auto.type === "janei") {
       h = IN.tfTest(holder, o.auto.items.map(function (it) { return { s: it.s, answer: it.answer, explain: it.explain, kilde: false }; }),
-        { id: "mock-" + o.nr, instant: false, lock: true, labels: ["JA", "NEI"], keepOrder: true, note: note, checkLabel: "Rett denne oppgaven", result: resultat, report: function () {} });
+        modusOpts({ id: "mock-" + o.nr, labels: ["JA", "NEI"], keepOrder: true, note: note, checkLabel: "Rett denne oppgaven", result: resultat, report: function () {} }));
     } else {
       h = IN.quiz(holder, o.auto.items.map(function (it) {
         return { q: it.q, options: it.options, answer: it.answer, explain: it.explain,
           render: it.sql ? function (n) { IN.sqlBlock(n, it.sql); } : null };
-      }), { id: "mock-" + o.nr, instant: false, lock: true, inline: true, note: note, checkLabel: "Rett denne oppgaven", result: resultat, report: function () {} });
+      }), modusOpts({ id: "mock-" + o.nr, inline: true, note: note, checkLabel: "Rett denne oppgaven", result: resultat, report: function () {} }));
     }
-    auto[o.key] = { h: h, sjekket: function () { return sjekketNaa(holder); } };
+    auto[o.key] = { h: h, o: o, holder: holder, strengt: strengt(), sjekket: function () { return sjekketNaa(holder); } };
     // Var oppgaven rettet før siden ble lastet på nytt, vises poengsummen igjen
     if (h && sjekketNaa(holder)) {
       var res = holder.querySelector(".qz-result"); if (res) res.innerHTML = resultat(h.counts());
     }
+  }
+
+  function modusOpts(opts) { if (strengt()) { opts.instant = false; opts.lock = true; } return opts; }
+  function tegnAutoPaaNytt() {
+    Object.keys(auto).forEach(function (k) {
+      var a = auto[k];
+      if (a.strengt !== strengt()) { try { autoDel(a.o, null, a.holder); } catch (e) { if (window.console) console.error(e); } }
+    });
   }
 
   function friTekst(o, host) {
@@ -334,7 +348,7 @@
     [1, 2, 3].forEach(function (n) { feil("del" + n, function () { var h = qs("#mock-del" + n); if (h) lagDel(n, h); }); });
 
     IN.qsa("[data-mock-modus]").forEach(function (b) {
-      b.addEventListener("click", function () { if (levert()) return; store("modus", b.getAttribute("data-mock-modus")); oppdaterModus(); tegnResultat(); });
+      b.addEventListener("click", function () { if (levert()) return; store("modus", b.getAttribute("data-mock-modus")); oppdaterModus(); tegnAutoPaaNytt(); tegnResultat(); });
     });
     IN.qsa("[data-mock-lever]").forEach(function (b) { b.addEventListener("click", lever); });
     IN.qsa("[data-mock-nytt]").forEach(function (b) { b.addEventListener("click", startPaaNytt); });
@@ -357,6 +371,95 @@
     tegnKlokke();
     if (tid().start != null) kjørTikk();
   }
+
+  /* ---------------- Figurer i løsningene ----------------
+     Små SVG-er med temafarger (klassene mfig-* står i mock.html). Smale nok til å leses på mobil. */
+  var NS = "http://www.w3.org/2000/svg";
+  function sv(tag, a, t) { var n = document.createElementNS(NS, tag); for (var k in a) if (a[k] != null) n.setAttribute(k, a[k]); if (t != null) n.textContent = t; return n; }
+  function svgRot(host, w, h, label) {
+    var svg = sv("svg", { class: "mfig", viewBox: "0 0 " + w + " " + h, role: "img", "aria-label": label });
+    var defs = sv("defs"), m = sv("marker", { id: "mfig-pil", viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" });
+    m.appendChild(sv("path", { d: "M0,0 L10,5 L0,10 z", class: "mfig-pilhode" })); defs.appendChild(m); svg.appendChild(defs);
+    host.appendChild(svg); return svg;
+  }
+
+  /* 1.3: relasjonsskjemaet som bokser (PN understreket) med piler fra FN til nøkkelen den peker på */
+  function skjema13(host) {
+    var W = 380, BW = 140, HH = 22, RH = 20, XL = 40, XR = 210;
+    var R = {
+      Deltaker:   { x: XL, y: 0,   a: ["Pnr", "Navn"], pk: 1 },
+      Påmeldt:    { x: XL, y: 84,  a: ["Pnr", "Kode", "Betalt"], pk: 2 },
+      Kurs:       { x: XL, y: 188, a: ["Kode", "Tittel", "Pris", "Ansvarlig"], pk: 1 },
+      Kursholder: { x: XL, y: 312, a: ["Ansattnr", "Navn"], pk: 1 },
+      Økt:        { x: XR, y: 188, a: ["Kode", "Nr", "Dato", "Romnr"], pk: 2 },
+      Rom:        { x: XR, y: 312, a: ["Romnr", "Plasser", "Styrer"], pk: 1, kn: "Styrer" },
+      Epost:      { x: XR, y: 416, a: ["Ansattnr", "Epost"], pk: 2 }
+    };
+    var svg = svgRot(host, W, 486, "Relasjonsskjemaet til oppgave 1.3 med fremmednøkler som piler");
+    var gL = sv("g"), gB = sv("g"); svg.appendChild(gB); svg.appendChild(gL);
+    function rowY(n, i) { return R[n].y + HH + RH * i + RH / 2; }
+    Object.keys(R).forEach(function (n) {
+      var r = R[n], h = HH + RH * r.a.length;
+      gB.appendChild(sv("rect", { x: r.x, y: r.y, width: BW, height: h, rx: 4, class: "mfig-boks" }));
+      gB.appendChild(sv("rect", { x: r.x, y: r.y, width: BW, height: HH, rx: 4, class: "mfig-hode" }));
+      gB.appendChild(sv("text", { x: r.x + BW / 2, y: r.y + 15, "text-anchor": "middle", class: "mfig-navn" }, n));
+      r.a.forEach(function (a, i) {
+        var t = sv("text", { x: r.x + 10, y: rowY(n, i) + 4, class: "mfig-attr" + (i < r.pk ? " mfig-pk" : "") }, a);
+        gB.appendChild(t);
+        if (r.kn === a) gB.appendChild(sv("text", { x: r.x + BW - 8, y: rowY(n, i) + 4, "text-anchor": "end", class: "mfig-merk" }, "KN"));
+      });
+    });
+    function pil(d) { gL.appendChild(sv("path", { d: d, class: "mfig-fn", "marker-end": "url(#mfig-pil)" })); }
+    function rett(fra, fi, til, ti) {   // mellom kolonnene
+      var y1 = rowY(fra, fi), y2 = rowY(til, ti);
+      pil("M" + R[fra].x + "," + y1 + " C" + (R[fra].x - 15) + "," + y1 + " " + (R[til].x + BW + 15) + "," + y2 + " " + (R[til].x + BW + 1) + "," + y2);
+    }
+    function bue(fra, fi, til, ti, side) {   // i samme kolonne, bue ut til siden
+      var x = side < 0 ? R[fra].x : R[fra].x + BW, dx = side * 28, y1 = rowY(fra, fi), y2 = rowY(til, ti);
+      pil("M" + x + "," + y1 + " C" + (x + dx) + "," + y1 + " " + (x + dx) + "," + y2 + " " + (x + side * 1) + "," + y2);
+    }
+    bue("Påmeldt", 0, "Deltaker", 0, -1);
+    bue("Påmeldt", 1, "Kurs", 0, -1);
+    bue("Kurs", 3, "Kursholder", 0, -1);
+    rett("Økt", 0, "Kurs", 0);
+    bue("Økt", 3, "Rom", 0, 1);
+    rett("Rom", 2, "Kursholder", 0);
+    rett("Epost", 0, "Kursholder", 0);
+    // Forklaring øverst til høyre, der det er ledig plass
+    [["Understrek = primærnøkkel (PN)", "mfig-merk"], ["Pil = fremmednøkkel (FN), fra", "mfig-merk"], ["kolonnen til nøkkelen den viser til", "mfig-merk"],
+     ["KN = kandidatnøkkel i tillegg", "mfig-merk"]].forEach(function (l, i) {
+      svg.appendChild(sv("text", { x: XR, y: 20 + i * 18, class: l[1] }, l[0]));
+    });
+  }
+
+  /* 3.3: dekomposisjonstreet, med FD-en det deles på langs hver gren */
+  function tre33(host) {
+    var W = 380, svg = svgRot(host, W, 262, "Dekomposisjonstreet til oppgave 3.3");
+    var N = [
+      { id: "S",   x: 190, y: 8,   t: "S(A, B, C, D, E, F)", k: "KN {A, D}" },
+      { id: "S1",  x: 95,  y: 92,  t: "S₁(A, B, C)",       k: "KN {A}" },
+      { id: "S2",  x: 285, y: 92,  t: "S₂(A, D, E, F)",    k: "KN {A, D}" },
+      { id: "S11", x: 48,  y: 192, t: "S₁₁(B, C)",         k: "B → C", ok: 1 },
+      { id: "S12", x: 142, y: 192, t: "S₁₂(A, B)",         k: "A → B", ok: 1 },
+      { id: "S21", x: 238, y: 192, t: "S₂₁(E, F)",         k: "E → F", ok: 1 },
+      { id: "S22", x: 332, y: 192, t: "S₂₂(A, D, E)",      k: "AD → E", ok: 1 }
+    ], by = {};
+    N.forEach(function (n) { by[n.id] = n; });
+    var gL = sv("g"), gB = sv("g"); svg.appendChild(gL); svg.appendChild(gB);
+    [["S", "S1", "S2", "del på A → B"], ["S1", "S11", "S12", "del på B → C"], ["S2", "S21", "S22", "del på E → F"]].forEach(function (e) {
+      var p = by[e[0]], yb = p.y + 44;
+      [e[1], e[2]].forEach(function (c) { gL.appendChild(sv("line", { x1: p.x, y1: yb, x2: by[c].x, y2: by[c].y, class: "mfig-gren" })); });
+      gB.appendChild(sv("text", { x: p.x, y: yb + 22, "text-anchor": "middle", class: "mfig-fd" }, e[3]));
+    });
+    N.forEach(function (n) {
+      var w = n.ok ? 88 : n.id === "S" ? 170 : 124;
+      gB.appendChild(sv("rect", { x: n.x - w / 2, y: n.y, width: w, height: 44, rx: 6, class: n.ok ? "mfig-boks mfig-ok" : "mfig-boks" }));
+      gB.appendChild(sv("text", { x: n.x, y: n.y + 18, "text-anchor": "middle", class: "mfig-navn" }, n.t));
+      gB.appendChild(sv("text", { x: n.x, y: n.y + 35, "text-anchor": "middle", class: "mfig-merk" }, n.k));
+    });
+    svg.appendChild(sv("text", { x: W / 2, y: 256, "text-anchor": "middle", class: "mfig-merk" }, "Grønne bokser er på BCNF. Under hver står FD-en som gjelder der."));
+  }
+  IN.mockFig = { skjema13: skjema13, tre33: tre33 };
 
   IN.mockSide = { init: init, tegnResultat: tegnResultat };
 })();
