@@ -283,50 +283,118 @@ td.has-tip:hover, td.has-tip:focus-visible, th.has-tip:hover, th.has-tip:focus-v
 th.has-tip { text-decoration: underline dotted; text-underline-offset: 3px;
   text-decoration-color: color-mix(in srgb, var(--color-on-surface) 40%, transparent); }
 
-/* ---------- Eksamensoppgave (utvidbart kort) ---------- */
+/* ---------- Eksamensoppgave (utvidbart kort) ----------
+   Design: plan/gjennomgang/design-eksamenskort.md. Toppen er lik lukket og åpen; inne i kortet én
+   fanerad med fast fargekode og høyst ett kantnivå (scenen/pseudokoden i demoen). */
 .examtask {
   border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg);
-  background: var(--color-surface-container-lowest); margin: var(--d-sm) 0; overflow: hidden;
+  background: var(--color-surface-container-lowest); margin: var(--d-sm) 0; scroll-margin-top: 7.5rem;
 }
 .examtask + .examtask { margin-top: var(--d-sm); }
-.examtask-sum {
-  display: flex; align-items: center; gap: var(--d-sm);
-  padding: .7rem .9rem; cursor: pointer; list-style: none; user-select: none;
-  font-size: var(--text-sm);
+.examtask[open] { border-color: var(--color-outline); }
+/* Flatt kort (crash course: inne i et steg) – ingen egen kant, bare skillelinjer */
+.examtask.et-flat { border: 0; border-top: 1px solid var(--color-outline-variant); border-bottom: 1px solid var(--color-outline-variant); border-radius: 0; background: transparent; }
+.examtask.et-flat + .examtask.et-flat { margin-top: 0; border-top: 0; }
+.examtask.et-flat > .et-head { border-radius: 0; padding-left: .2rem; padding-right: .2rem; }
+.examtask.et-flat .et-tabs, .examtask.et-flat .et-foot { margin-left: 0; margin-right: 0; }
+.examtask.et-flat .et-pane { padding-left: .2rem; padding-right: .2rem; }
+
+/* Toppen: år · oppgave · poeng | tittel | status | pil */
+.et-head {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "meta title status chev"; align-items: center; gap: .25rem .75rem;
+  padding: .65rem .9rem; cursor: pointer; list-style: none; border-radius: var(--radius-lg);
 }
-.examtask-sum::-webkit-details-marker { display: none; }
-.examtask-sum:hover { background-image: linear-gradient(var(--state-hover), var(--state-hover)); }
-.examtask-sum:focus-visible { outline: var(--focus); outline-offset: -2px; }
+.et-head::-webkit-details-marker { display: none; }
+.et-head:hover { background-image: linear-gradient(var(--state-hover), var(--state-hover)); }
+.et-head:focus-visible { outline: var(--focus); outline-offset: -2px; }
+.et-meta { grid-area: meta; display: inline-flex; align-items: center; gap: .45rem; font-size: var(--text-xs); color: var(--color-on-surface-variant); white-space: nowrap; }
 .et-year {
   flex: none; font-weight: 700; font-size: var(--text-xs); letter-spacing: .3px;
   background: var(--color-primary); color: var(--color-on-primary, #fff);
   padding: 2px 8px; border-radius: var(--radius);
 }
-.et-title { font-weight: 600; color: var(--color-on-surface); }
-.et-nr { flex: none; }
-.et-pts {
-  flex: none; margin-left: auto; font-weight: 600; font-size: var(--text-xs);
-  color: var(--color-on-surface-variant);
-  background: var(--color-surface-container-high); padding: 2px 8px; border-radius: var(--radius);
-}
+.et-pts { font-weight: 600; font-variant-numeric: tabular-nums; }
+.et-title { grid-area: title; font-weight: 600; font-size: var(--text-md); color: var(--color-on-surface); min-width: 0; }
+.et-status { grid-area: status; font-size: var(--text-xs); font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.et-status:empty { display: none; }
+.et-status.ok { background: var(--color-tone-ok); color: var(--color-on-tone-ok); }
+/* «Øv mer» er nøytral (gult betyr «fra eksamen/sensor»): flate, stiplet kant, ↻ */
+.et-status.ovmer { background: var(--color-surface); color: var(--color-on-surface); border: 1px dashed var(--color-on-surface-variant); }
+.et-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .et-chev {
-  flex: none; width: 16px; height: 16px; margin-left: var(--d-xs);
-  border-right: 2px solid var(--color-on-surface-variant);
-  border-bottom: 2px solid var(--color-on-surface-variant);
-  transform: rotate(45deg); transition: transform .15s ease; align-self: center;
+  grid-area: chev; width: 10px; height: 10px; margin: 0 .2rem;
+  border-right: 2px solid var(--color-on-surface-variant); border-bottom: 2px solid var(--color-on-surface-variant);
+  transform: rotate(45deg) translate(-2px, -2px); transition: transform .15s ease;
 }
-.examtask[open] .et-chev { transform: rotate(225deg); }
-.examtask[open] .examtask-sum { border-bottom: 1px solid var(--color-outline-variant); }
-.examtask-body { padding: var(--d-sm) var(--d-md) var(--d-md); }
-.et-sec { margin-top: var(--d-sm); padding-left: .8rem; border-left: 3px solid var(--color-outline-variant); }
-.et-sec:first-child { margin-top: .4rem; }
-.et-sec.oppgave { border-left-color: var(--color-primary); }
-.et-sec.losning { border-left-color: var(--color-on-tone-ok); }
-.et-sec.kjerne  { border-left-color: var(--color-on-tone-info); }
-.et-sec.tips    { border-left-color: var(--color-on-tone-danger); }
-.et-lbl {
-  font-size: var(--text-xs); font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
-  color: var(--color-on-surface-variant); margin-bottom: .25rem;
+.examtask[open] > .et-head .et-chev { transform: rotate(225deg) translate(-2px, -2px); }
+@media (prefers-reduced-motion: reduce) { .et-chev { transition: none; } }
+
+/* Fanene inne i kortet: én rad, understrek, fast fargekode (eksisterende tone-farger):
+   Oppgave = info (blå) · Steg for steg = heavy (lilla) · Løsning = ok (grønn) · Sensorveiledning = warn (gul).
+   Prikken vises alltid; valgt fane får svak tonebakgrunn og strek i fargen, panelet en tynn strek øverst. */
+.et-tabs {
+  display: flex; gap: .15rem; margin: 0 .9rem; border-bottom: 1px solid var(--color-outline-variant);
+  overflow-x: auto; scrollbar-width: none; scroll-margin-top: 7.5rem;
+}
+.et-tabs::-webkit-scrollbar { display: none; }
+.et-fane {
+  flex: none; background: none; border: 0; cursor: pointer; font: inherit; font-size: var(--text-sm);
+  color: var(--color-on-surface-variant); padding: .55rem .7rem; min-height: 40px; white-space: nowrap;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.et-fane:hover { color: var(--color-on-surface); background-image: linear-gradient(var(--state-hover), var(--state-hover)); }
+.et-fane:focus-visible { outline: var(--focus); outline-offset: -2px; }
+.et-fane .et-fane-s { display: none; }
+.et-fane.t-oppgave { --t-bg: var(--color-tone-info);  --t-fg: var(--color-on-tone-info); }
+.et-fane.t-demo    { --t-bg: var(--color-tone-heavy); --t-fg: var(--color-on-tone-heavy); }
+.et-fane.t-losning { --t-bg: var(--color-tone-ok);    --t-fg: var(--color-on-tone-ok); }
+.et-fane.t-sensor  { --t-bg: var(--color-tone-warn);  --t-fg: var(--color-on-tone-warn); }
+.et-fane::before { content: ""; display: inline-block; width: .55em; height: .55em; border-radius: 50%;
+  margin-right: .4em; vertical-align: .05em; background: var(--t-fg, var(--color-outline)); }
+.et-fane[aria-selected="true"] { font-weight: 600; background: var(--t-bg, transparent); color: var(--t-fg, var(--color-on-surface));
+  box-shadow: inset 0 -2px 0 var(--t-fg, var(--color-primary)); }
+.et-pane { padding: .8rem .9rem .9rem; min-width: 0; scroll-margin-top: 7.5rem; }
+[role="tabpanel"].et-pane { padding: .8rem .9rem .9rem; }
+.et-pane[hidden] { display: none; }
+.et-pane:focus-visible { outline: var(--focus); outline-offset: -2px; }
+/* Tonestrek øverst i panelet: on-tone-fargen (≥ 3:1 mot flaten), ikke den lyse tonen */
+.et-pane.t-oppgave { box-shadow: inset 0 2px 0 var(--color-on-tone-info); }
+.et-pane.t-demo    { box-shadow: inset 0 2px 0 var(--color-on-tone-heavy); }
+.et-pane.t-losning { box-shadow: inset 0 2px 0 var(--color-on-tone-ok); }
+.et-pane.t-sensor  { box-shadow: inset 0 2px 0 var(--color-on-tone-warn); }
+
+/* Små overskrifter og ledetekst inne i en fane (ingen VERSAL-etiketter og striper) */
+.et-h { margin: 1.1rem 0 .35rem; font-size: var(--text-sm); font-weight: 700; color: var(--color-on-surface); }
+.et-pane > .et-h:first-child { margin-top: 0; }
+.et-lead { margin: 0 0 .6rem; color: var(--color-on-surface-variant); font-size: var(--text-xs); }
+.et-husk + .et-husk { margin-top: .5rem; }
+
+/* Avvik fra eksamensarket: én linje med ⚠ i varselfarge, ingen boks */
+.et-avvik { margin: .8rem 0 0; font-size: var(--text-xs); color: var(--color-on-tone-warn); }
+.et-avvik ul { margin: .2rem 0 0; padding-left: 1.1rem; }
+.et-avvik p { margin: 0; display: inline; }
+
+/* Bunnlinje: kilde til venstre, «Hvordan gikk det?» til høyre */
+.et-foot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem;
+  margin: 0 .9rem; padding: .55rem 0 .7rem; border-top: 1px solid var(--color-outline-variant);
+}
+.et-foot .et-kilde, .et-foot .et-fn { margin: 0; }
+.et-src { min-width: 0; flex: 1 1 18rem; }
+.et-src > * + * { margin-top: .15rem; }
+.et-foot .et-self { margin: 0; padding: 0; border: 0; }
+
+@media (max-width: 560px) {
+  .et-head { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "meta status chev" "title title title"; padding: .6rem .7rem; }
+  .et-title { font-size: var(--text-sm); }
+  .et-tabs { margin: 0 .5rem; }
+  .et-fane { padding: .5rem .55rem; }
+  .et-fane .et-fane-l { display: none; }
+  .et-fane .et-fane-s { display: inline; }
+  .et-pane, [role="tabpanel"].et-pane { padding: .7rem .7rem .8rem; }
+  .et-foot { margin: 0 .7rem; }
+  .examtask .sp-stage { padding: 8px; }
 }
 .et-content { font-size: var(--text-sm); line-height: 1.55; color: var(--color-on-surface); }
 .et-content :first-child { margin-top: 0; }
@@ -427,7 +495,19 @@ th.has-tip { text-decoration: underline dotted; text-underline-offset: 3px;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 .tabs button[role="tab"]:hover { color: var(--color-on-surface); background-image: linear-gradient(var(--state-hover), var(--state-hover)); }
-.tabs button[role="tab"][aria-selected="true"] { color: var(--color-on-surface); box-shadow: inset 0 -2px 0 var(--color-primary); font-weight: 600; }
+.tabs button[role="tab"][aria-selected="true"] {
+  background: var(--color-tone-ok); color: var(--color-on-tone-ok); box-shadow: inset 0 -2px 0 var(--color-on-tone-ok); font-weight: 600;
+}
+.tabs button[role="tab"]:focus-visible { outline: var(--focus); outline-offset: -2px; }
+/* Veksleknapper som bytter innhold (trevarianter, traverseringer, demoer per deloppgave …): samme grønne valgt-farge */
+.tv-switch .btn[aria-pressed="true"], .st-switch .btn[aria-pressed="true"],
+.btn-row .btn[aria-pressed="true"] {
+  background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-color: var(--color-on-tone-ok); font-weight: 600;
+}
+/* Deloppgave-knappene i «Steg for steg» får fanens egen tone (lilla), ikke grønt (grønt = Løsning) */
+.et-demo-tabs .btn[aria-pressed="true"] {
+  background: var(--color-tone-heavy); color: var(--color-on-tone-heavy); border-color: var(--color-on-tone-heavy); font-weight: 600;
+}
 [role="tabpanel"] { padding: 1.1rem 0; }
 [role="tabpanel"][hidden] { display: none; }
 
@@ -529,8 +609,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .sp-controls { display: flex; flex-wrap: wrap; gap: var(--d-sm); align-items: center; margin: .7rem 0 .4rem; }
 .sp-counter { color: var(--color-on-surface-variant); font-size: var(--text-sm); font-variant-numeric: tabular-nums; margin-left: auto; white-space: nowrap; }
 .sp-explain {
-  background: var(--color-surface-container-lowest); border: 1px solid var(--color-outline-variant); border-left: 4px solid var(--color-primary);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: var(--d-sm) var(--d-md); margin-top: .6rem; min-height: 3.2em;
+  border-left: 3px solid var(--color-primary); padding: .1rem 0 .1rem .7rem; margin-top: .5rem; min-height: 2.6em;
 }
 .sp-explain .tagline {
   display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
@@ -869,7 +948,6 @@ input[type=range].sok-range { width: min(100%, 18rem); }
 .tv-none { color: var(--color-on-surface-variant); font-style: italic; }
 
 .tv-switch { display: flex; flex-wrap: wrap; gap: .35rem; margin: .7rem 0 .2rem; }
-.tv-switch button[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
 .tv-mini { border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg); padding: .3rem; background: var(--color-surface); }
 .tv-facts { margin: .4rem 0 0; display: grid; grid-template-columns: max-content 1fr; gap: .15rem .8rem; font-size: var(--text-sm); }
 .tv-facts dt { color: var(--color-on-surface-variant); }
@@ -1332,7 +1410,6 @@ a.a4-block:hover { border-color: var(--color-primary); color: var(--color-primar
 
 /* === Blokk 7 · Strategi === */
 .st-switch { display: flex; flex-wrap: wrap; gap: .35rem; margin: .4rem 0 .7rem; }
-.st-switch .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
 .st-rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: .7rem; margin: .5rem 0 1rem; }
 .st-rule { position: relative; padding-left: 2.6rem; margin: 0; }
 .st-rule h4 { margin: .1rem 0 .3rem; }
@@ -1468,10 +1545,10 @@ body[data-page="strategi"] .bigo-compact .bigo-val { white-space: normal; overfl
 }
 
 /* ===== Fremdrift: egenvurdering på eksamenskort og tilbake til løypa ===== */
-.et-self{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-top:.8rem;padding-top:.6rem;border-top:1px dashed var(--color-outline-variant)}
+.et-self{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-top:.8rem}
 .et-self-q{margin-right:.2rem}
 .et-self .btn[aria-pressed="true"].et-self-ok{background:var(--color-tone-ok);color:var(--color-on-tone-ok);border-color:var(--color-on-tone-ok)}
-.et-self .btn[aria-pressed="true"].et-self-ov{background:var(--color-tone-warn);color:var(--color-on-tone-warn);border-color:var(--color-on-tone-warn)}
+.et-self .btn[aria-pressed="true"].et-self-ov{background:var(--color-surface);color:var(--color-on-surface);border:1px dashed var(--color-on-surface-variant);font-weight:600}
 .crash-ret{position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:.2rem;max-width:calc(100vw - 32px);background:var(--color-primary);color:var(--color-on-primary);border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);padding:.2rem .3rem .2rem .9rem;font-size:.9rem}
 .crash-ret-a{color:inherit;text-decoration:none;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:.35rem 0}
 .crash-ret-a:hover,.crash-ret-a:focus-visible{text-decoration:underline}
@@ -1634,7 +1711,7 @@ body.has-crash-ret .ny-versjon{bottom:72px}
 .cr-ssum:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-md); }
 .cr-sico { grid-area: ico; display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 2px solid var(--color-outline); font-size: .8rem; font-weight: 700; line-height: 1; }
 .cr-sico.ok { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-color: var(--color-on-tone-ok); }
-.cr-sico.q { background: var(--color-tone-warn); color: var(--color-on-tone-warn); border-color: var(--color-on-tone-warn); }
+.cr-sico.q { background: var(--color-surface); color: var(--color-on-surface); border-style: dashed; border-color: var(--color-on-surface-variant); }
 .cr-sico.half { color: var(--color-primary); border-color: var(--color-primary); }
 .cr-sid { grid-area: id; font-weight: 700; color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
 .cr-stit { grid-area: tit; font-weight: 600; overflow-wrap: anywhere; }
@@ -1659,7 +1736,7 @@ body.has-crash-ret .ny-versjon{bottom:72px}
 .cr-kort:hover, .cr-kort:focus-visible { border-color: var(--color-primary); }
 .cr-ktit { font-weight: 600; overflow-wrap: anywhere; }
 .cr-kstat.ok { color: var(--color-on-tone-ok); font-weight: 600; }
-.cr-kstat.q { color: var(--color-on-tone-warn); font-weight: 600; }
+.cr-kstat.q { color: var(--color-on-surface); font-weight: 600; padding: 0 .4rem; border: 1px dashed var(--color-on-surface-variant); border-radius: 999px; background: var(--color-surface); }
 .cr-ekstra { margin: .5rem 0; }
 .cr-ekstra > summary { cursor: pointer; font-weight: 600; font-size: var(--text-sm); padding: .3rem 0; }
 .cr-mangler { border-left: 3px solid var(--color-on-tone-caution); background: var(--color-tone-caution); color: var(--color-on-tone-caution); padding: .4rem .6rem; border-radius: 0 var(--radius) var(--radius) 0; }
@@ -1968,56 +2045,30 @@ body.has-crash-ret .ny-versjon{bottom:72px}
   background: var(--color-surface-container-high); font-weight: 600; letter-spacing: .2px;
 }
 .et-fn { margin: .45rem 0 0; font-size: var(--text-xs); color: var(--color-on-surface-variant); }
-/* Avvik fra eksamensarket: varselboks rett under oppgaven */
-.et-sec.avvik {
-  border-left-color: var(--color-on-tone-warn); background: var(--color-tone-warn); color: var(--color-on-tone-warn);
-  padding: .45rem .7rem; border-radius: 0 var(--radius-md) var(--radius-md) 0;
-}
-.et-sec.avvik .et-lbl { color: var(--color-on-tone-warn); }
-.et-sec.avvik .et-lbl::before { content: "⚠ "; }
-.et-sec.avvik .et-content { color: var(--color-on-tone-warn); }
-/* Steg-demo og perfekt svar: lukkede <details> som åpnes ved behov */
-.et-sec.demo { border-left-color: var(--c-target); }
-.et-sec.perfekt { border-left-color: var(--c-sorted); }
-.et-demo, .et-perfekt {
-  border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg);
-  background: var(--color-surface-container-lowest); min-width: 0;
-}
-.et-demo > summary, .et-perfekt > summary {
-  cursor: pointer; padding: .45rem .7rem; font-weight: 600; font-size: var(--text-sm);
-  color: var(--color-primary); list-style: none; border-radius: var(--radius-lg);
-}
-.et-demo > summary::-webkit-details-marker, .et-perfekt > summary::-webkit-details-marker { display: none; }
-.et-demo > summary:hover, .et-perfekt > summary:hover { background-image: linear-gradient(var(--state-hover), var(--state-hover)); }
-.et-demo > summary:focus-visible, .et-perfekt > summary:focus-visible { outline: var(--focus); outline-offset: -2px; }
-.et-perfekt > summary::before { content: "＋ "; }
-.et-perfekt[open] > summary::before { content: "− "; }
-.et-demo-ico { font-size: .8em; }
-.et-demo[open] > summary, .et-perfekt[open] > summary { border-bottom: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-.et-demo-body, .et-pf-body { padding: .6rem .7rem .7rem; min-width: 0; }
-.et-demo-body .et-demo-grid { gap: .8rem; }
+/* Steg-demoen i kortet: rammen rundt scenen og pseudokoden er det ENE kantnivået */
+.et-demo-grid { gap: 1rem; }
 .et-demo-left, .et-demo-pc { min-width: 0; }
-.et-demo-h { margin: .2rem 0 .4rem; font-size: var(--text-sm); }
+.et-demo-h { margin: 0 0 .35rem; font-size: var(--text-xs); font-weight: 600; color: var(--color-on-surface-variant); }
 .et-demo-lines { margin-top: .6rem; }
 .et-demo-tabs { display: flex; flex-wrap: wrap; gap: var(--d-xs); margin-bottom: .6rem; }
-.et-demo-tabs .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary, #fff); border-color: var(--color-primary); }
-.et-demo-check {
-  margin: .5rem 0 0; padding: .3rem .6rem; border-radius: var(--radius-md); font-size: var(--text-sm); font-weight: 600;
-  background: var(--color-tone-ok); color: var(--color-on-tone-ok); overflow-wrap: anywhere;
-}
+.et-demo-check { margin: .5rem 0 0; font-size: var(--text-sm); font-weight: 600; color: var(--color-on-tone-ok); overflow-wrap: anywhere; }
 .et-demo-check[hidden] { display: none; }
 .et-demo-err { margin: 0; }
 .et-bars-host .sp-stage { overflow-x: auto; }
-/* Perfekt svar, lag 1: vårt eget fullpoengssvar */
-.et-pf-title { margin: 0 0 .4rem; font-size: var(--text-sm); color: var(--color-on-tone-ok); }
-.et-pf-note {
-  margin: 0 0 .6rem; padding: .35rem .6rem; border-radius: var(--radius-md); font-size: var(--text-xs);
-  background: var(--color-tone-info); color: var(--color-on-tone-info);
-}
+.examtask .stepplayer { margin: 0; }
+.examtask .hs-pc { border: 0; background: none; padding: 0; box-shadow: none; }
+.examtask .hs-pc + .hs-pc { margin-top: .6rem; }
+.examtask .sp-presets { margin-bottom: .4rem; }
+.examtask .sp-controls { margin: .5rem 0 .35rem; }
+.examtask .legend { margin: .45rem 0 0; }
+.examtask .exam-fig-h { max-width: 100%; }
+/* Fanen «Løsning»: vårt fullpoengssvar, flatt. Deloppgaven står som liten overskrift over teksten
+   (ikke i en smal kolonne – lange navn som «Ingen negative kanter» overlappet teksten ved siden av). */
+.et-pf-note { margin: 0 0 .6rem; font-size: var(--text-xs); color: var(--color-on-surface-variant); }
 .et-pf-intro { margin-bottom: .5rem; }
-.et-pf-del { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 0 .4rem; margin: .7rem 0 0; }
+.et-pf-del { margin: 1rem 0 0; }
 .et-pf-del:first-of-type { margin-top: .2rem; }
-.et-pf-dl { font-weight: 700; color: var(--color-primary); text-align: right; }
+.et-pf-dl { font-weight: 700; color: var(--color-primary); margin-bottom: .2rem; overflow-wrap: anywhere; }
 .et-pf-main { min-width: 0; }
 .et-pf-main > * + * { margin-top: .4rem; }
 .et-pf-code { min-width: 0; overflow-x: auto; }
@@ -2030,28 +2081,21 @@ body.has-crash-ret .ny-versjon{bottom:72px}
 .et-pf-kt, .et-pf-poeng { margin: .35rem 0 0; }
 .et-pf-poeng { font-size: var(--text-xs); color: var(--color-on-surface-variant); }
 .et-pf-why .explain-block { margin: .5rem 0 0; }
-.et-pf-anslag {
-  margin-top: .7rem; padding: .45rem .7rem; border-radius: var(--radius-md);
-  background: var(--color-tone-heavy); color: var(--color-on-tone-heavy);
-}
-.et-pf-anslag-lbl { font-size: var(--text-xs); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; margin-bottom: .2rem; }
+.et-pf-why .explain-bar { margin-bottom: .2rem; }
+.et-pf-anslag { margin-top: .9rem; }
+.et-pf-anslag-lbl { font-size: var(--text-sm); font-weight: 700; margin-bottom: .2rem; }
 .et-pf-anslag ul { margin: .2rem 0 0; padding-left: 1.2rem; }
-/* Perfekt svar, lag 2: sensorveiledningen ordrett, med kildelinje */
-.et-pf-sensor { margin-top: .9rem; border-top: 1px dashed var(--color-outline-variant); padding-top: .5rem; }
-.et-pf-sensor > summary { cursor: pointer; font-weight: 600; font-size: var(--text-sm); color: var(--color-on-tone-warn); }
-.et-pf-sensor > summary:focus-visible { outline: var(--focus); outline-offset: 2px; }
-.et-pf-src { margin: .35rem 0 .3rem; font-size: var(--text-xs); color: var(--color-on-surface-variant); overflow-wrap: anywhere; }
+/* Fanen «Sensorveiledning»: kildelinje øverst, sitatlinje i stedet for farget boks */
+.et-pf-src { margin: 0 0 .3rem; font-size: var(--text-xs); color: var(--color-on-surface-variant); overflow-wrap: anywhere; }
 blockquote.sensor {
-  margin: 0; padding: .5rem .8rem; border-left: 4px solid var(--color-on-tone-warn);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0; background: var(--color-tone-warn); color: var(--color-on-tone-warn);
+  margin: 0; padding: .1rem 0 .1rem .8rem; border-left: 3px solid var(--color-on-tone-warn);
   min-width: 0; overflow-wrap: anywhere;
 }
 blockquote.sensor p { margin: .3rem 0; }
 blockquote.sensor ul { margin: .3rem 0; padding-left: 1.2rem; }
 blockquote.sensor .et-pf-code { margin: .4rem 0; }
 blockquote.sensor .et-sv-krit, blockquote.sensor .et-sv-fasit + .et-sv-fasit { margin-top: .5rem; }
-blockquote.sensor .pseudo { background: var(--color-surface); color: var(--color-on-surface); }
-.et-sv-del + .et-sv-del { margin-top: .7rem; padding-top: .5rem; border-top: 1px solid color-mix(in srgb, var(--color-on-tone-warn) 25%, transparent); }
+.et-sv-del + .et-sv-del { margin-top: .7rem; padding-top: .5rem; border-top: 1px solid var(--color-outline-variant); }
 .et-sv-dl { font-weight: 700; }
 .et-sv-seq { font-family: var(--font-mono); font-size: var(--text-xs); line-height: 1.5; white-space: pre-wrap; margin: .3rem 0; }
 .et-pf-merknad { margin: .45rem 0 0; font-size: var(--text-xs); color: var(--color-on-surface-variant); }
@@ -2059,11 +2103,6 @@ blockquote.sensor .pseudo { background: var(--color-surface); color: var(--color
 .qz-kilde { margin: .35rem 0 0; font-size: var(--text-xs); color: var(--color-on-surface-variant); overflow-wrap: anywhere; }
 .qz-kilde span[title] { text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
 .qz-kilde-fn { margin: .6rem 0 0; font-size: var(--text-xs); color: var(--color-on-surface-variant); }
-@media (max-width: 480px) {
-  .et-demo-body, .et-pf-body { padding: .5rem .5rem .6rem; }
-  .et-pf-del { grid-template-columns: 1.9rem minmax(0, 1fr); }
-  blockquote.sensor { padding: .45rem .6rem; }
-}
 
 /* ===== Variabellinje ===== */
 /* varline.js: én diskret rad øverst i demofeltet med variablene i pseudokoden (i = 3 · j = 2 · n = 8).

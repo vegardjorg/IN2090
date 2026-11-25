@@ -107,7 +107,8 @@
 .schema-ic { color: var(--color-primary); }
 .schema-tools { display: flex; flex-wrap: wrap; gap: .4rem .8rem; align-items: center; padding: 0 var(--d-md) .4rem; }
 .schema-body { padding: 0 var(--d-md) .8rem; }
-.schema-list { display: grid; gap: .55rem; }
+.schema-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: .55rem; }
+.schema-list > * { min-width: 0; overflow-x: auto; }   /* lange tabelldefinisjoner ruller inne i skjemaet på mobil */
 .schema-line { font-size: 13.5px; overflow-wrap: anywhere; }
 .schema-tn { color: var(--color-primary); }
 .schema-col.pk { text-decoration: underline; text-underline-offset: 3px; }
@@ -170,5 +171,8 @@
 .bank-year[hidden] { display: none; }
 .bank-yh { margin: .4rem 0 .5rem; }
 .bank-year > .schema { margin-bottom: .7rem; }
-.bank-cards { display: grid; gap: .6rem; }
+.bank-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: .6rem; }
+.bank-cards > * { min-width: 0; }   /* brede figurer (ER) skal rulle inne i kortet, ikke strekke siden */
+.examtask pre, .schema-intro pre { overflow-x: auto; max-width: 100%; }   /* kode/fasit i <pre> på mobil */
+.examtask .et-pane table.tbl { display: block; max-width: 100%; overflow-x: auto; }
 .bank-oppg .exam-fig { margin: .6rem 0; }

@@ -205,15 +205,16 @@
   };
 
   /* Nivåstyrt tekstblokk med egen lokal bryter.
-     variants: { eli5?, normal?, teknisk? } (streng-HTML eller DOM-node). */
+     variants: { eli5?, normal?, teknisk? } (streng-HTML eller DOM-node). opts: { label, initial, noSwitch } */
   IN.explain = function (host, variants, opts) {
     if (typeof host === "string") host = qs(host);
     opts = opts || {};
     var block = el("div", { class: "explain-block" });
     var scope = IN.levelScope({ initial: opts.initial || null });
+    // noSwitch: ingen lokal nivåbryter, teksten følger nivået øverst på siden (brukes i eksamenskortet)
     var bar = el("div", { class: "explain-bar" }, [
       opts.label ? el("span", { class: "explain-label", text: opts.label }) : null,
-      scope.el
+      opts.noSwitch ? null : scope.el
     ]);
     var bodyEl = el("div", { class: "explain-body" });
     block.appendChild(bar); block.appendChild(bodyEl);
@@ -334,13 +335,16 @@
     activate(start, false);
 
     // Dyplenke til en eksamensoppgave: #fane=<fane>&oppg=<element-id eller kanonisk nøkkel, f.eks. H2023-2>.
-    // &demo=1 åpner også steg-demoen i kortet, &perfekt=1 (eller &svar=1) åpner «Perfekt svar».
+    // Fanen i kortet: &demo=1 → «Steg for steg», &perfekt=1 (eller &svar=1) → «Løsning»,
+    // &vis=oppgave|demo|losning|sensor → den fanen. Fokus flyttes til toppen av kortet.
     // Oppgavekortene bygges av sidens eget skript, så vi venter til siden er lastet,
     // åpner kortet og ruller dit.
     function reveal() {
       var m = location.hash.match(/oppg=([\w-]+)/);
       if (!m) return;
-      var wantDemo = /[#&]demo=1\b/.test(location.hash), wantSvar = /[#&](svar|perfekt)=1\b/.test(location.hash);
+      var vis = (location.hash.match(/[#&]vis=(oppgave|demo|losning|sensor)\b/) || [])[1] ||
+        (/[#&]demo=1\b/.test(location.hash) ? "demo" : /[#&](svar|perfekt)=1\b/.test(location.hash) ? "losning" : null);
+      var focused = false;
       try { history.scrollRestoration = "manual"; } catch (e) {}
       var go = function () {
         var t = document.getElementById(m[1]) || qs('details.examtask[data-key="' + m[1] + '"]');
@@ -351,14 +355,31 @@
         var card = t.matches && t.matches("details") ? t : t.querySelector("details.examtask");
         if (card) {
           card.open = true;
-          var dd = wantDemo && qs("details.et-demo", card); if (dd && !dd.open) dd.open = true;
-          var pd = wantSvar && qs("details.et-perfekt", card); if (pd && !pd.open) pd.open = true;
+          // Andre kjøring (etter 450 ms) skal ikke ta fanen tilbake hvis leseren allerede har byttet
+          if (vis && !focused && card._show && (card._tabs || []).indexOf(vis) >= 0) card._show(vis, false);
+          var head = qs("summary", card);
+          if (head && !focused) { try { head.focus({ preventScroll: true }); } catch (e) { head.focus(); } }
+          focused = true;
         }
         var top = t.getBoundingClientRect().top + window.pageYOffset - IN.stickyH(); // under de faste linjene
         window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
       };
       // To ganger: demoene over kan endre høyde rett etter lasting
-      var run = function () { setTimeout(go, 60); setTimeout(go, 450); };
+      // Lenker fra forsiden har også et tekstfragment (:~:text=…). Nettleseren ruller da selv til teksten
+      // litt etter lasting og midtstiller den. Ruller siden uten at leseren har gjort noe i det første
+      // halvannet sekundet, legger vi kortet tilbake under de faste linjene.
+      var settle = function () {
+        var user = false, tm = null, evs = ["wheel", "touchstart", "keydown", "pointerdown"];
+        var mark = function () { user = true; };
+        var onScroll = function () { if (!user) { clearTimeout(tm); tm = setTimeout(go, 120); } };
+        evs.forEach(function (e) { window.addEventListener(e, mark, { passive: true }); });
+        window.addEventListener("scroll", onScroll, { passive: true });
+        setTimeout(function () {
+          window.removeEventListener("scroll", onScroll);
+          evs.forEach(function (e) { window.removeEventListener(e, mark); });
+        }, 1500);
+      };
+      var run = function () { setTimeout(go, 60); setTimeout(function () { go(); settle(); }, 450); };
       if (document.readyState === "complete") run();
       else window.addEventListener("load", run);
     }
@@ -764,61 +785,190 @@
     if (v.nodeType) return v;
     return String(v);
   }
-  IN.examTask = function (host, data) {
+  /* Kortet (design: plan/gjennomgang/design-eksamenskort.md, logg: bygg-eksamenskort.md):
+       <details.examtask data-key>
+         summary.et-head:  år · oppgave · poeng | tittel | statusbrikke | pil   (lik lukket og åpen)
+         .examtask-body:   én fanerad (WAI-ARIA): Oppgave | Steg for steg | Løsning | Sensorveiledning
+                           med fast fargekode (t-oppgave/t-demo/t-losning/t-sensor), ett panel om gangen,
+                           og en bunnlinje med kildelinje + «Hvordan gikk det?».
+     Fanene bygges først når de vises. Oppgave er valgt når kortet åpnes.
+     opts.variant: "flat" → ingen ytre kant (kort inne i et steg i crash course).
+     card._show(id[, fokus]) bytter fane (brukes av dyplenker: &demo=1, &perfekt=1/&svar=1, &vis=<fane>). */
+  // Kort der `losning` er dekket av fullpoengssvaret (målt med plan/losning-dekning.mjs, alle punkter
+  // ≥ 85 % dekket, og lest gjennom). Her viser «Løsning» bare fullpoengssvaret. Alle andre kort med
+  // begge viser `losning` under svaret som «Kort fortalt», så ingenting forsvinner.
+  var LOSNING_DEKKET = {
+    "heap:H2025-5": 1, "heap:H2022-10": 1, "traer:H2021-8": 1, "traer:H2020-6": 1, "traer:H2024-2": 1,
+    "hashing:H2025-2": 1, "hashing:H2020-4": 1, "hashing:H2022-7": 1, "grafer:H2024-4": 1,
+    "grafer:H2021-11": 1, "grafer:H2021-7": 1, "grafer:H2024-8": 1, "grafer:H2021-12": 1,
+    "strategi:H2021-6": 1, "strategi:H2020-8": 1, "strategi:H2020-7": 1
+  };
+  var TABDEF = {
+    oppgave: { long: "Oppgave", short: "Oppgave" },
+    demo:    { long: "Steg for steg", short: "Steg" },
+    losning: { long: "Løsning", short: "Løsning" },
+    sensor:  { long: "Sensorveiledning", short: "Sensor" }
+  };
+  var etUid = 0;
+  IN.examTask = function (host, data, opts) {
     if (typeof host === "string") host = qs(host);
     if (!host) return;
     var d = data || {};
-    var card = el("details", { class: "examtask" });
+    opts = opts || {};
+    var n = ++etUid;
+    var card = el("details", { class: "examtask" + (opts.variant === "flat" ? " et-flat" : "") });
     if (d.id) card.id = d.id;
-    if (d.open) card.setAttribute("open", "");
-    var sum = el("summary", { class: "examtask-sum" });
-    if (d.year) sum.appendChild(el("span", { class: "et-year", text: d.year }));
-    sum.appendChild(el("span", { class: "et-title", text: d.title || "Eksamensoppgave" }));
-    if (d.oppgave_nr) sum.appendChild(el("span", { class: "et-nr muted small", text: d.oppgave_nr }));
-    if (d.points != null) sum.appendChild(el("span", { class: "et-pts", text: d.points + "p" }));
-    sum.appendChild(el("span", { class: "et-chev", "aria-hidden": "true" }));
-    card.appendChild(sum);
-
     if (d.key) card.dataset.key = d.key;
-
-    var body = el("div", { class: "examtask-body" });
-    function section(label, cls, content) {
-      if (content == null || content === "") return null;
-      var sec = el("div", { class: "et-sec " + cls });
-      sec.appendChild(el("div", { class: "et-lbl", text: label }));
-      var c = el("div", { class: "et-content" });
-      if (content.nodeType) c.appendChild(content);
-      else c.innerHTML = String(content);
-      sec.appendChild(c);
-      body.appendChild(sec);
-      return c;
-    }
-    var oc = section("Oppgaven", "oppgave", htmlFromListish(d.oppgave, false));
-    if (oc) {
-      var kl = kildeLinje(d);
-      if (kl) oc.insertBefore(kl, oc.firstChild);
-      if (d.poengkilde === "sv") {
-        var stars = qsa(".et-p", oc);
-        stars.forEach(function (p) { p.textContent = p.textContent.replace(/p\)\s*$/, "p*)"); });
-        if (stars.length) oc.appendChild(el("p", { class: "et-fn", text: "* Poengene per deloppgave er hentet fra sensorveiledningen. Eksamensarket viser bare totalen." }));
-      }
-    }
-    if (d.avvik) section("Avvik fra eksamensarket", "avvik", proseHTML(d.avvik));
-    section("Løsningsgjennomgang", "losning", htmlFromListish(d.losning, true));
-    if (d.kjerne) section("Kjernepoeng", "kjerne", htmlFromListish(d.kjerne, false));
-    section("Eksamenstips", "tips", htmlFromListish(d.tips, false));
+    var base = "etk" + n;
 
     var pf = d.perfekt || (d.key && IN.PERFEKT[d.key]) || null;
     if (pf) stripSitat(pf);
+    var type = pf ? (pf.type || "eksamen") : null;
+    if (pf && ["eksamen", "skjonn", "mock"].indexOf(type) < 0) { if (window.console) console.warn("perfekt: ukjent type", type, d.key); type = "eksamen"; }
     var demos = d.demo ? (Array.isArray(d.demo) ? d.demo : [d.demo]) : [];
     if (d.deler) demos = demos.filter(function (x) { return !x.del || d.deler.indexOf(x.del) >= 0; });
-    if (demos.length) body.appendChild(demoSection(d, demos, pf));
-    if (pf) { var ps = perfektSection(d, pf); if (ps) body.appendChild(ps); }
 
-    IN.symbolTips(body);
-    body.appendChild(selfAssess(card, d));
+    // Toppen
+    var chip = el("span", { class: "et-status" });
+    var nr = String(d.oppgave_nr || "").replace(/\s*\(mock\)\s*$/i, "").replace(/^Oppgave\s*/i, "Oppgave ");
+    card.appendChild(el("summary", { class: "et-head" }, [
+      el("span", { class: "et-meta" }, [
+        d.year ? el("span", { class: "et-year", text: d.year }) : null,
+        nr ? el("span", { class: "et-nr", text: nr }) : null,
+        d.points != null ? el("span", { class: "et-pts", text: d.points + " p" }) : null
+      ]),
+      el("span", { class: "et-title", text: d.title || "Eksamensoppgave" }),
+      chip,
+      el("span", { class: "et-chev", "aria-hidden": "true" })
+    ]));
+
+    // Fanene som finnes for dette kortet
+    var hasLos = d.losning != null && d.losning !== "" && !(Array.isArray(d.losning) && !d.losning.length);
+    var order = ["oppgave"];
+    if (demos.length) order.push("demo");
+    if (pf || hasLos || d.kjerne || d.tips) order.push("losning");
+    if (pf && pf.sensor && type !== "mock") order.push("sensor");
+    if (pf && pf.sensor && type === "mock" && window.console) console.warn("perfekt: «sensor» ignoreres på mock-oppgaver (" + (d.key || d.title) + ")");
+
+    var body = el("div", { class: "examtask-body" });
+    var bar = el("div", { class: "et-tabs", role: "tablist", "aria-label": "Deler av oppgaven" });
+    var btns = {}, panes = {}, built = {};
+    order.forEach(function (id, i) {
+      var tid = base + "-t-" + id, pid = base + "-p-" + id;
+      var b = el("button", { class: "et-fane t-" + id, type: "button", role: "tab", id: tid, "aria-controls": pid,
+        "aria-selected": i ? "false" : "true", tabindex: i ? "-1" : "0" },
+        [el("span", { class: "et-fane-l", text: TABDEF[id].long }),
+         el("span", { class: "et-fane-s", text: TABDEF[id].short, "aria-hidden": "true" })]);
+      var p = el("div", { class: "et-pane et-content t-" + id, role: "tabpanel", id: pid, "aria-labelledby": tid, tabindex: "0" });
+      p.hidden = i > 0;
+      b.addEventListener("click", function () { show(id, false); });
+      bar.appendChild(b); btns[id] = b; panes[id] = p;
+    });
+    bar.addEventListener("keydown", function (e) {
+      var cur = order.indexOf(curTab);
+      var nx = e.key === "ArrowRight" ? cur + 1 : e.key === "ArrowLeft" ? cur - 1 : e.key === "Home" ? 0 : e.key === "End" ? order.length - 1 : null;
+      if (nx == null) return;
+      e.preventDefault();
+      show(order[(nx + order.length) % order.length], true);
+    });
+    var curTab = order[0], resetOnOpen = false;
+    function show(id, focus) {
+      if (!btns[id]) return false;
+      resetOnOpen = false;
+      curTab = id;
+      order.forEach(function (k) {
+        var on = k === id;
+        btns[k].setAttribute("aria-selected", on ? "true" : "false");
+        btns[k].setAttribute("tabindex", on ? "0" : "-1");
+        panes[k].hidden = !on;
+      });
+      if (!built[id]) {
+        built[id] = true;
+        try { if (builders[id]) builders[id](panes[id]); IN.symbolTips(panes[id]); }
+        catch (e) { panes[id].appendChild(el("p", { class: "muted small", text: "Kunne ikke vise denne delen." })); if (window.console) console.error(e); }
+      }
+      if (focus) btns[id].focus();
+      // Fanerada kan rulle sidelengs på mobil: hold valgt fane synlig
+      if (bar.scrollWidth > bar.clientWidth) {
+        var br = btns[id].getBoundingClientRect(), rr = bar.getBoundingClientRect();
+        if (br.left < rr.left || br.right > rr.right) bar.scrollLeft += br.left - rr.left - 16;
+      }
+      return true;
+    }
+    // Oppgave er valgt når kortet åpnes (men ikke når en dyplenke nettopp har valgt en annen fane)
+    card.addEventListener("toggle", function () {
+      if (!card.open) resetOnOpen = true;
+      else if (resetOnOpen && curTab !== order[0]) show(order[0], false);
+    });
+
+    // Oppgave (bygges med en gang): oppgavetekst + avvik som én varsellinje
+    var src = el("div", { class: "et-src" });
+    var kl = kildeLinje(d); if (kl) src.appendChild(kl);
+    var op = panes.oppgave;
+    setContent(op, htmlFromListish(d.oppgave, false));
+    if (d.poengkilde === "sv") {
+      var stars = qsa(".et-p", op);
+      stars.forEach(function (p) { p.textContent = p.textContent.replace(/p\)\s*$/, "p*)"); });
+      if (stars.length) src.appendChild(el("p", { class: "et-fn", text: "* Poengene per deloppgave er hentet fra sensorveiledningen. Eksamensarket viser bare totalen." }));
+    }
+    if (d.avvik) {
+      var av = el("div", { class: "et-avvik", role: "note" });
+      var items = Array.isArray(d.avvik) ? d.avvik : [d.avvik];
+      av.appendChild(el("b", { text: "⚠ Avvik fra eksamensarket:" }));
+      if (items.length === 1) { av.appendChild(document.createTextNode(" ")); av.appendChild(el("span", { html: String(items[0]).replace(/^\s*<p>([\s\S]*)<\/p>\s*$/, "$1") })); }
+      else av.appendChild(el("ul", null, items.map(function (x) { return el("li", { html: String(x) }); })));
+      op.appendChild(av);
+    }
+    built.oppgave = true;
+
+    var builders = {
+      demo: function (p) { demoPane(p, d, demos, pf); },
+      losning: function (p) {
+        var los = htmlFromListish(d.losning, true);
+        if (pf) {
+          buildPerfekt(p, d, pf, type);
+          if (hasLos && !LOSNING_DEKKET[IN.pageId() + ":" + d.key]) {
+            p.appendChild(el("h4", { class: "et-h", text: "Kort fortalt" }));
+            p.appendChild(setContent(el("div", { class: "et-kort" }), los));
+          }
+        } else if (hasLos) p.appendChild(setContent(el("div", { class: "et-kort" }), los));
+        if (d.kjerne || d.tips) {
+          p.appendChild(el("h4", { class: "et-h", text: "Husk til eksamen" }));
+          if (d.kjerne) p.appendChild(setContent(el("div", { class: "et-husk" }), htmlFromListish(d.kjerne, false)));
+          if (d.tips) p.appendChild(setContent(el("div", { class: "et-husk" }), htmlFromListish(d.tips, false)));
+        }
+      },
+      sensor: function (p) { buildSensor(p, d, pf, type); }
+    };
+
+    order.forEach(function (k) { body.appendChild(panes[k]); });
+    body.insertBefore(bar, body.firstChild);
+    IN.symbolTips(op);
+
+    // Bunnlinje: kilde til venstre, «Hvordan gikk det?» til høyre (lik i alle faner)
+    var self = selfAssess(card, d);
+    body.appendChild(el("div", { class: "et-foot" }, [src.firstChild ? src : null, self]));
     card.appendChild(body);
     host.appendChild(card);
+
+    // Statusbrikken i toppen følger den lagrede fremdriften (kort:<side>:<id>)
+    function paintStatus() {
+      var r = IN.progress && IN.progress.get(cardKey(card, d)), s = r && r.status;
+      clear(chip);
+      chip.className = "et-status" + (s === "ok" || s === "ovmer" ? " " + s : "");
+      if (s === "ok" || s === "ovmer") {
+        chip.appendChild(el("span", { class: "et-sr", text: "Status: " }));
+        chip.appendChild(document.createTextNode(s === "ok" ? "✓ Fikk det til" : "↻ Øv mer"));
+      }
+    }
+    document.addEventListener("in:progress", function (e) {
+      var k = e.detail && e.detail.key;
+      if (card.isConnected && (!k || k === cardKey(card, d))) paintStatus();
+    });
+    paintStatus();
+    if (d.open) card.open = true;
+    card._show = show;
+    card._tabs = order.slice();
     return card;
   };
 
@@ -876,13 +1026,6 @@
     if (v.nodeType) node.appendChild(v); else node.innerHTML = String(v);
     return node;
   }
-  function etSec(label, cls) {
-    var sec = el("div", { class: "et-sec " + cls });
-    sec.appendChild(el("div", { class: "et-lbl", text: label }));
-    var c = el("div", { class: "et-content" });
-    sec.appendChild(c);
-    return { sec: sec, c: c };
-  }
   function normAns(v) { return String(v == null ? "" : v).replace(/\s+/g, " ").replace(/\s*,\s*/g, ", ").trim(); }
   function demoWant(demo, pf) {
     if (demo.fasit != null) return String(demo.fasit);
@@ -891,62 +1034,34 @@
     return s ? String(s.fasitVerdi) : null;
   }
 
-  /* Seksjon «Steg for steg»: lukket <details>, demoen monteres først når den åpnes. */
-  function demoSection(d, demos, pf) {
-    var s = etSec("Steg for steg", "demo");
-    var multi = demos.length > 1;
-    var det = el("details", { class: "et-demo" });
-    var label = multi ? (d.demoLabel || "Se algoritmen kjøre på oppgavens input") : (demos[0].label || "Kjør algoritmen på oppgavens input");
-    det.appendChild(el("summary", { html: "<span class=\"et-demo-ico\" aria-hidden=\"true\">▶</span> " + label }));
-    var inner = el("div", { class: "et-demo-body" });
-    det.appendChild(inner);
-    var mounted = false;
-    det.addEventListener("toggle", function () {
-      if (!det.open || mounted) return;
-      mounted = true;
-      if (!multi) { IN.mountExamDemo(inner, demos[0], { perfekt: pf }); return; }
-      var tabs = el("div", { class: "et-demo-tabs", role: "group", "aria-label": "Velg demo" });
-      var panes = demos.map(function (dm, i) {
-        var pane = el("div", { class: "et-demo-pane" }); pane.hidden = i > 0;
-        var done = false;
-        var b = el("button", { class: "btn sm", type: "button", "aria-pressed": i === 0 ? "true" : "false",
-          text: dm.tab || dm.label || dm.del || ("Demo " + (i + 1)) });
-        b.addEventListener("click", function () {
-          IN.qsa("button", tabs).forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-          panes.forEach(function (p) { p.el.hidden = p.el !== pane; });
-          if (!done) { done = true; IN.mountExamDemo(pane, dm, { perfekt: pf }); }
-        });
-        tabs.appendChild(b);
-        var o = { el: pane, mount: function () { if (!done) { done = true; IN.mountExamDemo(pane, dm, { perfekt: pf }); } } };
-        return o;
+  /* Fanen «Steg for steg»: demoen monteres når fanen vises første gang. Flere demoer får en liten
+     knapperad (.et-demo-tabs / .et-demo-pane) øverst i fanen. Inne i kortet viser demoen ikke
+     «Kjøretid og minne» og «Koden, linje for linje»; de står allerede i fanen over kortet. */
+  function demoPane(host, d, demos, pf) {
+    var ctx = { perfekt: pf, iKort: true };
+    var lead = demos.length > 1 ? d.demoLabel : demos[0].label;
+    if (lead) host.appendChild(el("p", { class: "et-lead", text: lead }));
+    if (demos.length === 1) { IN.mountExamDemo(host, demos[0], ctx); return; }
+    var tabs = el("div", { class: "et-demo-tabs", role: "group", "aria-label": "Velg deloppgave" });
+    var panes = demos.map(function (dm, i) {
+      var pane = el("div", { class: "et-demo-pane" }); pane.hidden = i > 0;
+      var done = false;
+      function mount() { if (!done) { done = true; IN.mountExamDemo(pane, dm, ctx); } }
+      var b = el("button", { class: "btn sm", type: "button", "aria-pressed": i === 0 ? "true" : "false",
+        text: dm.tab || dm.label || dm.del || ("Demo " + (i + 1)) });
+      b.addEventListener("click", function () {
+        IN.qsa("button", tabs).forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        panes.forEach(function (p) { p.el.hidden = p.el !== pane; });
+        mount();
       });
-      inner.appendChild(tabs);
-      panes.forEach(function (p) { inner.appendChild(p.el); });
-      panes[0].mount();
+      tabs.appendChild(b);
+      return { el: pane, mount: mount };
     });
-    s.c.appendChild(det);
-    return s.sec;
+    host.appendChild(tabs);
+    panes.forEach(function (p) { host.appendChild(p.el); });
+    panes[0].mount();
   }
 
-  /* Seksjon «Perfekt svar»: vårt fullpoengssvar + (eksamen/skjønn) sensorveiledningen ordrett. */
-  function perfektSection(d, pf) {
-    var type = pf.type || "eksamen";
-    if (["eksamen", "skjonn", "mock"].indexOf(type) < 0) { if (window.console) console.warn("perfekt: ukjent type", type, d.key); type = "eksamen"; }
-    var s = etSec("Perfekt svar", "perfekt");
-    var det = el("details", { class: "et-perfekt" });
-    det.appendChild(el("summary", { text: type === "mock" ? "Vis vårt fullpoengssvar (anslag)" : "Vis perfekt svar" }));
-    var inner = el("div", { class: "et-pf-body" });
-    det.appendChild(inner);
-    var built = false;
-    function build() {
-      if (built) return; built = true;
-      try { buildPerfekt(inner, d, pf, type); IN.symbolTips(inner); }
-      catch (e) { inner.appendChild(el("p", { class: "muted small", text: "Kunne ikke vise svaret." })); if (window.console) console.error(e); }
-    }
-    det.addEventListener("toggle", function () { if (det.open) build(); });
-    s.c.appendChild(det);
-    return s.sec;
-  }
   function algoOf(k) {
     if (!k) return null;
     if (typeof k === "string") return (IN.algos && IN.algos[k]) || null;
@@ -995,8 +1110,7 @@
   function buildPerfekt(host, d, pf, type) {
     var deler = d.deler || pf.deler || null;
     var ours = el("div", { class: "et-pf-ours" });
-    var title = type === "skjonn" ? "Vårt forslag til et fullpoengssvar" : type === "mock" ? "Vårt fullpoengssvar (anslag)" : "Vårt fullpoengssvar";
-    ours.appendChild(el("h5", { class: "et-pf-title", text: title }));
+    // Ingen overskrift «Vårt fullpoengssvar»: fanen heter «Løsning».
     if (type === "skjonn") ours.appendChild(el("p", { class: "et-pf-note", text: "Sensor vurderer denne oppgaven etter skjønn. Det finnes ikke ett fasitsvar, så dette er ett eksempel på et svar som dekker kriteriene." }));
     if (type === "mock") ours.appendChild(el("p", { class: "et-pf-note", text: "Dette er en øvingsoppgave laget for guiden, ikke en eksamensoppgave. Svaret og poengfordelingen er vårt eget anslag, ikke en sensorveiledning." }));
     if (pf.intro) ours.appendChild(el("div", { class: "et-pf-intro", html: proseHTML(pf.intro) }));
@@ -1018,29 +1132,26 @@
       if (sv.etter) main.appendChild(el("div", { class: "et-pf-txt", html: proseHTML(sv.etter) }));
       if (sv.kjoretid) main.appendChild(el("p", { class: "et-pf-kt", html: "<b>Kjøretid:</b> " + sv.kjoretid }));
       if (sv.poeng) main.appendChild(el("p", { class: "et-pf-poeng", html: "<b>Gir poeng for:</b> " + (Array.isArray(sv.poeng) ? sv.poeng.join("; ") : sv.poeng) }));
-      if (sv.hvorfor) { var hh = el("div", { class: "et-pf-why" }); main.appendChild(hh); IN.explain(hh, sv.hvorfor, { label: "Hvorfor dette gir full pott:" }); }
+      if (sv.hvorfor) { var hh = el("div", { class: "et-pf-why" }); main.appendChild(hh); IN.explain(hh, sv.hvorfor, { label: "Hvorfor dette gir full pott:", noSwitch: true }); }
       box.appendChild(main);
       ours.appendChild(box);
     });
-    if (pf.hvorfor) { var wh = el("div", { class: "et-pf-why" }); ours.appendChild(wh); IN.explain(wh, pf.hvorfor, { label: "Hvorfor dette gir full pott:" }); }
+    if (pf.hvorfor) { var wh = el("div", { class: "et-pf-why" }); ours.appendChild(wh); IN.explain(wh, pf.hvorfor, { label: "Hvorfor dette gir full pott:", noSwitch: true }); }
     if (type === "mock" && pf.anslag) {
       var an = el("div", { class: "et-pf-anslag" }, [el("div", { class: "et-pf-anslag-lbl", text: "Vårt anslag over poengfordelingen" })]);
       var al = listOrText(pf.anslag); if (al) an.appendChild(al);
       ours.appendChild(an);
     }
     host.appendChild(ours);
-
-    if (type === "mock") {
-      if (pf.sensor && window.console) console.warn("perfekt: «sensor» ignoreres på mock-oppgaver (" + (d.key || d.title) + ")");
-      return;
-    }
-    var sv = pf.sensor;
+  }
+  /* Fanen «Sensorveiledning»: kildelinje øverst, så sensorveiledningen ordrett med en sitatlinje. */
+  function buildSensor(host, d, pf, type) {
+    var sv = pf && pf.sensor, deler = d.deler || pf.deler || null;
     if (!sv) return;
-    var sdet = el("details", { class: "et-pf-sensor" });
-    sdet.appendChild(el("summary", { text: "Sensorveiledningen sier (ordrett)" }));
     var y = examYear(d), nr = oppgNr(d);
     var src = sv.kilde || ("Kilde: sensorveiledning IN2090" + (y ? " " + y : "") + (nr ? ", oppgave " + nr : ""));
-    sdet.appendChild(el("p", { class: "et-pf-src", text: src }));
+    host.appendChild(el("p", { class: "et-pf-src", text: src }));
+    host.appendChild(el("p", { class: "et-lead", text: "Ordrett fra sensorveiledningen. Vårt eget svar står under «Løsning»." }));
     var bq = el("blockquote", { class: "sensor" });
     function sensorPart(p) {
       var w = el("div", { class: "et-sv-del" });
@@ -1058,9 +1169,8 @@
     }
     if (sv.deler && sv.deler.length) filterDeler(sv.deler, deler).forEach(function (p) { bq.appendChild(sensorPart(p)); });
     else bq.appendChild(sensorPart(sv));
-    sdet.appendChild(bq);
-    if (sv.merknad) sdet.appendChild(el("p", { class: "et-pf-merknad", html: "<b>Merk:</b> " + sv.merknad }));
-    host.appendChild(sdet);
+    host.appendChild(bq);
+    if (sv.merknad) host.appendChild(el("p", { class: "et-pf-merknad", html: "<b>Merk:</b> " + sv.merknad }));
   }
 
   /* ---------- Motorer for innebygde demoer ----------
@@ -1105,7 +1215,7 @@
     return { ok: normAns(got) === normAns(want), got: normAns(got), want: normAns(want) };
   };
 
-  /* IN.mountExamDemo(host, demo, { perfekt })
+  /* IN.mountExamDemo(host, demo, { perfekt, iKort })   iKort: true inne i eksamenskortet (se demoPane)
      demo: {
        engine: "heap",                 navn i IN.ENGINES
        gen: "heapInsert" | "heapGen.median" | fn,   generator (IN.gen[navn], sti i IN, eller funksjon)
@@ -1143,18 +1253,21 @@
       var right = el("div", { class: "et-demo-pc" + (multi ? " hs-pcs" : "") }, [el("h4", { class: "et-demo-h", text: "Pseudokode (følger demoen)" })]);
       var handle = null;
       var det = null;
+      var iKort = !!ctx.iKort;   // inne i eksamenskortet: ingen «Koden, linje for linje» og ingen «Kjøretid og minne»
       if (algos.length && IN.pseudo && IN.pseudo.render) {
-        det = el("details", { class: "card et-demo-lines" }, [el("summary", { html: "<b>Koden, linje for linje</b> (" + algos.map(function (a) { return plainEsc(a.name); }).join(", ") + ")" })]);
+        if (!iKort) det = el("details", { class: "card et-demo-lines" }, [el("summary", { html: "<b>Koden, linje for linje</b> (" + algos.map(function (a) { return plainEsc(a.name); }).join(", ") + ")" })]);
         var hs = algos.map(function (a) {
           var box = el("div", { class: "hs-pc" }), pc = el("div");
           if (multi) box.appendChild(el("h5", { class: "hs-pc-title", text: a.title || a.name }));
           box.appendChild(pc); right.appendChild(box);
           var hd = IN.pseudo.render(pc, a, { head: !multi });
-          var bo = IN.pseudo.bigO && IN.pseudo.bigO(a, { compact: true }); if (bo) box.appendChild(bo);
-          var ex = el("div");
-          if (multi) det.appendChild(el("h5", { style: "margin:.8rem 0 .3rem", text: a.title || a.name }));
-          det.appendChild(ex);
-          if (IN.pseudo.explainer) IN.pseudo.explainer(ex, a, {});
+          if (!iKort) {
+            var bo = IN.pseudo.bigO && IN.pseudo.bigO(a, { compact: true }); if (bo) box.appendChild(bo);
+            var ex = el("div");
+            if (multi) det.appendChild(el("h5", { style: "margin:.8rem 0 .3rem", text: a.title || a.name }));
+            det.appendChild(ex);
+            if (IN.pseudo.explainer) IN.pseudo.explainer(ex, a, {});
+          }
           return { box: box, hd: hd };
         });
         if (!multi) handle = hs[0].hd;
@@ -1218,13 +1331,14 @@
 
   /* Egenvurdering nederst i hvert eksamenskort → kort:<side>:<id> {status:"ok"|"ovmer"}.
      Id-en hentes når den trengs: kortets egen id, ellers nærmeste forelder med id. */
+  function cardKey(card, d) {
+    var id = card.id || ((card.parentElement && card.parentElement.closest("[id]")) || {}).id;
+    if (!id) id = "t-" + String((d.year || "") + "-" + (d.title || "")).toLowerCase().replace(/[^a-z0-9æøå]+/g, "-");
+    return "kort:" + IN.pageId() + ":" + id;
+  }
   function selfAssess(card, d) {
     var wrap = el("div", { class: "et-self", role: "group", "aria-label": "Hvordan gikk oppgaven?" });
-    function key() {
-      var id = card.id || ((card.parentElement && card.parentElement.closest("[id]")) || {}).id;
-      if (!id) id = "t-" + String((d.year || "") + "-" + (d.title || "")).toLowerCase().replace(/[^a-z0-9æøå]+/g, "-");
-      return "kort:" + IN.pageId() + ":" + id;   // nøkkel inne i fremdriftsregisteret (in2090:fremdrift:v1), ikke egen localStorage-nøkkel
-    }
+    function key() { return cardKey(card, d); }
     var bOk = el("button", { class: "btn sm et-self-ok", type: "button", text: "✓ Fikk det til" });
     var bOv = el("button", { class: "btn sm et-self-ov", type: "button", text: "↻ Må øve mer" });
     function paint() {
@@ -1243,6 +1357,7 @@
     wrap.appendChild(el("span", { class: "et-self-q muted small", text: "Hvordan gikk det?" }));
     wrap.appendChild(bOk); wrap.appendChild(bOv);
     card.addEventListener("toggle", function () { if (card.open) paint(); });
+    document.addEventListener("in:progress", function (e) { var k = e.detail && e.detail.key; if (!k || k === key()) paint(); });
     setTimeout(paint, 0);
     return wrap;
   }
@@ -1574,7 +1689,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261125d";
+  IN.VERSION = "20261125i";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
