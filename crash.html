@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crash course · IN2090</title>
+  <meta name="description" content="Crash course i IN2090: en løype i eksamensrekkefølge (ER, realisering, SQL, FD og normalisering), vektet etter forventede eksamenspoeng. Velg Ekspress, Standard eller Grundig, og følg stegene med kjerne, oppskrift, eksempel, eksamenskort og sjekk.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <style>
+    /* Sidespesifikt for crash.html (resten av .cr-* ligger i styles.css) */
+    .cr-eks { margin: .5rem 0 .75rem; }
+    .cr-eks > p.small { margin: 0 0 .3rem; }
+    .cr-eks pre, .cr-eks .pc, .cr-eks code { overflow-wrap: anywhere; }
+    .cr-eks > div { overflow-x: auto; max-width: 100%; }
+    .cr-kles { display: flex; flex-wrap: wrap; gap: .4rem .8rem; align-items: center; margin: .25rem 0 .6rem; }
+    .cr-kles .cr-kstat:empty { display: none; }
+    /* Kortet fyller hele bredden i steget; flex-raden fra styles.css (lenkekort) ville latt det vokse ut av skjermen */
+    .cr-klist > li.cr-kli.is-inline { display: block; min-width: 0; }
+    .cr-kli.is-inline > details.examtask { min-width: 0; max-width: 100%; }
+    .cr-step, .cr-sbody { min-width: 0; }
+    .cr-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .5rem; margin: .6rem 0 0; padding: 0; list-style: none; }
+    .cr-facts li { border: 1px solid var(--color-outline-variant, rgba(127,127,127,.35)); border-radius: 10px; padding: .45rem .6rem; font-size: var(--text-sm); }
+    .cr-facts b { display: block; font-size: 1.05em; }
+    .cr-gp td:nth-child(2) { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body data-page="crash">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+
+  <!-- Fast fremdriftslinje: vises når toppkortet (#cr-top) er rullet ut av syne -->
+  <div class="cr-stick" id="cr-stick" data-sticky role="region" aria-label="Fremdrift i løypa">
+    <div class="cr-stick-in">
+      <div class="cr-stick-prog">
+        <div class="cr-bar" id="cr-stick-bar" role="progressbar" aria-label="Fremdrift i valgt lengde" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="cr-stick-fill"></span></div>
+        <span class="cr-stick-pct" id="cr-stick-pct">0 %</span>
+        <span class="cr-stick-ab small muted" id="cr-stick-ab"></span>
+      </div>
+      <button class="btn sm cr-go cr-stick-go" type="button" id="cr-stick-go">Fortsett →</button>
+      <a class="btn sm ghost cr-stick-ov" href="#cr-top" id="cr-stick-ov">Oversikt</a>
+      <label class="cr-sr" for="cr-stick-len">Lengde på løypa</label>
+      <select class="cr-stick-len" id="cr-stick-len"></select>
+    </div>
+    <p class="cr-stick-note small" id="cr-stick-note" role="status" aria-live="polite"></p>
+  </div>
+
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Crash course</h1>
+      <p class="lead">En løype gjennom IN2090 i samme rekkefølge som eksamen: ER, realisering, SQL, FD og normalisering.
+        Stegene er vektet etter hvor mange poeng de pleier å gi. Du velger hvor grundig:
+        <b>Ekspress</b> (ca. <span data-cr-timer="E">5</span> timer, de tyngste stegene),
+        <b>Standard</b> (ca. <span data-cr-timer="S">11</span> timer, alle oppgavetypene og en generalprøve) eller
+        <b>Grundig</b> (ca. <span data-cr-timer="G">20</span> timer, alle eksamensoppgavene). Du kan bytte underveis uten å miste noe.</p>
+      <ul class="cr-facts" aria-label="Fakta om eksamen">
+        <li><b>4 timer</b>100 poeng, 2,4 min per poeng</li>
+        <li><b>Alle trykte og skrevne</b>hjelpemidler (H2023–H2025)</li>
+        <li><b>Tre deler</b>modellering · SQL · FD og normalisering</li>
+        <li><b>Jukselapp</b><a href="assets/eksamensnotater.pdf" target="_blank" rel="noopener">Eksamensnotater (PDF)</a></li>
+      </ul>
+    </div>
+
+    <section class="card cr-top is-fresh" id="cr-top" aria-label="Start og lengde">
+      <p class="cr-start-hint" id="cr-start-hint">Velg lengde, så starter du her.</p>
+      <div class="cr-go-row">
+        <div class="cr-len-col">
+          <div class="cr-len" role="radiogroup" aria-label="Lengde på løypa" id="cr-len"></div>
+          <p class="small muted cr-len-txt" id="cr-len-txt"></p>
+        </div>
+        <div class="cr-actions">
+          <button class="btn cr-go cr-go-lg" type="button" id="cr-fortsett">Start løypa →</button>
+        </div>
+      </div>
+      <p class="small muted" id="cr-fortsett-txt"></p>
+      <p class="small cr-len-note" id="cr-len-note" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card cr-queue" id="cr-queue" aria-labelledby="cr-queue-h">
+      <h2 id="cr-queue-h">Repetisjonskø</h2>
+      <p class="small muted">Steg og eksamenskort du har merket «Må øve mer», med de tyngste først. Et steg forsvinner
+        fra køen når du klarer sjekken eller merker kortet «Fikk det til» igjen.</p>
+      <ol class="cr-qlist" id="cr-qlist"></ol>
+    </section>
+
+    <div id="cr-etapper"></div>
+
+    <section class="card cr-tools" aria-labelledby="cr-tools-h">
+      <h2 id="cr-tools-h">Flytt eller nullstill fremdriften</h2>
+      <p class="small muted">Fremdriften lagres bare i denne nettleseren. Med en overføringskode kan du ta den med
+        fra mobilen til PC-en eller omvendt. Ingenting sendes til noen server.</p>
+      <details class="cr-transfer">
+        <summary>Eksporter eller importer</summary>
+        <div class="cr-transfer-body">
+          <div class="cr-tr-row">
+            <button class="btn sm" type="button" id="cr-export">Lag overføringskode</button>
+            <button class="btn sm ghost" type="button" id="cr-copy" hidden>Kopier</button>
+          </div>
+          <label class="small" for="cr-code">Overføringskode</label>
+          <textarea id="cr-code" class="cr-code" rows="3" spellcheck="false" autocomplete="off" placeholder="Lim inn en kode fra en annen enhet her, eller lag en ny over."></textarea>
+          <div class="cr-tr-row">
+            <button class="btn sm primary" type="button" id="cr-import">Importer koden</button>
+          </div>
+          <p class="small" id="cr-tr-msg" role="status" aria-live="polite"></p>
+          <p class="small muted">Ved import beholdes det nyeste resultatet for hver oppgave. Ingenting du har gjort på denne enheten blir borte.</p>
+        </div>
+      </details>
+      <div class="cr-tr-row">
+        <button class="btn sm cr-reset" type="button" id="cr-reset">Nullstill fremdrift</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Crash course · <a href="01-er.html">Start med blokk 1, ER-modellering</a></footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/stepplayer.js?v=20261125n"></script>
+  <script src="assets/js/varline.js?v=20261125n"></script>
+  <script src="assets/js/viz-relation.js?v=20261125n"></script>
+  <script src="assets/js/viz-er.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125n"></script>
+  <script src="assets/js/bank.js?v=20261125n"></script>
+  <script src="assets/js/data-crash.js?v=20261125n"></script>
+  <script src="assets/js/side-crash.js?v=20261125n"></script>
+</body>
+</html>

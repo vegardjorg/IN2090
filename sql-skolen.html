@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL-skolen · IN2090</title>
+  <meta name="description" content="SQL-skolen i IN2090: kursets skrivemåte for SQL og relasjonsalgebra, linjeleser med forklaring per linje på tre nivåer, Parsons-oppgaver for spørringer, øving i å lese spørringer og en guide til hvordan eksamenssvar i SQL skrives.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261125n">
+  <style>
+    /* SQL-skolen: sidespesifikt */
+    .sqs-ra { font-family: var(--font-mono, ui-monospace, monospace); }
+    .sqs-ra sub { font-size: .75em; }
+    .sqs-ra-blokk { padding: .45rem .7rem; margin: .3rem 0 .6rem; border-radius: 8px; background: var(--color-surface-container);
+      border: 1px solid var(--color-outline-variant); overflow-x: auto; line-height: 1.7; }
+    .sqs-kode { font-family: var(--font-mono, ui-monospace, monospace); font-size: .92em; white-space: pre-wrap; word-break: break-word; background: none; padding: 0; }
+    .sqs-pre { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; line-height: 1.45; padding: .5rem .7rem; margin: .3rem 0;
+      border-radius: 8px; background: var(--color-surface-container); border: 1px solid var(--color-outline-variant); overflow-x: auto; white-space: pre; }
+    .sqs-tab td:first-child { white-space: normal; min-width: 8.5rem; }
+    .sqs-tab td .mono { word-break: break-word; }
+    .sqs-res { margin: .5rem 0; }
+    .sqs-res > summary { cursor: pointer; font-weight: 600; }
+    .sqs-rad, .sqs-ff { margin: .8rem 0; }
+    .sqs-rad h4, .sqs-ff h4 { margin-top: .1rem; }
+    .sqs-rad-row { align-items: center; }
+    .sqs-tall { width: 5.5rem; padding: .3rem .45rem; font: inherit; border-radius: 6px; border: 1px solid var(--color-outline);
+      background: var(--color-surface); color: var(--color-on-surface); }
+    .sqs-ok { color: var(--color-on-tone-ok); background: var(--color-tone-ok); padding: .35rem .6rem; border-radius: 6px; }
+    .sqs-bad { color: var(--color-on-tone-danger); background: var(--color-tone-danger); padding: .35rem .6rem; border-radius: 6px; }
+    .sqs-ff-status { margin-top: .4rem; }
+    .pseudo .pc-line.sqs-feillinje { outline: 2px solid var(--color-on-tone-danger); outline-offset: -2px; }
+    .sqs-ta { width: 100%; box-sizing: border-box; font-family: var(--font-mono, ui-monospace, monospace); font-size: 14px; line-height: 1.45;
+      padding: .5rem .6rem; border-radius: 8px; border: 1px solid var(--color-outline); background: var(--color-surface); color: var(--color-on-surface); resize: vertical; }
+    .sqs-sitat { margin: .4rem 0; padding: .5rem .9rem; border-left: 4px solid var(--color-primary); background: var(--color-surface-container); border-radius: 0 8px 8px 0; }
+    .sqs-sitat ul { margin: .3rem 0 0 1.1rem; padding: 0; }
+    .sqs-sj { display: flex; gap: .5rem; align-items: flex-start; margin: .3rem 0; }
+    .sqs-sj input { margin-top: .25rem; flex: 0 0 auto; }
+    .sqs-pair > div { min-width: 0; }
+    .sqs-pair .card { height: 100%; box-sizing: border-box; }
+    #ll-resultat { margin-top: .8rem; }
+    /* Smal skjerm: tabellradene stables som små kort med etikett per celle */
+    @media (max-width: 640px) {
+      .sqs-tab, .sqs-tab tbody, .sqs-tab tr, .sqs-tab td { display: block; width: 100%; box-sizing: border-box; }
+      .sqs-tab thead { display: none; }
+      .sqs-tab tr { border-bottom: 1px solid var(--color-outline-variant); padding: .45rem 0; }
+      .sqs-tab td { border: 0; padding: .15rem .6rem; }
+      .sqs-tab td::before { content: attr(data-l) ": "; font-weight: 600; color: var(--color-on-surface-variant); font-size: .85em; }
+      .sqs-tab td.sqs-hode { font-weight: 600; font-size: 1.02em; }
+      .sqs-tab td.sqs-hode::before { content: none; }
+      .sqs-tab td.sqs-tom { display: none; }
+      .sqs-tab td .mono { white-space: normal; }
+    }
+  </style>
+</head>
+<body data-page="sql-skolen">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>SQL-skolen</h1>
+      <p class="lead">På eksamen skriver du SQL som tekst, uten en database å prøve på. Her øver du på selve skrivingen og lesingen:
+        kursets skrivemåte for SQL og relasjonsalgebra, spørringer forklart linje for linje, linjer som skal i riktig rekkefølge,
+        spørringer du skal lese og forstå, og hvordan et godt eksamenssvar ser ut. Stoffet selv står i
+        <a href="04-sql.html">blokk 4 · SQL</a> og <a href="05-sql-videre.html">blokk 5 · SQL videregående</a>.</p>
+    </div>
+
+    <div id="skjema"></div>
+
+    <div class="tabs" role="tablist" aria-label="SQL-skolen">
+      <button data-tab="notasjon">Notasjon</button>
+      <button data-tab="linjeleser">Linjeleser</button>
+      <button data-tab="parsons">Sett linjene i rekkefølge</button>
+      <button data-tab="les">Les spørringen</button>
+      <button data-tab="skriveguide">Skriveguide</button>
+    </div>
+
+    <!-- ===================== NOTASJON ===================== -->
+    <section data-panel="notasjon">
+      <h3>SQL og relasjonsalgebra slik kurset skriver dem</h3>
+      <div id="ex-notasjon"></div>
+
+      <h4>SQL</h4>
+      <p class="small muted">Kurset bruker PostgreSQL. Nøkkelord skrives med store bokstaver, tabeller og kolonner med små, og funksjoner som <span class="mono">count</span> med små. Det er stil, ikke krav. Lenkene går til stedet der stoffet forklares.</p>
+      <div class="table-wrap">
+        <table class="sqs-tab">
+          <thead><tr><th>Skrivemåte</th><th>Betyr</th><th>Eksempel</th><th>Mer</th></tr></thead>
+          <tbody id="not-sql-tbody"></tbody>
+        </table>
+      </div>
+
+      <h4>Relasjonsalgebra</h4>
+      <p class="small muted">Relasjonsalgebra har vært med på eksamen to ganger (P20 og H25, 5 poeng). Kursets RA har ikke divisjon og ikke ytre join. Mer om RA i <a href="03-relasjonsalgebra.html">blokk 3</a>.</p>
+      <div class="table-wrap">
+        <table class="sqs-tab">
+          <thead><tr><th>Skrives</th><th>Betyr</th><th>I SQL</th></tr></thead>
+          <tbody id="not-ra-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="callout begrep"><span class="lbl">Fra SQL til RA</span>
+        <span class="mono">SELECT k FROM t1, …, tn WHERE u</span> svarer til π<sub>k</sub>(σ<sub>u</sub>(t1 × … × tn)): kryssprodukt av tabellene i FROM,
+        seleksjon med WHERE, projeksjon med SELECT. Likheten gjelder «opp til duplikater», fordi RA jobber med mengder og SQL med multimengder.
+        <span class="small muted">(F03-01 lysark 12–13, formulert med egne ord.)</span></div>
+
+      <h4>Et RA-uttrykk, to skrivemåter</h4>
+      <div class="card" id="ra-eksempel"></div>
+
+      <h4>Koble RA til SQL</h4>
+      <div class="card dra-card"><div id="ra-match"></div></div>
+
+      <h4>Sant eller usant?</h4>
+      <div id="tf-notasjon"></div>
+    </section>
+
+    <!-- ===================== LINJELESER ===================== -->
+    <section data-panel="linjeleser">
+      <h3>Linjeleser</h3>
+      <p class="muted small">Velg en spørring. Klikk en linje (eller bruk <span class="kbd">↑</span> <span class="kbd">↓</span>) for forklaring.
+        Bryteren i forklaringsboksen styrer nivået bare for dette feltet. Linjer med <b>?</b> har en felle forklart under.</p>
+      <div class="btn-row" id="ll-picker" role="group" aria-label="Velg spørring"></div>
+      <h4 id="ll-title"></h4>
+      <div id="ll-explainer"></div>
+      <div id="ll-resultat"></div>
+      <p class="small muted">Vil du se spørringene utført steg for steg, med mellomtabellene? Det gjør demoene i <a href="04-sql.html#fane=anatomi">blokk 4</a> og <a href="05-sql-videre.html#fane=aggregering">blokk 5</a>.</p>
+    </section>
+
+    <!-- ===================== PARSONS ===================== -->
+    <section data-panel="parsons">
+      <h3>Sett linjene i riktig rekkefølge</h3>
+      <p class="muted small">Linjene til en riktig spørring er stokket. Velg en oppgave og sett linjene på plass.</p>
+      <div class="btn-row" id="pa-picker" role="group" aria-label="Velg oppgave"></div>
+      <div class="card dra-card"><div id="pa-host"></div></div>
+      <div id="pa-resultat"></div>
+      <p class="small muted">Klausulene som brikker, med lokkebrikker: <a href="04-sql.html#fane=bygg">Bygg spørringen</a> i blokk 4 og 5. Skrive hele spørringen selv og få den rettet: <a href="04-sql.html#fane=skriv-sql">Skriv SQL</a>.</p>
+    </section>
+
+    <!-- ===================== LES SPØRRINGEN ===================== -->
+    <section data-panel="les">
+      <h3>Les spørringen</h3>
+      <p>På eksamen må du kunne lese en spørring og si hva den gir, både i flervalget om antall rader og når du sjekker ditt eget svar.
+        Skjemaet øverst på siden har alle radene i biblioteksdatabasen. Fest det, så har du det for hånden.</p>
+
+      <h4>Hva spør spørringen om?</h4>
+      <div id="les-quiz"></div>
+
+      <h4>Hvor mange rader?</h4>
+      <p class="small muted">Regn for hånd på biblioteksdatabasen. Svaret og tabellen regnes ut av guidens SQL-motor.
+        Med eksamens poengregel (+2 for riktig, −0,5 for galt) og flere oppgaver: <a href="05-sql-videre.html#fane=radantall">blokk 5, «Hvor mange rader?»</a>.</p>
+      <div id="radantall"></div>
+
+      <h4>Finn feilen</h4>
+      <p class="small muted">Hver spørring har én feil som sensor ville trukket for. Klikk linja med feilen. Du har to forsøk.</p>
+      <div id="ff-host"></div>
+
+      <h4>Prøv selv</h4>
+      <p class="small muted">Skriv en hvilken som helst SELECT-spørring mot biblioteksdatabasen og se hva den gir. Motoren følger PostgreSQL-reglene kurset bruker.</p>
+      <div class="card" id="sandkasse"></div>
+    </section>
+
+    <!-- ===================== SKRIVEGUIDE ===================== -->
+    <section data-panel="skriveguide">
+      <h3>Slik skriver du et eksamenssvar i SQL</h3>
+      <div id="ex-skriv"></div>
+
+      <h4>Det oppgaveteksten sier</h4>
+      <div id="sg-sitat-oppgave"></div>
+
+      <h4>Oppskrift</h4>
+      <ol id="sg-oppskrift"></ol>
+
+      <h4>Fra oppgavetekst til SQL</h4>
+      <p class="small muted">Ordene i oppgaven forteller hvilket verktøy du trenger.</p>
+      <div class="table-wrap">
+        <table class="sqs-tab">
+          <thead><tr><th>Står det …</th><th>… trenger du</th><th>Vanlig feil</th><th>Mer</th></tr></thead>
+          <tbody id="sg-ordliste"></tbody>
+        </table>
+      </div>
+
+      <h4>Uklart og presist svar på samme oppgave</h4>
+      <p id="sg-oppgave"></p>
+      <div class="grid cols-2 sqs-pair">
+        <div><div class="card" id="sg-bad"><h4 style="margin-top:.2rem">Gir trekk</h4></div></div>
+        <div><div class="card" id="sg-good"><h4 style="margin-top:.2rem">Full uttelling</h4></div></div>
+      </div>
+
+      <h4>Sensors faste trekkliste</h4>
+      <div id="sg-sitat-sensor"></div>
+      <p class="small">I tillegg har sensor trukket for NATURAL JOIN der tabellene deler <span class="mono">navn</span>, for hardkodede ID-er, for indre join der rader med 0 skulle vært med, for <span class="mono">!= NULL</span>, for manglende CREATE VIEW og for manglende DESC. Hele oversikten med år står under «Hva eksamen spør om» i <a href="04-sql.html">blokk 4</a> og <a href="05-sql-videre.html">blokk 5</a>.</p>
+
+      <h4>Sjekkliste før du leverer</h4>
+      <div class="card" id="sg-sjekk"></div>
+
+      <h4>Svar i relasjonsalgebra</h4>
+      <ul id="sg-ra"></ul>
+      <div class="callout snarvei"><span class="lbl">Snarvei</span>
+        Skriv svaret som SQL i hodet først, og oversett: tabellene i FROM og join-betingelsene blir ⋈ (eller × og σ), WHERE blir σ, og SELECT blir π ytterst.
+        Eksempelet i <a href="#fane=notasjon">Notasjon</a> viser begge skrivemåtene.</div>
+
+      <div class="callout eli5"><span class="lbl">Øv videre</span>
+        Eksamensoppgavene med skjema, løsningsforslag og sensorveiledning ligger i <a href="04-sql.html#fane=eksamen">blokk 4</a> og <a href="05-sql-videre.html#fane=eksamen">blokk 5</a>.
+        Skriv svaret selv, sammenlign med løsningen, og gå gjennom sjekklista over.</div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · SQL-skolen</footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/stepplayer.js?v=20261125n"></script>
+  <script src="assets/js/varline.js?v=20261125n"></script>
+  <script src="assets/js/viz-relation.js?v=20261125n"></script>
+  <script src="assets/js/data-sql.js?v=20261125n"></script>
+  <script src="assets/js/dra.js?v=20261125n"></script>
+  <script src="assets/js/sql-motor.js?v=20261125n"></script>
+  <script src="assets/js/data-sqlskolen.js?v=20261125n"></script>
+  <script src="assets/js/side-sqlskolen.js?v=20261125n"></script>
+  <script>
+  (function () {
+    "use strict";
+    if (window.IN && window.IN.sqlSkolen) window.IN.sqlSkolen.init();
+  })();
+  </script>
+</body>
+</html>

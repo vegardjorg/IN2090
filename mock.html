@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mock-eksamen · IN2090</title>
+  <meta name="description" content="En prøveeksamen i IN2090 i samme form som H2023–H2025: modellering (30 p), SQL (50 p) og FD og normalisering (20 p) på 4 timer, med tidtaker, selvretting etter eksamensreglene og fullpoengssvar med poengfordeling.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261125n">
+  <style>
+    /* ---------- Mock-eksamen (bare denne siden) ---------- */
+    .mock-regler { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 12px 0 20px; }
+    .mock-regler .card { margin: 0; }
+    .mock-regler h3 { margin: 0 0 6px; font-size: 1rem; }
+    .mock-regler ul { margin: 0; padding-left: 1.2em; }
+
+    .mock-klokke { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 12px 0; }
+    .mock-klokke-tid { display: flex; flex-direction: column; min-width: 9em; }
+    .mock-klokke-v { font-size: 2rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .mock-klokke.varsel .mock-klokke-v { color: var(--color-tone-warn); }
+    .mock-klokke.fare .mock-klokke-v, .mock-klokke.ute .mock-klokke-v { color: var(--color-tone-danger); }
+    .mock-klokke-knapper { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mock-naa { flex-basis: 100%; margin: 0; }
+    .mock-naa:empty { display: none; }
+
+    .mock-pille { position: fixed; right: 12px; bottom: 12px; z-index: 40; display: inline-flex; align-items: baseline; gap: 6px;
+      padding: 8px 14px; border-radius: 999px; text-decoration: none; font-variant-numeric: tabular-nums;
+      background: var(--color-surface-container-high); color: var(--color-on-surface); border: 1px solid var(--color-outline-variant);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .18); }
+    .mock-pille[hidden] { display: none; }
+    .mock-pille-tid { font-weight: 700; font-family: var(--font-mono, ui-monospace, monospace); }
+    .mock-pille-st { font-size: .8rem; color: var(--color-on-surface-variant); }
+    .mock-pille.varsel { background: var(--color-tone-warn); color: var(--color-on-tone-warn); border-color: transparent; }
+    .mock-pille.fare, .mock-pille.ute { background: var(--color-tone-danger); color: var(--color-on-tone-danger); border-color: transparent; }
+    .mock-pille.varsel .mock-pille-st, .mock-pille.fare .mock-pille-st, .mock-pille.ute .mock-pille-st { color: inherit; }
+    .mock-pille.pause { opacity: .85; }
+
+    .mock-modus { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+    .mock-modus .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary, #fff); border-color: var(--color-primary); }
+    .mock-status { margin: 8px 0; }
+    .mock-handling { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+
+    .mock-delhode { margin: 4px 0 14px; }
+    .mock-opg .mock-tekst > :first-child { margin-top: 0; }
+    .mock-fig { margin: 12px 0; }
+    .mock-fig .exam-fig-h { overflow-x: auto; }
+    .mock-svarfelt { margin-top: 14px; display: grid; gap: 12px; min-width: 0; }
+    .mock-svarfelt > * { min-width: 0; }
+    .mock-fri label { display: block; font-weight: 600; margin-bottom: 4px; }
+    .mock-svar { width: 100%; box-sizing: border-box; min-height: 8em; resize: vertical; padding: 8px 10px;
+      font: inherit; font-family: var(--font-mono, ui-monospace, monospace); font-size: .9rem;
+      background: var(--color-surface); color: var(--color-on-surface); border: 1px solid var(--color-outline); border-radius: 8px; }
+    .mock-selv { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 12px; border-radius: 8px;
+      background: var(--color-surface-container-low); border: 1px dashed var(--color-outline-variant); }
+    .mock-poeng { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .mock-poeng-inp { width: 4.5em; padding: 4px 6px; font: inherit; background: var(--color-surface); color: var(--color-on-surface);
+      border: 1px solid var(--color-outline); border-radius: 6px; }
+    .mock-res { margin: 8px 0 0; }
+    .mock-videre { margin: 18px 0 8px; display: flex; justify-content: flex-end; }
+
+    .mock-tabell td, .mock-tabell th { vertical-align: middle; }
+    .mock-tabell td:first-child, .mock-tabell th:first-child { white-space: normal; }
+    .mock-tabell .mock-delrad th { text-align: left; background: var(--color-surface-container); }
+    .mock-tabell .mock-sumrad td, .mock-tabell .mock-totrad th, .mock-tabell .mock-totrad td { border-top: 2px solid var(--color-outline-variant); }
+    .mock-tabell .mock-poeng label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .mock-tidsplan td:nth-child(n+2), .mock-tidsplan th:nth-child(n+2) { text-align: right; white-space: nowrap; }
+
+    /* Eksamensmodus: ingen fasit før innlevering */
+    body.mock-skjul .examtask .et-fane.t-losning,
+    body.mock-skjul .mock-fasitknapp,
+    body.mock-skjul .mock-auto .qz-foot { display: none; }
+    .mock-skjult-merk { display: none; }
+    body.mock-skjul .mock-skjult-merk { display: block; }
+
+    @media (max-width: 560px) {
+      .mock-klokke-v { font-size: 1.6rem; }
+      .mock-tabell thead th:last-child, .mock-tabell tbody td:last-child:not(:first-child), .mock-tabell tfoot td:last-child { display: none; }
+      .mock-tabell .mock-poeng .muted { display: none; }
+    }
+  </style>
+</head>
+<body data-page="mock">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Mock-eksamen</h1>
+      <p class="lead">En hel prøveeksamen i samme form som H2023–H2025: modellering, SQL og FD og normalisering, 100 poeng på 4 timer. Alle oppgavene er nye og laget for guiden, med et eget lite skjema. Avkrysningsoppgavene rettes med minuspoeng slik som på eksamen, SQL-svarene kan kjøres mot en testdatabase, og hver oppgave har et fullpoengssvar med poengfordeling.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Mock-eksamen">
+      <button data-tab="om">Om prøven</button>
+      <button data-tab="del1">Del 1 · Modellering</button>
+      <button data-tab="del2">Del 2 · SQL</button>
+      <button data-tab="del3">Del 3 · FD</button>
+      <button data-tab="resultat">Lever og resultat</button>
+    </div>
+
+    <!-- ===================== OM PRØVEN ===================== -->
+    <section data-panel="om">
+      <h2>Slik bruker du prøven</h2>
+      <div class="mock-regler">
+        <div class="card">
+          <h3>Som på eksamen</h3>
+          <ul>
+            <li>4 timer, 100 poeng: del 1 gir 30, del 2 gir 50 og del 3 gir 20.</li>
+            <li>Alle trykte og skrevne hjelpemidler er tillatt, slik som H2023–H2025.</li>
+            <li>ER-modellen tegner du på papir, slik du ville gjort på skissearket.</li>
+            <li>SQL skriver du som fritekst. På eksamen har du ingen database å kjøre den på.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Retting</h3>
+          <ul>
+            <li>Radantall: +2 riktig, −0,5 galt, 0 blankt.</li>
+            <li>JA/NEI: +1 riktig, −1 galt, 0 blankt.</li>
+            <li>Ingen avkrysningsoppgave gir under 0 poeng.</li>
+            <li>Resten vurderer du selv mot fullpoengssvaret og poenglista under «Løsning».</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Lagring</h3>
+          <ul>
+            <li>Svar, poeng og tid lagres i nettleseren din, så du kan ta pauser.</li>
+            <li>«Start på nytt» under «Lever og resultat» sletter alt.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Modus</h3>
+      <div class="mock-modus" role="group" aria-label="Velg modus">
+        <button class="btn" type="button" data-mock-modus="eksamen" aria-pressed="true">Eksamensmodus</button>
+        <button class="btn" type="button" data-mock-modus="ovelse" aria-pressed="false">Øvingsmodus</button>
+      </div>
+      <p class="small mock-status" data-mock-status></p>
+      <p class="small muted">I eksamensmodus er fanen «Løsning», «Vis fasit» og rettingen av avkrysningsoppgavene skjult til du leverer. I øvingsmodus kan du sjekke hver oppgave underveis. «Kjør» og «Sjekk» på SQL-oppgavene virker i begge modusene.</p>
+
+      <h3>Tidtaker</h3>
+      <div id="mock-klokke"></div>
+
+      <h3>Forslag til tidsbruk</h3>
+      <div class="table-wrap">
+        <table class="cmp-table mock-tidsplan">
+          <thead><tr><th scope="col">Del</th><th scope="col">Poeng</th><th scope="col">Minutter</th><th scope="col">Ferdig etter</th></tr></thead>
+          <tbody>
+            <tr><td>Les gjennom hele settet</td><td>–</td><td>5</td><td>0:05</td></tr>
+            <tr><td>Del 1 · Modellering (1.1–1.3)</td><td>30</td><td>70</td><td>1:15</td></tr>
+            <tr><td>Del 2 · SQL (2.1–2.7)</td><td>50</td><td>120</td><td>3:15</td></tr>
+            <tr><td>Del 3 · FD og normalisering (3.1–3.3)</td><td>20</td><td>40</td><td>3:55</td></tr>
+            <tr><td>Les over</td><td>–</td><td>5</td><td>4:00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">Omtrent 2,4 minutter per poeng. SQL-delen gir halvparten av poengene og får halvparten av tiden.</p>
+
+      <h3>Strategi</h3>
+      <div id="mock-strategi"></div>
+
+      <div class="mock-videre"><a class="btn primary" href="#fane=del1">Begynn på del 1 →</a></div>
+    </section>
+
+    <!-- ===================== DEL 1 ===================== -->
+    <section data-panel="del1" hidden>
+      <h2>Del 1 · Modellering (30 poeng)</h2>
+      <p class="small muted mock-skjult-merk">Eksamensmodus: «Løsning» vises når du har levert.</p>
+      <div id="mock-del1"></div>
+    </section>
+
+    <!-- ===================== DEL 2 ===================== -->
+    <section data-panel="del2" hidden>
+      <h2>Del 2 · SQL (50 poeng)</h2>
+      <p>Alle oppgavene i del 2 bruker bysykkeldatabasen. Fest skjemaet, så har du det ved siden av oppgavene.</p>
+      <div id="mock-skjema"></div>
+      <p class="small muted mock-skjult-merk">Eksamensmodus: «Løsning» og «Vis fasit» vises når du har levert.</p>
+      <div id="mock-del2"></div>
+    </section>
+
+    <!-- ===================== DEL 3 ===================== -->
+    <section data-panel="del3" hidden>
+      <h2>Del 3 · FD og normalisering (20 poeng)</h2>
+      <p class="small muted mock-skjult-merk">Eksamensmodus: «Løsning» vises når du har levert.</p>
+      <div id="mock-del3"></div>
+    </section>
+
+    <!-- ===================== RESULTAT ===================== -->
+    <section data-panel="resultat" hidden>
+      <h2>Lever og resultat</h2>
+      <p class="small mock-status" data-mock-status></p>
+      <div class="mock-handling">
+        <button class="btn primary" type="button" data-mock-lever>Lever prøven</button>
+        <button class="btn" type="button" data-mock-nytt>↺ Start på nytt</button>
+      </div>
+      <p class="small muted">Når du leverer, stopper tidtakeren, avkrysningsoppgavene rettes, og fasit og forklaringer åpnes. Poengene for de andre oppgavene setter du selv, her eller nederst i hver oppgave.</p>
+      <div id="mock-resultat"></div>
+      <div class="callout snarvei"><span class="lbl">Etterpå</span>
+        <p>Les forklaringene til alt du mistet poeng på. Feil i radantall og JA/NEI peker som regel på én bestemt felle: NULL i WHERE, LEFT JOIN, NATURAL JOIN, svak entitet eller total deltakelse. Øv på den på blokksiden og ta så en ekte eksamen fra eksamensbanken.</p>
+      </div>
+    </section>
+  </main>
+
+  <a id="mock-pille" class="mock-pille" href="#fane=om" hidden aria-label="Tid igjen av prøven. Gå til tidtakeren"><span class="mock-pille-tid">4:00:00</span><span class="mock-pille-st">igjen</span></a>
+
+  <footer class="footer">IN2090-guide · Mock-eksamen</footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/viz-relation.js?v=20261125n"></script>
+  <script src="assets/js/viz-er.js?v=20261125n"></script>
+  <script src="assets/js/data-mock.js?v=20261125n"></script>
+  <script src="assets/js/sql-motor.js?v=20261125n"></script>
+  <script src="assets/js/sql-oppgave.js?v=20261125n"></script>
+  <script src="assets/js/side-mock.js?v=20261125n"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[mock] " + navn, e); } }
+
+    safe("strategi", function () {
+      IN.explain("#mock-strategi", {
+        eli5: "<p>Tenk på prøven som en kakebuffet med fire timer til rådighet. Du forsyner deg først der det er mest kake for tiden: SQL-delen er halve buffeten. Står du fast på én kake, går du videre og kommer tilbake senere. På avkrysningsoppgavene koster et galt svar noe, så du krysser bare når du er ganske sikker.</p>",
+        normal: "<p>Les gjennom hele settet først. Begynn gjerne med den delen du er tryggest på, men hold øye med klokka: en oppgave på 5 poeng er ikke verdt 30 minutter. Skriv delsvar og kommentarer når du ikke blir ferdig, for sensor gir delpoeng per delmål. På radantall lønner det seg å gjette når du kan utelukke noe (+2 mot −0,5). På JA/NEI (±1) lønner det seg ikke å gjette blindt.</p>",
+        teknisk: "<p>Forventet poeng ved gjetting: på radantall med sannsynlighet p for riktig er gevinsten 2p − 0,5(1 − p), som er positiv når p &gt; 0,2. På JA/NEI er den p − (1 − p), som bare er positiv når p &gt; 0,5. Siden ingen oppgave gir under 0, er risikoen ved å svare på alle avgrenset til oppgavens egen pott. SQL-oppgavene rettes etter delmål (riktige tabeller, join-betingelser, filter, gruppering), så en spørring med én feil kan fortsatt gi mesteparten av poengene.</p>"
+      }, { label: "Strategi:" });
+    });
+    safe("mock", function () { IN.mockSide.init(); });
+  })();
+  </script>
+</body>
+</html>

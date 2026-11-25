@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 3 · Relasjonsalgebra · IN2090</title>
+  <meta name="description" content="Relasjonsalgebra i IN2090: π, σ, ρ, kryssprodukt, join med betingelse og naturlig join, union, snitt og differanse, navngitte resultater og RA-trær. Med stegvis evaluering av uttrykkstrær, fellen med naturlig join, oversettelse mellom SQL og RA, øving og eksamensoppgavene.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <style>
+    /* Blokk 3 · relasjonsalgebra (sidens egen stil) */
+    .ra-ops { width: 100%; }
+    .ra-ops td:first-child { font-size: 1.15rem; white-space: nowrap; }
+    .ra-presets { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; margin: .3rem 0 .6rem; }
+    .ra-presets .lbl { margin-right: .2rem; }
+    .ra-presets .btn[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+    .ra-edit { margin: .2rem 0 .6rem; }
+    .ra-input { display: block; width: 100%; box-sizing: border-box; font-size: 15px; padding: .45rem .6rem; border-radius: 8px;
+      border: 1px solid var(--color-outline); background: var(--color-surface-container-lowest); color: var(--color-on-surface); resize: vertical; min-height: 2.6rem; }
+    .ra-input:focus { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+    .ra-edit-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .4rem; }
+    .ra-symbar { display: flex; flex-wrap: wrap; gap: .25rem; margin: 0 0 .35rem; }
+    .ra-sym { min-width: 2.1rem; font-size: 15px; padding-left: .35rem; padding-right: .35rem; }
+    .ra-err { background: var(--color-tone-danger); color: var(--color-on-tone-danger); border-radius: 8px; padding: .45rem .7rem; margin: .4rem 0; }
+    .ra-ok { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-radius: 8px; padding: .45rem .7rem; margin: .4rem 0; }
+    .ra-bad { background: var(--color-tone-warn); color: var(--color-on-tone-warn); border-radius: 8px; padding: .45rem .7rem; margin: .4rem 0; }
+    .ra-prog { background: var(--color-surface-container-low); border: 1px solid var(--color-outline-variant); border-radius: 8px; padding: .35rem .6rem; margin-bottom: .5rem; font-size: 14px; overflow-wrap: anywhere; }
+    .ra-prog-line { padding: .1rem .3rem; border-radius: 5px; }
+    .ra-prog-line.on { background: var(--color-primary-container); color: var(--color-on-primary-container); }
+    .ra-tree-scroll { overflow-x: auto; max-width: 100%; margin: .2rem 0 .4rem; }
+    .ra-tree { position: relative; margin: 0 auto; }
+    .ra-tree svg { position: absolute; left: 0; top: 0; }
+    .ra-edge { stroke: var(--color-outline); stroke-width: 1.5; stroke-dasharray: 4 3; }
+    .ra-edge.done { stroke: var(--color-primary); stroke-dasharray: none; stroke-width: 2; }
+    .ra-node { position: absolute; transform: translate(-50%, -50%); font-family: var(--font-mono); font-size: 14px; line-height: 1.25;
+      padding: .2rem .5rem; border-radius: 8px; border: 1.5px dashed var(--color-outline); background: var(--color-surface-container-lowest);
+      color: var(--color-on-surface-variant); text-align: center; white-space: normal; overflow-wrap: anywhere; z-index: 1; width: max-content; box-sizing: border-box; }
+    .ra-stage { flex: 1 1 100%; width: 100%; min-width: 0; }
+    .sp-stage:has(> .ra-stage) { display: block; height: auto; min-height: 240px; overflow: visible; padding: var(--d-sm); }
+    .ra-stage .rel-row { align-items: flex-start; }
+    button.ra-node { cursor: pointer; }
+    .ra-node.leaf { border-style: solid; border-color: var(--color-outline-variant); background: var(--color-surface-container-high); color: var(--color-on-surface); font-weight: 600; }
+    .ra-node.done { border-style: solid; border-color: var(--color-primary); color: var(--color-on-surface); }
+    .ra-node.active { border: 2px solid var(--color-primary); background: var(--color-primary-container); color: var(--color-on-primary-container); font-weight: 700; box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent); }
+    .ra-node sub { font-size: 78%; }
+    .ra-tabs { margin-top: .3rem; }
+    .ra-out .rel-name { color: var(--color-primary); }
+    .ra-mini { margin: .5rem 0 1rem; }
+    .ra-mini-expr { background: var(--color-surface-container-low); border-left: 3px solid var(--color-primary); padding: .35rem .6rem; border-radius: 0 6px 6px 0; font-size: 15px; overflow-wrap: anywhere; }
+    .ra-arrow { align-self: center; font-size: 1.4rem; color: var(--color-on-surface-variant); padding: 0 .2rem; }
+    .ra-mini-note { margin-top: .2rem; }
+    .ra-ov { margin: .8rem 0; }
+    .ra-ov-h { margin: 0 0 .3rem; }
+    .ra-ov .tag { font-size: 12px; font-weight: 500; }
+    .ra-trees { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+    .ra-trees > figure { margin: 0; min-width: 0; max-width: 100%; }
+    .ra-trees figcaption { font-size: 13px; color: var(--color-on-surface-variant); }
+    .ra-sqlra { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem 1rem; align-items: start; }
+    .ra-sqlra > * { min-width: 0; }
+    @media (max-width: 760px) { .ra-sqlra { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="relasjonsalgebra">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 3 · Relasjonsalgebra</h1>
+      <p class="lead">Relasjonsalgebra (RA) er det presise språket under SQL: operatorer som tar relasjoner og gir nye relasjoner. RA har vært lite spurt om på eksamen, men H2025 hadde 5 poeng, og RA gjør SQL lettere å forstå. Her lærer du alle operatorene i kurset, lager og evaluerer uttrykkstrær steg for steg, og oversetter mellom SQL og RA.</p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_3"><b>H2025</b> · Relasjonsalgebra på båtskjemaet · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-2_4"><b>H2024</b> · UNION skrevet om (samme idé) · <span class="pts">5p</span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Relasjonsalgebra">
+      <button data-tab="grunnlag">Hva er RA?</button>
+      <button data-tab="unaere">π, σ og ρ</button>
+      <button data-tab="join">× og ⋈</button>
+      <button data-tab="mengde">∪, ∩ og ∖</button>
+      <button data-tab="tre">Uttrykkstre steg for steg</button>
+      <button data-tab="sql">SQL ↔ RA</button>
+      <button data-tab="ovelse">Øv: skriv RA</button>
+      <button data-tab="eksamen">Eksamensoppgaver</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · GRUNNLAG ===================== -->
+    <section data-panel="grunnlag">
+      <h3>Hva er relasjonsalgebra?</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>algebra</b> er en mengde operasjoner der argumentene og resultatet er av samme slag, som + og × over tall eller ∪ og ∩ over mengder.
+        I relasjonsalgebra er argumentene og resultatet <b>relasjoner</b>. Hver operator tar én eller to relasjoner og gir en ny relasjon. Derfor kan du sette operatorene inn i hverandre og bygge store uttrykk av små.
+        <ul>
+          <li>Operatorene endrer aldri tabellene i databasen. De gir et nytt resultat.</li>
+          <li>Resultatet har ikke navn. Du kan gi det et med <span class="mono">Navn := uttrykk</span> og bruke navnet senere.</li>
+          <li>Relasjoner er <b>mengder</b> av tupler. Like rader finnes ikke, så duplikater forsvinner etter hver operasjon.</li>
+        </ul></div>
+      <div id="ex-grunnlag"></div>
+
+      <h4>Alle operatorene i kurset</h4>
+      <div class="table-wrap"><table class="cmp-table ra-ops">
+        <thead><tr><th>Symbol</th><th>Navn</th><th>Argumenter</th><th>Gjør</th><th>I SQL</th></tr></thead>
+        <tbody>
+          <tr><td>π<sub>A, B</sub>(R)</td><td>projeksjon</td><td>én</td><td>velger kolonner (og fjerner like rader)</td><td class="mono">SELECT DISTINCT A, B</td></tr>
+          <tr><td>σ<sub>betingelse</sub>(R)</td><td>seleksjon</td><td>én</td><td>velger rader</td><td class="mono">WHERE</td></tr>
+          <tr><td>ρ<sub>A→B</sub>(R)</td><td>omdøping</td><td>én</td><td>gir attributtet A navnet B</td><td class="mono">AS</td></tr>
+          <tr><td>R × S</td><td>kartesisk produkt (kryssprodukt)</td><td>to</td><td>alle kombinasjoner av rader</td><td class="mono">FROM R, S</td></tr>
+          <tr><td>R ⋈<sub>betingelse</sub> S</td><td>join (med betingelse)</td><td>to</td><td>kombinasjonene som oppfyller betingelsen</td><td class="mono">JOIN … ON</td></tr>
+          <tr><td>R ⋈ S</td><td>naturlig join</td><td>to</td><td>kobler på alle attributter med likt navn</td><td class="mono">NATURAL JOIN</td></tr>
+          <tr><td>R ∪ S, R ∩ S, R ∖ S</td><td>union, snitt, differanse</td><td>to</td><td>vanlige mengdeoperasjoner, krever samme signatur</td><td class="mono">UNION, INTERSECT, EXCEPT</td></tr>
+          <tr><td>N := uttrykk</td><td>navngitt resultat</td><td></td><td>gir resultatet et navn</td><td class="mono">WITH N AS (…)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">Betingelser skrives med <span class="mono">= ≠ &lt; &gt; ≤ ≥</span>, <span class="mono">∧</span> (og), <span class="mono">∨</span> (eller) og <span class="mono">¬</span> (ikke). Tekstkonstanter står i fnutter: <span class="mono">'Oslo'</span>.</p>
+
+      <h4>Tabellene vi bruker</h4>
+      <p class="small muted">Egne små tabeller, så du kan regne alt for hånd. Kunde og Båt er en forenklet utgave av skjemaet i H2025.</p>
+      <div id="ra-tabeller" class="rel-row"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor gir π<sub>by</sub>(Student) 3 rader og ikke 4?</summary>
+          <p>To studenter bor i Oslo. Etter projeksjonen er de to radene like (bare «Oslo»), og en mengde har hvert element én gang. SQL er en multimengde og gir 4 rader med mindre du skriver <span class="mono">DISTINCT</span>.</p></details>
+        <details class="grense"><summary>Hvorfor «divisjon» og «ytre join» ikke står her</summary>
+          <p>Kursets relasjonsalgebra har bare operatorene i tabellen over. Ytre join finnes bare i SQL i kurset (blokk 5). «For alle»-spørsmål løses med differanse, se fanen <a href="#fane=mengde">∪, ∩ og ∖</a>.</p></details>
+        <ul>
+          <li><b>Skrivemåte.</b> Kurset skriver betingelser og attributtlister med senket skrift. Har du ikke senket skrift, skriv for eksempel <span class="mono">π_{navn}(…)</span>. Det viktige er at operator, betingelse og argument er tydelige.</li>
+          <li><b>Differanse</b> skrives <span class="mono">\</span> i lysarkene om relasjonsalgebra (her ∖). Naturlig join står som <span class="mono">⋈</span> uten senket skrift, men ett lysark bruker <span class="mono">⋆</span>. Begge betyr det samme.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-grunnlag"></div>
+    </section>
+
+    <!-- ===================== 2 · UNÆRE ===================== -->
+    <section data-panel="unaere">
+      <h3>π, σ og ρ: operatorer med ett argument</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li><b>Projeksjon</b> <span class="mono">π<sub>A, B</sub>(R)</span> gir en relasjon med bare attributtene A og B. Den velger <i>kolonner</i>.</li>
+          <li><b>Seleksjon</b> <span class="mono">σ<sub>betingelse</sub>(R)</span> gir radene i R der betingelsen er sann, med alle attributtene. Den velger <i>rader</i>.</li>
+          <li><b>Omdøping</b> <span class="mono">ρ<sub>A→B</sub>(R)</span> gir attributtet A det nye navnet B. Alt annet er likt. Flere omdøpinger skilles med komma: <span class="mono">ρ<sub>A→B, C→D</sub></span>.</li>
+        </ul></div>
+      <div id="ex-unaere"></div>
+
+      <h4>Projeksjon: velg kolonner</h4>
+      <div id="mini-pi"></div>
+      <h4>Seleksjon: velg rader</h4>
+      <div id="mini-sigma"></div>
+      <div id="mini-sigma2"></div>
+      <h4>Omdøping: nye navn</h4>
+      <div id="mini-rho"></div>
+      <h4>Satt sammen: σ innerst, π ytterst</h4>
+      <div id="mini-pisigma"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor σ innerst og ikke π innerst?</summary>
+          <p>Det innerste kjøres først. <span class="mono">σ<sub>by = 'Oslo'</sub>(π<sub>navn</sub>(Student))</span> virker ikke, fordi π allerede har fjernet <span class="mono">by</span>. Velg radene først, og klipp bort kolonnene til slutt. Samme rekkefølge som i SQL: WHERE ser alle kolonnene, SELECT velger til slutt.</p></details>
+        <details class="grense"><summary>Hvorfor er σ<sub>by = Oslo</sub> uten fnutter feil?</summary>
+          <p>Uten fnutter leses <span class="mono">Oslo</span> som et attributtnavn. Konstanter i tekst skrives <span class="mono">'Oslo'</span>. Tall skrives uten fnutter.</p></details>
+        <details class="grense"><summary>Hvorfor går pilen i ρ fra gammelt til nytt?</summary>
+          <p><span class="mono">ρ<sub>tittel→navn</sub></span> betyr «tittel skal hete navn». Snur du pilen, prøver du å omdøpe et attributt som ikke finnes.</p></details>
+      </div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-unaere"></div>
+    </section>
+
+    <!-- ===================== 3 · × OG ⋈ ===================== -->
+    <section data-panel="join">
+      <h3>Kryssprodukt og join</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li><b>Kartesisk produkt</b> <span class="mono">R × S</span>: alle attributtene fra begge, og alle kombinasjoner av en rad fra R og en rad fra S. Har R n rader og S m rader, har produktet n · m.</li>
+          <li><b>Join med betingelse</b> <span class="mono">R ⋈<sub>betingelse</sub> S</span>: kombinasjonene som oppfyller betingelsen. Per definisjon er <span class="mono">R ⋈<sub>b</sub> S = σ<sub>b</sub>(R × S)</span>. Alle attributtene blir med, også begge kopiene av en kolonne med samme navn. Skriv da relasjonsnavnet foran: <span class="mono">Student.snr = Tatt.snr</span>.</li>
+          <li><b>Naturlig join</b> <span class="mono">R ⋈ S</span>: kobler på <b>alle</b> attributter med likt navn og tar med hvert felles attributt én gang. Finnes ingen felles navn, blir resultatet kryssproduktet.</li>
+        </ul></div>
+      <div id="ex-join"></div>
+
+      <h4>Kryssprodukt</h4>
+      <div id="mini-cross"></div>
+      <h4>Join med betingelse</h4>
+      <div id="mini-theta"></div>
+      <h4>Naturlig join og fellene</h4>
+      <p class="small muted">Velg et tilfelle. Kolonnene naturlig join kobler på, er markert i stegspilleren i fanen <a href="#fane=tre">Uttrykkstre</a>.</p>
+      <div id="join-cases"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor gir Student ⋈ Emne 12 rader og ikke en feilmelding?</summary>
+          <p>Naturlig join uten felles attributtnavn er lovlig og betyr kryssproduktet. Du merker det bare på at svaret blir altfor stort. Sjekk alltid hvilke navn som er felles før du skriver ⋈ uten betingelse.</p></details>
+        <details class="grense"><summary>Hvorfor ble svaret tomt med Foreleser?</summary>
+          <p>Student og Foreleser har begge <span class="mono">navn</span>. Naturlig join krever at alle felles attributter er like, også de som tilfeldigvis heter det samme. Bruk ρ, eller skriv betingelsen selv.</p></details>
+        <details class="grense"><summary>Hvorfor ⋈ med betingelse og ikke naturlig join på eksamen?</summary>
+          <p>Med betingelse står det svart på hvitt hva som kobles, og du kan ikke gå i navnefellen. Sensor i H2025 viste join med betingelse (<span class="mono">Kunde.Kundenr = Båt.Kundenr</span>). Naturlig join er like riktig når du har sjekket at det bare finnes ett felles navn.</p></details>
+        <ul>
+          <li><b>Begge kopiene.</b> Etter join med betingelse finnes både <span class="mono">Student.snr</span> og <span class="mono">Tatt.snr</span>. Skriver du bare <span class="mono">snr</span> i en π etterpå, er det tvetydig.</li>
+          <li><b>Samme relasjon to ganger</b> (for eksempel par av studenter) krever ρ på den ene kopien, ellers kan du ikke skille kolonnene fra hverandre.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-join"></div>
+    </section>
+
+    <!-- ===================== 4 · MENGDEOPERATORER ===================== -->
+    <section data-panel="mengde">
+      <h3>Union, snitt og differanse</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <span class="mono">R ∪ S</span> (rader i minst én av dem), <span class="mono">R ∩ S</span> (rader i begge) og <span class="mono">R ∖ S</span> (rader i R som ikke er i S) er vanlige mengdeoperasjoner på tuplene.
+        De krever at R og S har <b>samme signatur</b>: samme attributtnavn og typer. Ofte trengs π (og kanskje ρ) først for å få det til.</div>
+      <div id="ex-mengde"></div>
+
+      <h4>Hver operator for seg</h4>
+      <div id="mini-union"></div>
+      <div id="mini-diff"></div>
+
+      <h4>«Både og» og ekvivalens med ∨</h4>
+      <div id="set-cases"></div>
+
+      <h4>«Minst én» mot «bare»</h4>
+      <p class="small muted">Den samme fellen som «for alle» mot «finnes» i SQL (H2020 trakk 3 poeng for den).</p>
+      <div id="foralle-cases"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor kan jeg ikke ta π<sub>snr</sub>(Student) ∖ Tatt?</summary>
+          <p>Signaturene er (snr) og (snr, kode, kar). Mengdeoperatorene sammenligner hele rader, så begge sidene må ha de samme attributtene. Projiser Tatt også: <span class="mono">π<sub>snr</sub>(Student) ∖ π<sub>snr</sub>(Tatt)</span>.</p></details>
+        <details class="grense"><summary>Hvorfor R ∖ S og ikke S ∖ R?</summary>
+          <p>Differanse er ikke symmetrisk. Les den som «det som er i R, men ikke i S». Tenk på hva du vil ha igjen, og sett det til venstre.</p></details>
+        <details class="grense"><summary>Hvorfor ∩ og ikke ∧ for «både IN2090 og IN2010»?</summary>
+          <p>σ ser på én rad om gangen, og én rad i Tatt har bare én kode. «Både og» handler om to forskjellige rader for samme student. Lag to mengder og ta snittet.</p></details>
+      </div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-mengde"></div>
+    </section>
+
+    <!-- ===================== 5 · UTTRYKKSTRE ===================== -->
+    <section data-panel="tre">
+      <h3>Uttrykkstre steg for steg</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Et RA-uttrykk kan tegnes som et tre. <b>Bladene</b> er relasjonene, og hver <b>indre node</b> er en operator med betingelse eller attributtliste i senket skrift.
+        Unære operatorer (π, σ, ρ) har ett barn, binære (×, ⋈, ∪, ∩, ∖) har to. Treet evalueres <b>nedenfra og opp</b>, og roten gir svaret.
+        Når en database får en SQL-spørring, oversettes den først til et slikt tre.</div>
+      <div id="ex-tre"></div>
+
+      <p class="small muted">Velg et eksempel, eller skriv ditt eget uttrykk over tabellene Student, Emne, Tatt, Foreleser, Kunde og Båt. Klikk på en node i treet for å hoppe til steget. Grønt er rader som beholdes, rødt rader som faller bort, og markerte kolonner er dem operatoren bruker.</p>
+      <div id="ra-player"></div>
+
+      <div class="callout snarvei"><span class="lbl">Slik leser og skriver du et tre</span>
+        <ul>
+          <li>Skal du <b>lese</b> et uttrykk: finn den innerste parentesen, det er et blad eller en liten node nederst. Jobb deg utover.</li>
+          <li>Skal du <b>skrive</b> et uttrykk: start nederst med tabellene du trenger, koble dem (⋈), velg rader (σ) og klipp kolonner (π) til slutt.</li>
+          <li><b>Del opp med :=</b> når uttrykket blir langt. Det er lettere å lese for sensor og for deg selv.</li>
+        </ul></div>
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor er det lov å flytte σ nedover i treet?</summary>
+          <p>Et uttrykk kan skrives om til andre uttrykk som gir samme svar. Å velge radene før en join, når betingelsen bare gjelder den ene tabellen, gir samme resultat med mindre mellomresultater. Databasen bruker slike omskrivinger. Hvordan den velger blant dem (spørreplaner), er ikke pensum. Se et eksempel i fanen <a href="#fane=sql">SQL ↔ RA</a>.</p></details>
+      </div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-tre"></div>
+    </section>
+
+    <!-- ===================== 6 · SQL ↔ RA ===================== -->
+    <section data-panel="sql">
+      <h3>Fra SQL til relasjonsalgebra og tilbake</h3>
+      <div class="callout begrep"><span class="lbl">Grunnregel</span>
+        <span class="mono">SELECT k FROM t₁, …, tₙ WHERE u</span> blir <span class="mono">π<sub>k</sub>(σ<sub>u</sub>(t₁ × … × tₙ))</span>.
+        Det er likt <b>bortsett fra duplikater</b>: SQL gir en multimengde, RA gir en mengde.</div>
+      <div id="ex-sql"></div>
+
+      <h4>Oversettelsestabell</h4>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>SQL</th><th>RA</th><th>Merk</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">SELECT a, b</td><td>π<sub>a, b</sub></td><td>π fjerner duplikater, som <span class="mono">SELECT DISTINCT</span>.</td></tr>
+          <tr><td class="mono">SELECT a AS b</td><td>ρ<sub>a→b</sub></td><td>Etter π: <span class="mono">ρ<sub>a→b</sub>(π<sub>a</sub>(…))</span>.</td></tr>
+          <tr><td class="mono">FROM R, S</td><td>R × S</td><td>Komma i FROM er kryssprodukt.</td></tr>
+          <tr><td class="mono">WHERE u</td><td>σ<sub>u</sub></td><td><span class="mono">AND</span> → ∧, <span class="mono">OR</span> → ∨, <span class="mono">NOT</span> → ¬, <span class="mono">!=</span> → ≠.</td></tr>
+          <tr><td class="mono">R JOIN S ON (u)</td><td>R ⋈<sub>u</sub> S</td><td>Det samme som σ<sub>u</sub>(R × S).</td></tr>
+          <tr><td class="mono">R NATURAL JOIN S</td><td>R ⋈ S</td><td>Samme navnefelle i begge språk.</td></tr>
+          <tr><td class="mono">R JOIN S USING (a)</td><td>R ⋈ S</td><td>Bare når a er det eneste felles navnet. Ellers ρ først.</td></tr>
+          <tr><td class="mono">UNION, INTERSECT, EXCEPT</td><td>∪, ∩, ∖</td><td>Også i SQL fjerner disse duplikater. <span class="mono">ALL</span>-variantene har ingen RA-motsvarighet i kurset.</td></tr>
+          <tr><td class="mono">WITH N AS (…)</td><td>N := …</td><td>Navngitt mellomresultat.</td></tr>
+          <tr><td class="mono">GROUP BY, count, sum, ORDER BY, LIMIT, LEFT JOIN</td><td>(ingen)</td><td>Finnes ikke i kursets relasjonsalgebra.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Eksempel: SQL → tre</h4>
+      <div class="ra-sqlra">
+        <div id="sql-eks"></div>
+        <div id="sql-eks-ra"></div>
+      </div>
+      <div class="ra-trees" id="sql-traer"></div>
+      <div id="sql-eks-res"></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor gir SQL og RA ulikt antall rader?</summary>
+          <p>Uten <span class="mono">DISTINCT</span> beholder SQL duplikater. <span class="mono">SELECT by FROM Student</span> gir 4 rader, <span class="mono">π<sub>by</sub>(Student)</span> gir 3. Skal SQL-spørringen gi nøyaktig samme svar som RA-uttrykket, skriv <span class="mono">SELECT DISTINCT</span>.</p></details>
+        <details class="grense"><summary>Hvorfor står π ytterst når SELECT står først?</summary>
+          <p>SQL skrives i en fast rekkefølge, men SELECT er noe av det siste som skjer. I RA står det som skjer sist, ytterst.</p></details>
+        <details class="grense"><summary>Hvorfor ikke <span class="mono">!=</span> i stedet for EXCEPT?</summary>
+          <p><span class="mono">WHERE s.snr != t.snr</span> over et produkt gir studenter som har <i>en</i> rad i Tatt med et annet snr, ikke studenter <i>uten</i> rader. «Ingen» krever differanse (<span class="mono">EXCEPT</span>, <span class="mono">NOT EXISTS</span> eller <span class="mono">NOT IN</span> i SQL).</p></details>
+      </div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-sql"></div>
+    </section>
+
+    <!-- ===================== 7 · ØVING ===================== -->
+    <section data-panel="ovelse">
+      <h3>Øv: skriv uttrykket selv</h3>
+      <p class="muted small">Skriv et RA-uttrykk og trykk «Sjekk». Svaret ditt evalueres på eksempeltabellene og sammenlignes med forslaget som mengde. Det finnes ofte flere riktige uttrykk. Du kan bruke symbolknappene eller ord: <span class="mono">pi[…]</span>, <span class="mono">sigma[…]</span>, <span class="mono">rho[a->b]</span>, <span class="mono">x</span>, <span class="mono">join[…]</span>, <span class="mono">union</span>, <span class="mono">snitt</span>, <span class="mono">minus</span>, <span class="mono">and</span>, <span class="mono">or</span>, <span class="mono">not</span>. Svarene dine lagres i nettleseren.</p>
+      <details class="schema card"><summary class="schema-sum"><b>Tabellene</b></summary><div id="ov-tabeller" class="rel-row"></div></details>
+      <div id="ra-ovelser"></div>
+    </section>
+
+    <!-- ===================== EKSAMEN ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgaver</h3>
+      <p class="muted small">Relasjonsalgebra har vært spurt om i H2025 (oppgave 1.3, 5 p) og på prøveeksamen 2020 (5 p, ikke i banken her). H2024 2.4 er en SQL-oppgave, men ideen er en RA-ekvivalens: union over samme tabell er det samme som én seleksjon med ∨.</p>
+      <div id="bank-ra"></div>
+      <h3>Samme idé i SQL: H2024 2.4</h3>
+      <div id="bank-ra-2024"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Merket viser hvilken fane påstanden hører til.</p>
+      <div id="tf-ra"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 3 · Relasjonsalgebra · <a href="04-sql.html">Neste: blokk 4, SQL</a></footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/stepplayer.js?v=20261125n"></script>
+  <script src="assets/js/viz-relation.js?v=20261125n"></script>
+  <script src="assets/js/viz-er.js?v=20261125n"></script>
+  <script src="assets/js/data-ra.js?v=20261125n"></script>
+  <script src="assets/js/side-ra.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125n"></script>
+  <script src="assets/js/bank.js?v=20261125n"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.dataRa, S = IN.raSide;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[03-ra] " + navn, e); } }
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-grunnlag": {
+        eli5: "<p>Tenk på tabellene som kortstokker. Relasjonsalgebra er en liten verktøykasse: én saks som klipper bort kolonner, én sil som slipper gjennom bare noen kort, én lim-maskin som setter sammen kort fra to stokker. Hvert verktøy gir en ny kortstokk, og den kan du putte rett inn i neste verktøy. Den opprinnelige stokken blir aldri ødelagt.</p>",
+        normal: "<p>Relasjonsalgebra er grunnmuren under SQL. Der SQL beskriver <i>hva</i> du vil ha, beskriver et RA-uttrykk nøyaktig hvilke operasjoner som gir svaret, og i hvilken rekkefølge. Det er derfor databasen oversetter SQL til RA før den kjører spørringen.</p><p>Den viktigste forskjellen fra SQL er at relasjoner er mengder. Et resultat kan aldri ha to like rader.</p>",
+        teknisk: "<p>En relasjon er en mengde tupler over en signatur (attributtnavn med domener). Operatorene er funksjoner fra én eller to relasjoner til en ny relasjon, så algebraen er lukket: ethvert uttrykk kan brukes som argument i et annet. Unære operatorer er π, σ og ρ. Binære er ×, ⋈, ∪, ∩ og ∖.</p><p>Fordi resultatet er en mengde, fjernes duplikater automatisk. SQL-tabeller og -svar er multimengder, og <span class=\"mono\">SELECT</span> svarer bare til π «opp til duplikater».</p>"
+      },
+      "ex-unaere": {
+        eli5: "<p>π er en saks: du klipper bort kolonnene du ikke vil ha. σ er en sil: bare radene som passer, slipper gjennom. ρ er en navnelapp: du limer et nytt navn over et gammelt, men innholdet er det samme.</p>",
+        normal: "<p>De tre unære operatorene gjør én ting hver. σ endrer hvor mange <i>rader</i> det er, π endrer hvilke <i>kolonner</i> det er (og kan gi færre rader fordi like rader slås sammen), og ρ endrer bare <i>navn</i>. Det vanligste mønsteret på eksamen er <span class=\"mono\">π<sub>…</sub>(σ<sub>…</sub>(R))</span>.</p>",
+        teknisk: "<p><span class=\"mono\">π<sub>A</sub>(R) = { t[A] | t ∈ R }</span> og <span class=\"mono\">σ<sub>c</sub>(R) = { t ∈ R | c(t) }</span>. σ bevarer signaturen, π gir signaturen A. ρ endrer signaturen og ingenting annet.</p><p>Betingelsen i σ kan bare bruke attributter som finnes i argumentet. Derfor må σ stå inni π når betingelsen bruker en kolonne π fjerner.</p>"
+      },
+      "ex-join": {
+        eli5: "<p>Kryssproduktet setter hvert kort fra den ene stokken sammen med hvert kort fra den andre, også kort som ikke har noe med hverandre å gjøre. En join setter bare sammen kortene som hører sammen, for eksempel en student og emnene hun har tatt. Naturlig join gjetter hva som hører sammen ved å se på kolonner som heter det samme. Det er praktisk, men den kan gjette feil.</p>",
+        normal: "<p>Nesten alle spørsmål om to tabeller trenger en join. Med betingelse skriver du selv hva som skal være likt, og alle kolonnene blir med. Naturlig join kobler på kolonnene som heter det samme og tar dem med én gang.</p><p>Fellen er navnene: ingen felles navn gir kryssprodukt, og et tilfeldig felles navn gir for få rader.</p>",
+        teknisk: "<p><span class=\"mono\">R × S</span> har signaturen til R etterfulgt av S og |R| · |S| tupler. <span class=\"mono\">R ⋈<sub>c</sub> S := σ<sub>c</sub>(R × S)</span>. Naturlig join er en join med likhet på alle felles attributtnavn, fulgt av en projeksjon som beholder én kopi av hvert. Med tom mengde felles attributter er betingelsen tom, så <span class=\"mono\">R ⋈ S = R × S</span>.</p><p>ρ er verktøyet for å styre naturlig join: gi like navn til det du vil koble på, og ulike navn til det du ikke vil koble på.</p>"
+      },
+      "ex-mengde": {
+        eli5: "<p>Tenk på to gjestelister. Union er alle som står på minst én av listene. Snitt er dem som står på begge. Differanse er dem på den første listen som ikke står på den andre. For å sammenligne listene må de være skrevet på samme måte, for eksempel bare med navn.</p>",
+        normal: "<p>Mengdeoperatorene sammenligner hele rader. Derfor må begge sidene ha samme signatur. Det typiske grepet er å projisere ned til nøkkelen (for eksempel snr) på begge sider, gjøre mengdeoperasjonen, og så joine tilbake for å få med navn og annet.</p><p>Differanse er måten å si «ikke», «ingen» og «bare» på.</p>",
+        teknisk: "<p><span class=\"mono\">R ∪ S</span>, <span class=\"mono\">R ∩ S</span> og <span class=\"mono\">R ∖ S</span> er definert når R og S har samme signatur (union-kompatible). Snitt kan uttrykkes med differanse: <span class=\"mono\">R ∩ S = R ∖ (R ∖ S)</span>.</p><p>Universell kvantifisering («alle emnene er A») skrives som «finnes A» minus «finnes ikke-A». Det er samme logikk som <span class=\"mono\">NOT EXISTS</span> og <span class=\"mono\">EXCEPT</span> i SQL.</p>"
+      },
+      "ex-tre": {
+        eli5: "<p>Treet er en oppskrift som leses nedenfra. Nederst ligger ingrediensene (tabellene). Hver boks over er et trinn i oppskriften: sile, klippe eller blande. Øverst står den ferdige retten.</p>",
+        normal: "<p>Treet viser rekkefølgen tydeligere enn parentesene. Hver node får inn resultatet fra barna sine og sender sitt resultat oppover. I demoen ser du tabellen som kommer inn og tabellen som går ut av hver node.</p>",
+        teknisk: "<p>Uttrykkstreet er syntakstreet til RA-uttrykket. Evalueringen er postorden: barn før forelder. Ekvivalente uttrykk gir ulike trær med samme resultat, og databasen velger blant dem. Kurset viser oversettelsen fra SQL til tre og at trær kan skrives om, men hvordan databasen velger, er ikke pensum.</p>"
+      },
+      "ex-sql": {
+        eli5: "<p>SQL og relasjonsalgebra sier det samme med forskjellige ord. SELECT er saksen π, WHERE er silen σ, og FROM med flere tabeller er kombinasjonsmaskinen ×. Den største forskjellen: SQL beholder like rader, RA kaster dem.</p>",
+        normal: "<p>Oversett klausul for klausul. FROM gir bladene (og ⋈ eller ×), WHERE gir σ, SELECT gir π ytterst. Mengdeoperatorene har direkte motstykker. Aggregering, sortering og ytre join finnes ikke i kursets RA.</p>",
+        teknisk: "<p>For en SELECT–FROM–WHERE-spørring er oversettelsen <span class=\"mono\">π<sub>k</sub>(σ<sub>u</sub>(t₁ × … × tₙ))</span>. Eksplisitt <span class=\"mono\">JOIN … ON</span> gir ⋈ med betingelse, og alias i SELECT gir ρ. Likheten gjelder opp til duplikater, fordi SQL har multimengdesemantikk. Med <span class=\"mono\">DISTINCT</span> er de like.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Tabellene ---------- */
+    function tabeller(host, navn) {
+      navn.forEach(function (n) {
+        var t = D.db[n];
+        IN.vizTable(host, { navn: n, kolonner: t.kolonner.map(function (c) { return { navn: c, pk: t.pk.indexOf(c) >= 0 }; }), rader: t.rader }, { compact: true });
+      });
+    }
+    var ALLE = ["Student", "Tatt", "Emne", "Foreleser", "Kunde", "Båt"];
+    safe("tabeller", function () { tabeller(IN.qs("#ra-tabeller"), ALLE); tabeller(IN.qs("#ov-tabeller"), ALLE); });
+
+    /* ---------- Små demoer ---------- */
+    safe("mini", function () {
+      S.mini("#mini-pi", "π_{by}(Student)", { note: "Fire rader inn, tre ut: de to Oslo-radene blir like." });
+      S.mini("#mini-sigma", "σ_{by = 'Oslo'}(Student)", { note: "To av fire rader passer. Alle kolonnene er med." });
+      S.mini("#mini-sigma2", "σ_{kode = 'IN2090' ∧ kar ≠ 'A'}(Tatt)", { note: "Betingelsen gjelder én rad om gangen: kode må være IN2090 <i>og</i> karakteren noe annet enn A." });
+      S.mini("#mini-rho", "ρ_{tittel→navn, sp→poeng}(Emne)", { note: "Samme rader, nye attributtnavn." });
+      S.mini("#mini-pisigma", "π_{navn}(σ_{by = 'Oslo'}(Student))", { note: "Tilsvarer <span class=\"mono\">SELECT navn FROM Student WHERE by = 'Oslo';</span>" });
+      S.mini("#mini-cross", "σ_{by = 'Oslo'}(Student) × Emne", { note: "2 studenter · 3 emner = 6 rader. Ingen av radene sier at studenten har tatt emnet. × alene gir sjelden mening, men er grunnlaget for join." });
+      S.mini("#mini-theta", "Student ⋈_{Student.snr = Tatt.snr} Tatt", { note: "Av 4 · 5 = 20 kombinasjoner oppfyller 5 betingelsen. Begge snr-kolonnene er med. Di har ingen rad i Tatt og forsvinner." });
+      S.mini("#mini-union", "π_{snr}(σ_{by = 'Oslo'}(Student)) ∪ π_{snr}(σ_{kode = 'IN2010'}(Tatt))", { note: "Bor i Oslo {1, 3} eller har tatt IN2010 {1}. Student 1 står på begge sider, men kommer bare én gang." });
+      S.mini("#mini-diff", "π_{snr}(Student) ∖ π_{snr}(Tatt)", { note: "Alle studenter {1, 2, 3, 4} minus dem som har tatt noe {1, 2, 3}." });
+    });
+    safe("join-cases", function () { S.cases("#join-cases", D.joinCases); });
+    safe("set-cases", function () { S.cases("#set-cases", D.setCases); });
+    safe("foralle-cases", function () { S.cases("#foralle-cases", D.forAlleCases); });
+
+    /* ---------- Stegspiller ---------- */
+    safe("ra-player", function () { S.player("#ra-player", { presets: D.presets }); });
+
+    /* ---------- SQL → tre ---------- */
+    safe("sql-eks", function () {
+      var sql = "SELECT s.navn, e.tittel\nFROM Student AS s\n  JOIN Tatt AS t USING (snr)\n  JOIN Emne AS e USING (kode)\nWHERE s.by = 'Oslo' AND t.kar = 'A';";
+      IN.sqlBlock(IN.qs("#sql-eks"), sql);
+      var a = "π_{navn, tittel}(σ_{by = 'Oslo' ∧ kar = 'A'}(Student ⋈ Tatt ⋈ Emne))";
+      var b = "π_{navn, tittel}(σ_{by = 'Oslo'}(Student) ⋈ σ_{kar = 'A'}(Tatt) ⋈ Emne)";
+      IN.qs("#sql-eks-ra").appendChild(IN.el("div", { class: "ra-mini-expr mono", html: IN.ra.html(IN.ra.parse(a)[0].expr) }));
+      IN.qs("#sql-eks-ra").appendChild(IN.el("p", { class: "small", html: "USING (snr) og USING (kode) blir naturlig join, fordi snr og kode er de eneste felles navnene i hvert steg. WHERE blir σ, SELECT blir π ytterst." }));
+      var host = IN.qs("#sql-traer"), all = { active: function () { return false; }, done: function () { return true; } };
+      [[a, "Rett fra SQL-en: σ over hele joinen"], [b, "Samme svar: σ flyttet ned til hver sin tabell"]].forEach(function (p) {
+        var f = IN.el("figure");
+        S.tree(f, IN.ra.parse(p[0])[0].expr, all, null);
+        f.appendChild(IN.el("figcaption", { text: p[1] }));
+        host.appendChild(f);
+      });
+      S.mini("#sql-eks-res", a, { note: "Begge trærne gir disse tre radene. Ada har A i to emner, Cy i ett." });
+    });
+
+    /* ---------- Øving ---------- */
+    safe("ovelser", function () { S.ovelse("#ra-ovelser", D.ovinger); });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "ra-" + fane }); });
+    });
+
+    /* ---------- Sant/usant ---------- */
+    safe("tf-ra", function () {
+      IN.tfTest("#tf-ra", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: D.faner[it.fane] || it.fane, kilde: false };
+      }), { id: "ra-tf" });
+    });
+
+    /* ---------- Eksamensbanken ---------- */
+    safe("bank-ra", function () { IN.examBank("#bank-ra", { block: "relasjonsalgebra" }); });
+    safe("bank-ra-2024", function () { IN.examBank("#bank-ra-2024", { block: "sql", years: ["H2024"], tema: "ekvivalens" }); });
+  })();
+  </script>
+</body>
+</html>

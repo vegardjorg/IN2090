@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 9 · Sikkerhet · IN2090</title>
+  <meta name="description" content="Sikkerhet i IN2090: konfidensialitet, integritet og tilgjengelighet, brukere og roller, GRANT og REVOKE, SQL-injection og parametriserte spørringer (PreparedStatement og %s), med en demo og eksamensoppgaven fra H2023.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <style>
+    .sik-demo { border: 1px solid var(--color-outline-variant); border-radius: 10px; padding: .8rem; background: var(--color-surface-container-low); margin: .8rem 0 1.2rem; min-width: 0; }
+    .sik-demo .btn-row { margin: .35rem 0; }
+    .sik-lbl { margin-right: .2rem; }
+    .sik-kode, .sik-sql { font-family: var(--font-mono); font-size: 13px; line-height: 1.5; background: var(--color-surface-container-lowest); color: var(--color-on-surface);
+      border: 1px solid var(--color-outline-variant); border-radius: 8px; padding: .55rem .7rem; margin: .4rem 0; overflow-x: auto; max-width: 100%; }
+    .sik-sql { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .sik-field { display: flex; flex-direction: column; gap: .25rem; margin: .5rem 0; }
+    .sik-field input { width: 100%; max-width: 100%; box-sizing: border-box; font-family: var(--font-mono); }
+    .sik-chk { display: flex; gap: .4rem; align-items: flex-start; margin: .3rem 0 .6rem; }
+    .sik-chk input { margin-top: .2rem; }
+    .sik-ut { min-width: 0; }
+    .sik-h { margin: .6rem 0 0; }
+    .sik-inn { background: var(--color-tone-caution); color: var(--color-on-tone-caution); text-decoration: underline; text-decoration-color: var(--color-on-tone-caution); text-underline-offset: 3px; }
+    .sik-c-kom { color: var(--color-on-surface-variant); opacity: .75; font-style: italic; }
+    .sik-param { font-family: var(--font-mono); font-size: 13px; margin: .3rem 0; overflow-wrap: anywhere; }
+    .sik-setn { margin: .4rem 0; min-width: 0; }
+    .sik-tab { max-width: 100%; overflow-x: auto; }
+    .sik-feil, .sik-brudd { background: var(--color-tone-danger); color: var(--color-on-tone-danger); border-radius: 8px; padding: .45rem .65rem; margin: .4rem 0; overflow-wrap: anywhere; }
+    .sik-nekt { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-radius: 8px; padding: .45rem .65rem; margin: .4rem 0; overflow-wrap: anywhere; }
+    .sik-pre { font-family: var(--font-mono); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; margin: .4rem 0; }
+    .sik-cia { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; margin: .6rem 0 1rem; }
+    .sik-cia > div { border: 1px solid var(--color-outline-variant); border-radius: 10px; padding: .6rem .75rem; background: var(--color-surface-container-lowest); }
+    .sik-cia h4 { margin: 0 0 .3rem; }
+    .sik-cia p { margin: .2rem 0; }
+    @media (max-width: 760px) { .sik-cia { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="sikkerhet">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 9 · Sikkerhet</h1>
+      <p class="lead">En kort blokk. Sikkerhet har nesten aldri vært spurt om på eksamen. Unntaket er SQL-injection: H2023 hadde en programmeringsoppgave der løsningen ikke fikk være sårbar. Lær deg derfor parametriserte spørringer godt, og les resten som bakgrunn. Programmering med SQL generelt ligger i <a href="08-sql-programmering.html">blokk 8</a>.</p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-2_7"><b>H2023</b> · Oppdater uten SQL-injection · <span class="pts">5p</span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Sikkerhet">
+      <button data-tab="mal">Mål og tilgang</button>
+      <button data-tab="grant">GRANT og REVOKE</button>
+      <button data-tab="injection">SQL-injection</button>
+      <button data-tab="eksamen">Eksamensoppgave</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · MÅL OG TILGANG ===================== -->
+    <section data-panel="mal">
+      <h3>Hva skal sikres?</h3>
+      <div class="sik-cia">
+        <div><h4>Konfidensialitet</h4><p>Uvedkommende skal ikke kunne <b>se</b> data de ikke har tilgang til.</p><p class="small muted">Brudd: noen leser passordene i brukertabellen.</p></div>
+        <div><h4>Integritet</h4><p>Dataene skal være korrekte. Uautoriserte brukere skal ikke kunne <b>endre</b> dem.</p><p class="small muted">Brudd: noen setter sine egne bestillinger til betalt.</p></div>
+        <div><h4>Tilgjengelighet</h4><p>De som har fått tilgang, skal faktisk kunne <b>bruke</b> dataene.</p><p class="small muted">Brudd: noen sletter en tabell, eller tjenesten slutter å svare.</p></div>
+      </div>
+      <p class="small muted">På engelsk kalles de tre målene ofte CIA (<i>confidentiality, integrity, availability</i>).</p>
+      <div id="ex-cia"></div>
+
+      <h4>Hvem sjekker tilgangen?</h4>
+      <div class="callout begrep"><span class="lbl">Tre steder</span>
+        <ul>
+          <li><b>Klienten</b> logger inn brukeren og sjekker hva hen har lov til. Backend og database må stole på klienten, og bare klienten skal komme til backend.</li>
+          <li><b>Backend</b> logger inn brukeren og sjekker rettighetene. Backend bruker ofte én felles databasebruker, så databasen må stole på backend.</li>
+          <li><b>Databasen</b> logger inn hver bruker direkte, og hver person får sin egen databasebruker. Klienten kan sjekke på forhånd, for eksempel for å skjule knapper.</li>
+        </ul>
+        Uansett valg er sikkerhet en helhetlig oppgave: hull kan finnes i alle ledd (frontend, backend, nettverk), så hvert ledd må sikres.</div>
+
+      <h4>Brukere, roller og rettigheter</h4>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        Tilgang i databasen styres av <b>brukere</b>, <b>roller</b> og <b>rettigheter</b>. En rolle samler rettigheter som hører sammen (for eksempel «bibliotekar»), og brukerne får roller. Det kalles rollebasert tilgangskontroll.
+        <ul>
+          <li>Brukeren er den du logger inn som (<span class="mono">psql … -U kari</span>). Databasen lagrer brukernavn og krypterte passord.</li>
+          <li>Alle databaser, skjemaer, tabeller og views har en eier.</li>
+          <li>Som regel er det bare superbrukere som kan lage brukere og roller.</li>
+        </ul></div>
+      <div id="ex-roller"></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-mal"></div>
+    </section>
+
+    <!-- ===================== 2 · GRANT OG REVOKE ===================== -->
+    <section data-panel="grant">
+      <h3>GRANT og REVOKE</h3>
+      <div class="callout begrep"><span class="lbl">Form</span>
+        <p class="sik-pre">GRANT &lt;rettigheter&gt; ON &lt;objekt&gt; TO &lt;rolle&gt;;
+REVOKE &lt;rettigheter&gt; ON &lt;objekt&gt; FROM &lt;rolle&gt;;</p>
+        Rettigheter er for eksempel <span class="mono">SELECT</span>, <span class="mono">INSERT</span>, <span class="mono">UPDATE</span>, <span class="mono">DELETE</span>, <span class="mono">CREATE</span>, <span class="mono">CONNECT</span>, <span class="mono">USAGE</span> og <span class="mono">ALL</span>. Objektet kan være en tabell, et view, et skjema eller en database. Får en rolle en rettighet, får alle medlemmene den.</div>
+      <div id="ex-grant"></div>
+
+      <h4>Eksempel: et lite bibliotek</h4>
+      <p class="small muted">Tabellene <span class="mono">bok</span> og <span class="mono">utlaan</span>, rollene <span class="mono">laaner</span> og <span class="mono">bibliotekar</span>, brukerne kari og per.</p>
+      <div id="sql-grant"></div>
+      <div class="callout eksempel"><span class="lbl">Les linjene</span>
+        <ol>
+          <li>Lager to roller.</li>
+          <li>Lager to brukere som kan logge inn.</li>
+          <li>Lånerne kan lese bøkene. Bibliotekarene kan lese, registrere og endre utlån, men ikke slette dem.</li>
+          <li>Bibliotekarene kan rette titler, men ingen andre kolonner i bok. De kan ikke lese bok, for det har ingen gitt dem.</li>
+          <li>kari blir bibliotekar og per låner. De får rollens rettigheter.</li>
+          <li>Bibliotekarene mister retten til å endre utlån. SELECT og INSERT har de fortsatt.</li>
+        </ol></div>
+
+      <h4>Tilgang gjennom et view</h4>
+      <div class="callout eksempel"><span class="lbl">Eksempel</span>
+        Noen ganger skal brukerne bare se en oppsummering, ikke selve radene. Tenk på pasientjournaler: forskere kan få antall pasienter med hver sykdom per kommune, men ikke journalen til hver person. Lag et view og gi tilgang til det:
+        <div id="sql-view"></div>
+        Lånerne kan nå lese <span class="mono">utlaan_per_bok</span> uten å ha noen rettigheter på <span class="mono">utlaan</span>.</div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor kan ikke kari lese bok, når hun er bibliotekar?</summary>
+          <p>Rettigheter må gis eksplisitt. At en rolle høres viktigere ut, gir den ingenting. bibliotekar har bare fått rettigheter på utlaan og UPDATE på tittel i bok.</p></details>
+        <details class="grense"><summary>Hvorfor <span class="mono">FROM</span> i REVOKE og ikke <span class="mono">TO</span>?</summary>
+          <p>Du gir <i>til</i> noen og tar <i>fra</i> noen: <span class="mono">GRANT … TO</span>, <span class="mono">REVOKE … FROM</span>.</p></details>
+        <details class="grense"><summary>Hvordan gir jeg en bruker en rolle?</summary>
+          <p>Med <span class="mono">GRANT rolle TO bruker;</span>, som i linje 5. Det er samme kommando som for rettigheter, bare uten <span class="mono">ON</span>.</p></details>
+      </div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-grant"></div>
+    </section>
+
+    <!-- ===================== 3 · SQL-INJECTION ===================== -->
+    <section data-panel="injection">
+      <h3>SQL-injection</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        SQL-injection er et angrep der en bruker får databasen til å kjøre sin egen SQL-kode. Angriperen kan komme seg forbi innloggingen og lese, endre eller slette data hen ikke skal ha tilgang til. Det krever tre ting:
+        <ul>
+          <li>et program som kjører SQL (Python, Java …),</li>
+          <li>inndata fra brukeren som blir en del av spørringen,</li>
+          <li>at programmet ikke skiller mellom data og kommando.</li>
+        </ul></div>
+      <div id="ex-injection"></div>
+
+      <h4>Prøv selv</h4>
+      <p class="small muted">Et program søker etter en bok med tittelen brukeren skriver inn. Databasen har tabellene <span class="mono">bok(bid, tittel, forfatter)</span> og <span class="mono">bruker(brukernavn, passord)</span>. Spørringene kjøres i en liten SQL-tolk i nettleseren. DROP og andre endringer blir bare beskrevet. Bytt mellom strengsammensetting og parameter, og prøv eksemplene.</p>
+      <div id="sik-demo"></div>
+
+      <h3>Løsningen: parametriserte spørringer</h3>
+      <div id="ex-param"></div>
+      <div class="callout snarvei"><span class="lbl">Mønster til eksamen</span>
+        <p><b>Python (psycopg):</b> <span class="mono">%s</span> der verdien skal stå, og verdiene som en tuppel i andre argument. Husk kommaet i <span class="mono">(verdi,)</span> når det bare er én.</p>
+        <pre class="sik-kode">cur = conn.cursor()
+cur.execute("UPDATE utlaan SET levert = current_date "
+            "WHERE bid = %s AND laaner = %s;", (bid, laaner))
+conn.commit()</pre>
+        <p><b>Java (JDBC):</b> <span class="mono">?</span> der verdien skal stå, så <span class="mono">setString</span>, <span class="mono">setInt</span> og så videre med nummeret på plassholderen (fra 1).</p>
+        <pre class="sik-kode">PreparedStatement stmt = conn.prepareStatement(
+    "UPDATE utlaan SET levert = current_date " +
+    "WHERE bid = ? AND laaner = ?;");
+stmt.setInt(1, bid);
+stmt.setString(2, laaner);
+stmt.execute();</pre>
+        <p class="small">Endrer du data, må endringen også bli lagret (<span class="mono">conn.commit()</span> i psycopg). Mer om dette i <a href="08-sql-programmering.html">blokk 8</a>.</p></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor er <span class="mono">"… = '%s'" % tittel</span> ikke parametrisert?</summary>
+          <p>Det er Pythons egen strengformatering. Verdien limes inn i teksten før databasen ser den, akkurat som med <span class="mono">+</span>. Parametrisert blir det bare når verdiene gis som eget argument til <span class="mono">execute</span>, og uten apostrofer rundt <span class="mono">%s</span>.</p></details>
+        <details class="grense"><summary>Hvorfor ikke bare fjerne farlige tegn fra inndataene?</summary>
+          <p>Det er lett å glemme et tilfelle, og ekte inndata kan inneholde apostrofer (Rock'n'roll-boka, O'Brien). Parametre løser begge problemene på en gang.</p></details>
+        <details class="grense"><summary>Hvorfor hjelper rettigheter i databasen, når programmet er sårbart?</summary>
+          <p>Har databasebrukeren til programmet bare de rettighetene det trenger, stopper databasen mye av skaden. Slå på avkrysningen i demoen og prøv «Slett tabellen». Hullet er der likevel, så du trenger parametre uansett. Ikke anta for mye om de andre leddene i systemet.</p></details>
+      </div>
+
+      <h4>Steng tilkoblingene</h4>
+      <p class="small">Tilkoblinger, cursorer, statements og resultatsett holder på ressurser. Steng dem med <span class="mono">close()</span> når du er ferdig, særlig i programmer som kjører lenge. Når en tilkobling stenges, stenges alt som er laget fra den. I Java kan en try-with-resources-blokk gjøre det automatisk.</p>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-injection"></div>
+    </section>
+
+    <!-- ===================== EKSAMEN ===================== -->
+    <section data-panel="eksamen">
+      <h3>Eksamensoppgave</h3>
+      <p class="muted small">Den eneste sikkerhetsoppgaven i banken: H2023 2.7, en programmeringsoppgave der løsningen ikke fikk være sårbar for SQL-injection. GRANT, REVOKE og roller har ikke vært spurt om.</p>
+      <div id="bank-sikkerhet"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Merket viser hvilken fane påstanden hører til.</p>
+      <div id="tf-sikkerhet"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 9 · Sikkerhet · <a href="10-indekser.html">Neste: blokk 10, indekser</a></footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/stepplayer.js?v=20261125n"></script>
+  <script src="assets/js/varline.js?v=20261125n"></script>
+  <script src="assets/js/viz-relation.js?v=20261125n"></script>
+  <script src="assets/js/viz-er.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261125n"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261125n"></script>
+  <script src="assets/js/bank.js?v=20261125n"></script>
+  <script src="assets/js/sql-motor.js?v=20261125n"></script>
+  <script src="assets/js/side-sikkerhet.js?v=20261125n"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, S = IN.sikkerhet;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[09-sikkerhet] " + navn, e); } }
+
+    Object.keys(S.EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, S.EX[id], { label: "Forklaring:" }); });
+    });
+
+    safe("sql-grant", function () {
+      IN.sqlBlock(IN.qs("#sql-grant"),
+        "CREATE ROLE laaner; CREATE ROLE bibliotekar;\n" +
+        "CREATE USER kari WITH PASSWORD 'hemmelig'; CREATE USER per WITH PASSWORD 'hemmelig';\n" +
+        "GRANT SELECT ON bok TO laaner; GRANT SELECT, INSERT, UPDATE ON utlaan TO bibliotekar;\n" +
+        "GRANT UPDATE (tittel) ON bok TO bibliotekar;\n" +
+        "GRANT bibliotekar TO kari; GRANT laaner TO per;\n" +
+        "REVOKE UPDATE ON utlaan FROM bibliotekar;");
+    });
+    safe("sql-view", function () {
+      IN.sqlBlock(IN.qs("#sql-view"),
+        "CREATE VIEW utlaan_per_bok AS\n" +
+        "  SELECT bid, count(*) AS antall\n" +
+        "  FROM utlaan\n" +
+        "  GROUP BY bid;\n" +
+        "GRANT SELECT ON utlaan_per_bok TO laaner;");
+    });
+
+    safe("sik-demo", function () { S.injectionDemo("#sik-demo"); });
+
+    Object.keys(S.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, S.quiz[fane], { id: "sik-" + fane }); });
+    });
+
+    safe("tf-sikkerhet", function () {
+      IN.tfTest("#tf-sikkerhet", S.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: S.faner[it.fane] || it.fane, kilde: false };
+      }), { id: "sik-tf" });
+    });
+
+    safe("bank-sikkerhet", function () { IN.examBank("#bank-sikkerhet", { block: "sql-programmering", tema: "SQL-injection" }); });
+  })();
+  </script>
+</body>
+</html>

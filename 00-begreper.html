@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 0 · Begreper · IN2090</title>
+  <meta name="description" content="Grunnbegrepene i IN2090: database og DBMS, relasjon, tuppel, attributt, domene, signatur og skjema, og nøklene (supernøkkel, kandidatnøkkel, primærnøkkel, fremmednøkkel) med en interaktiv supernøkkelsjekk.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261125n">
+  <style>
+    .bg-regler { margin: .3rem 0 .4rem; padding-left: 1.2rem; }
+    .bg-svar { margin-top: .5rem; }
+    .bg-linje { margin: .35rem 0; padding: .45rem .65rem; border-radius: 8px; border-left: 4px solid var(--color-outline-variant); background: var(--color-surface-container, transparent); }
+    .bg-linje.bg-ja { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-left-color: currentColor; }
+    .bg-linje.bg-nei { background: var(--color-tone-danger); color: var(--color-on-tone-danger); border-left-color: currentColor; }
+    .bg-linje.bg-merk { background: var(--color-tone-warn); color: var(--color-on-tone-warn); border-left-color: currentColor; }
+    .bg-sn .btn[aria-pressed="true"] { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+    .bg-tab { margin: .6rem 0; }
+  </style>
+</head>
+<body data-page="begreper">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 0 · Begreper og relasjonsmodellen</h1>
+      <p class="lead">Ordene resten av guiden bygger på: database og DBMS, relasjon, tuppel, attributt og domene, og de fire nøklene. Eksamen spør sjelden om dette alene, men du trenger det i <a href="02-realisering.html">realisering</a>, <a href="04-sql.html">SQL</a> og <a href="06-fd.html">FD-er</a>.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Begreper">
+      <button data-tab="database">Database og DBMS</button>
+      <button data-tab="relasjon">Relasjonsmodellen</button>
+      <button data-tab="nokler">Nøkler</button>
+      <button data-tab="dra">Øv: dra og sorter</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · DATABASE OG DBMS ===================== -->
+    <section data-panel="database">
+      <h3>Database og databasesystem</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li><b>Database:</b> en samling data på et bestemt format. Kurset handler bare om <b>relasjonsdatabaser</b>, der dataene ligger i tabeller.</li>
+          <li><b>Databasesystem (DBMS):</b> programvaren som lar oss definere, lage, vedlikeholde og styre tilgangen til en database. Et <b>RDBMS</b> gjør det for relasjonsdatabaser. Kurset bruker PostgreSQL.</li>
+          <li><b>Spørrespråk:</b> et språk for å stille spørsmål til databasen. SQL er <b>deklarativt</b>: du skriver hva du vil ha, og DBMS-et finner ut hvordan.</li>
+        </ul>
+        I dagligtale betyr «database» både dataene, programmet og begge deler.</div>
+      <div id="ex-database"></div>
+
+      <h4>Hvorfor ikke bare filer eller et regneark?</h4>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>Løsning</th><th>Hva den gir</th><th>Hva som mangler</th></tr></thead>
+        <tbody>
+          <tr><td>Variabler i et program</td><td>Raskt og enkelt</td><td>Forsvinner ved omstart, begrenset av minnet, bare tilgjengelig for ett program</td></tr>
+          <tr><td>Filer</td><td>Varer, billig plass, deles mellom programmer</td><td>Søk og endringer må programmeres for hånd</td></tr>
+          <tr><td>Regneark</td><td>Tabeller med kolonner og rader</td><td>Fast struktur, spørrespråk, tilgangskontroll, integritet og store datamengder</td></tr>
+          <tr><td>Relasjonsdatabase</td><td>Alt over, med SQL oppå filsystemet</td><td>Passer dårlig for ustrukturerte data (tekst, video) og for spørsmål om stier mellom individer (grafdatabaser)</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-database"></div>
+    </section>
+
+    <!-- ===================== 2 · RELASJONSMODELLEN ===================== -->
+    <section data-panel="relasjon">
+      <h3>Relasjonsmodellen</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li><b>Relasjon</b> (tabell): en signatur og en <b>mengde</b> tupler.</li>
+          <li><b>Signatur:</b> relasjonens navn og attributtene, for eksempel <span class="mono">Rom(romkode, bygning, romnr, etasje, plasser)</span>. Den kan også ha med typene og nøklene.</li>
+          <li><b>Relasjonsskjema:</b> en mengde signaturer, altså oppskriften på hele databasen. En <b>relasjonsdatabase</b> er en mengde relasjoner med unike navn.</li>
+          <li><b>Attributt</b> (kolonne): et navn og en type. To attributter i samme relasjon kan ikke hete det samme.</li>
+          <li><b>Domene</b> (type): de lovlige verdiene for et attributt, som <span class="mono">int</span>, <span class="mono">text</span> eller <span class="mono">date</span>.</li>
+          <li><b>Tuppel</b> (rad): én verdi for hvert attributt. Formelt er det et sett av par (attributt, verdi), så vi kan skrive <span class="mono">t.plasser</span> i stedet for «femte verdi».</li>
+          <li><b>Verdier</b> er atomære, altså brukbare uten å pakkes ut. <b>NULL</b> markerer en verdi som mangler eller er ukjent.</li>
+        </ul></div>
+      <div id="ex-relasjon"></div>
+
+      <h4>Eksempelet i blokk 0: Rom</h4>
+      <div id="tab-rom"></div>
+      <p class="small">Signaturen med typer: <span class="mono">Rom(romkode text, bygning text, romnr text, etasje int, plasser int)</span>. Tabellen har fem tupler og fem attributter. romnr er tekst, fordi det er et navn og ikke et tall vi regner med.</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor spiller rekkefølgen på radene og kolonnene ingen rolle?</summary>
+          <p>Tuplene er en mengde, og en mengde har ingen rekkefølge. Hver tuppel er par av attributtnavn og verdi, så kolonnene har ingen fast plass heller. To tabeller med samme innhold i ulik rekkefølge er samme relasjon.</p></details>
+        <details class="grense"><summary>Hvorfor kan SQL gi duplikater når relasjoner ikke kan ha dem?</summary>
+          <p>Relasjonsmodellen og relasjonsalgebraen bruker mengder. SQL-tabeller og svar på spørringer er <b>multimengder</b>, og der kan samme rad stå flere ganger. <span class="mono">DISTINCT</span> fjerner dem.</p></details>
+        <ul>
+          <li><b>Relasjon er ikke det samme som relasjon i ER.</b> I ER-modellen er en relasjon en rombe som kobler entiteter. I relasjonsmodellen er det en tabell. Se <a href="01-er.html">blokk 1</a>.</li>
+          <li><b>NULL er ikke 0 eller tom tekst.</b> Det er «ukjent», og det påvirker sammenligninger i SQL (<a href="04-sql.html">blokk 4</a>).</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-relasjon"></div>
+    </section>
+
+    <!-- ===================== 3 · NØKLER ===================== -->
+    <section data-panel="nokler">
+      <h3>Nøkler</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li><b>Supernøkkel (SN):</b> en mengde attributter der ingen to tupler kan ha like verdier i alle, i noen lovlig tilstand. Hele relasjonen er alltid en SN.</li>
+          <li><b>Kandidatnøkkel (KN):</b> en minimal supernøkkel. Uansett hvilket attributt du fjerner, er den ikke lenger en SN.</li>
+          <li><b>Primærnøkkel (PN):</b> den kandidatnøkkelen vi velger. Den kan aldri være NULL, og det finnes bare én.</li>
+          <li><b>Fremmednøkkel (FN):</b> attributter som peker på en nøkkel i en relasjon (ofte en annen). Hver verdi må finnes der den peker. Skrives <span class="mono">FN: romkode → Rom(romkode)</span>.</li>
+          <li><b>Nøkkelattributt:</b> et attributt som er med i <b>minst én</b> kandidatnøkkel. Det trengs i <a href="06-fd.html#fane=nokler">blokk 6</a> og <a href="07-normalisering.html">blokk 7</a>.</li>
+        </ul>
+        Nøkler er regler om alle lovlige tilstander og bestemmes ut fra hva dataene betyr. Radene som ligger der nå, kan bare <b>motbevise</b> en nøkkel.</div>
+      <div id="ex-nokler"></div>
+
+      <h4>Prøv selv: er dette en supernøkkel?</h4>
+      <p class="small muted">Velg attributter. Tabellen markerer to rader som er like i det du har valgt, og under står hva reglene sier. Prøv <span class="mono">{bygning, etasje}</span>.</p>
+      <div id="sn-sjekk"></div>
+
+      <h4>Primær- og fremmednøkkel: Rom og Booking</h4>
+      <p class="small">Et rom bookes for en hel dag om gangen, så <span class="mono">{romkode, dato}</span> er en KN i Booking. romkode i Booking er en fremmednøkkel til Rom. Kolonnene i PN er markert, og pilen viser FN.</p>
+      <div id="tab-fn"></div>
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>Begrep</th><th>I skjemaet (realisering)</th><th>I SQL</th></tr></thead>
+        <tbody>
+          <tr><td>KN</td><td class="mono">KN: {romkode}, {bygning, romnr}</td><td><span class="mono">UNIQUE NOT NULL</span> på de andre KN-ene</td></tr>
+          <tr><td>PN</td><td class="mono">PN: {romkode}</td><td><span class="mono">PRIMARY KEY</span>, det samme som <span class="mono">UNIQUE NOT NULL</span>, én per tabell</td></tr>
+          <tr><td>FN</td><td class="mono">FN: romkode → Rom(romkode)</td><td><span class="mono">REFERENCES Rom (romkode)</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor er ikke <span class="mono">{bygning, etasje}</span> en nøkkel når alle radene er ulike?</summary>
+          <p>To rom i samme etasje i samme bygning er helt lovlig, de finnes bare ikke i dataene akkurat nå. En nøkkel må holde for alle lovlige tilstander, ikke bare den du ser.</p></details>
+        <details class="grense"><summary>Hvorfor er <span class="mono">{romkode, etasje}</span> en supernøkkel, men ikke en kandidatnøkkel?</summary>
+          <p>romkode alene skiller alle rom. etasje er overflødig, så mengden er ikke minimal.</p></details>
+        <details class="grense"><summary>Hvorfor er bygning et nøkkelattributt når PN er <span class="mono">{romkode}</span>?</summary>
+          <p>bygning er med i KN-en <span class="mono">{bygning, romnr}</span>. «Minst én KN» er nok. Det er den typiske feilen på nøkkelattributt-oppgavene.</p></details>
+        <ul>
+          <li><b>En FN trenger ikke være unik.</b> R01 står to ganger i Booking, og det er lov. Det er verdien i Rom som må være unik.</li>
+          <li><b>Minimal er ikke det samme som minst.</b> <span class="mono">{bygning, romnr}</span> har to attributter og er like mye en KN som <span class="mono">{romkode}</span>.</li>
+        </ul></div>
+
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Nøkkelbegrepene testes i FD-oppgavene: kryss av alle KN (H2020), nøkkelattributt JA/NEI (H2023 og H2024) og KN for hver delrelasjon i dekomposisjon. Der finner du nøklene med tillukning, se <a href="06-fd.html#fane=nokler">blokk 6</a>. I realisering skal KN, PN og FN skrives for hver relasjon (<a href="02-realisering.html">blokk 2</a>).</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-nokler"></div>
+    </section>
+
+    <!-- ===================== ØV: DRA OG SORTER ===================== -->
+    <section data-panel="dra">
+      <h3>Øv: dra og sorter</h3>
+      <p class="muted small">Velg en brikke og så en bøtte, eller dra i ☰. Tastatur: Tab til brikken, Mellomrom for å løfte, piltaster for å velge plass og Mellomrom for å slippe.</p>
+      <div id="dra-begreper"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Merket viser hvilken fane påstanden hører til.</p>
+      <div id="tf-begreper"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 0 · Begreper · <a href="01-er.html">Neste: blokk 1, ER-modellering</a></footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/stepplayer.js?v=20261125n"></script>
+  <script src="assets/js/viz-relation.js?v=20261125n"></script>
+  <script src="assets/js/dra.js?v=20261125n"></script>
+  <script src="assets/js/data-begreper.js?v=20261125n"></script>
+  <script src="assets/js/side-begreper.js?v=20261125n"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.dataBegreper, B = IN.begreper;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[00-begreper] " + navn, e); } }
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-database": {
+        eli5: "<p>Databasen er et stort arkivskap med mapper. DBMS-et er arkivaren: du spør arkivaren om det du trenger, og arkivaren vet hvor alt ligger, passer på at ingen roter det til og sjekker hvem som får se hva.</p>",
+        normal: "<p>Du kunne lagret alt i filer og skrevet kode som leser og oppdaterer dem. Databasesystemet gjør den jobben for deg. Du beskriver strukturen én gang, og så stiller du spørsmål i SQL. Systemet passer på at dataene følger reglene, at flere kan bruke dem samtidig, og at bare de som har lov, får tilgang.</p>",
+        teknisk: "<p>DBMS-et er et abstraksjonslag over filsystemet. Strukturen (metadata: tabeller, typer, skranker) er beskrevet eksplisitt, og det gjør uthenting og oppdatering effektiv. Fordi SQL er deklarativt, kan systemet selv velge hvordan en spørring utføres. Den faste strukturen gjør det også mulig å håndheve integritet (nøkler, NOT NULL) og tilgangskontroll sentralt i stedet for i hvert program.</p>"
+      },
+      "ex-relasjon": {
+        eli5: "<p>En relasjon er et skjema med faste rubrikker øverst (attributtene) og én linje per ting (tuplene). Hver rubrikk har en regel for hva du kan skrive der (domenet). Det står aldri to helt like linjer, og det spiller ingen rolle hvilken linje som står først.</p>",
+        normal: "<p>Tenk på relasjonen som en tabell, men med to strenge regler: radene er en mengde, så det finnes ingen duplikater og ingen rekkefølge, og hver celle har nøyaktig én atomær verdi av riktig type (eller NULL). Signaturen er «overskriften» som forteller hva du trenger for å bruke tabellen.</p>",
+        teknisk: "<p>En relasjon er et par (signatur, mengde av tupler). Signaturen tilordner hvert attributtnavn et domene, for eksempel <span class=\"mono\">Rom: {romkode: text, …, plasser: int}</span>. En tuppel er en funksjon fra attributtnavn til verdier i riktig domene, så <span class=\"mono\">t.plasser</span> er veldefinert uten noen kolonnerekkefølge.</p><p>To relasjoner er like når signaturene og tuppelmengdene er like. Derfor er rad- og kolonnerekkefølgen uten betydning. SQL bryter med dette ved å bruke multimengder.</p>"
+      },
+      "ex-nokler": {
+        eli5: "<p>En supernøkkel er en beskrivelse som alltid peker ut nøyaktig ett rom, kanskje med unødvendige detaljer («rom R03 i første etasje»). En kandidatnøkkel er en slik beskrivelse uten noe ekstra («rom R03» eller «rom 1101 i Fysikk»). Primærnøkkelen er den vi bestemmer oss for å bruke. En fremmednøkkel er en lapp i en annen tabell som sier «det gjelder rom R03», og rommet må finnes.</p>",
+        normal: "<p>Nøkler kommer fra hva dataene betyr, ikke fra hva som står der i dag. Spør: kan to forskjellige rom noen gang ha like verdier her? Er svaret nei, er mengden en supernøkkel. Kan du fjerne ett attributt og fortsatt svare nei, er den ikke minimal, og da er den ikke en kandidatnøkkel.</p><p>Fremmednøkler binder tabellene sammen. De sikrer at en booking aldri peker på et rom som ikke finnes.</p>",
+        teknisk: "<p>X er en SN for R hvis det for alle lovlige instanser og alle tupler t₁ ≠ t₂ gjelder at t₁[X] ≠ t₂[X]. KN: SN der ingen ekte delmengde er SN. Hver supermengde av en SN er en SN, og R selv er en SN, så hver relasjon har minst én KN.</p><p>I <a href=\"06-fd.html#fane=nokler\">blokk 6</a> kommer en mer presis test: X er en SN hvis og bare hvis <span class=\"mono\">X⁺</span> er hele R. En FN fra S til R krever at verdiene i FN-attributtene i S finnes som nøkkelverdier i R. I SQL er dette <span class=\"mono\">REFERENCES</span>.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- Tabeller og demoer ---------- */
+    safe("tab-rom", function () { IN.vizTable("#tab-rom", D.rom, { compact: true }); });
+    safe("sn-sjekk", function () { B.snSjekk("#sn-sjekk"); });
+    safe("tab-fn", function () { B.tabeller("#tab-fn"); });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "begreper-" + fane }); });
+    });
+
+    /* ---------- Sant/usant ---------- */
+    safe("tf-begreper", function () {
+      IN.tfTest("#tf-begreper", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: D.faner[it.fane] || it.fane, kilde: it.kilde ? [{ ref: it.kilde.ref, egneOrd: true, eksamen: false }] : false };
+      }), { id: "begreper-tf" });
+    });
+
+    /* ---------- Dra-øvinger ---------- */
+    safe("dra-begreper", function () { B.dra("#dra-begreper"); });
+  })();
+  </script>
+</body>
+</html>

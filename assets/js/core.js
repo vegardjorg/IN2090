@@ -44,20 +44,20 @@
   IN.PAGES = [
     /* ready:false = vises nedtonet i menyen som «kommer», uten lenke. Sett true når siden er bygget. */
     { id: "index",             href: "index.html",                 label: "Forside",                  ready: true },
-    { id: "crash",             href: "crash.html",                 label: "Crash course",             ready: false },
-    { id: "sql-skolen",        href: "sql-skolen.html",            label: "SQL-skolen",               ready: false },
-    { id: "begreper",          href: "00-begreper.html",           label: "0 · Begreper",             ready: false },
+    { id: "crash",             href: "crash.html",                 label: "Crash course",             ready: true },
+    { id: "sql-skolen",        href: "sql-skolen.html",            label: "SQL-skolen",               ready: true },
+    { id: "begreper",          href: "00-begreper.html",           label: "0 · Begreper",             ready: true },
     { id: "er",                href: "01-er.html",                 label: "1 · ER-modellering",       ready: true },
     { id: "realisering",       href: "02-realisering.html",        label: "2 · Realisering",          ready: true },
-    { id: "relasjonsalgebra",  href: "03-relasjonsalgebra.html",   label: "3 · Relasjonsalgebra",     ready: false },
+    { id: "relasjonsalgebra",  href: "03-relasjonsalgebra.html",   label: "3 · Relasjonsalgebra",     ready: true },
     { id: "sql",               href: "04-sql.html",                label: "4 · SQL",                  ready: true },
     { id: "sql-videre",        href: "05-sql-videre.html",         label: "5 · SQL videregående",     ready: true },
     { id: "fd",                href: "06-fd.html",                 label: "6 · FD",    ready: true },
     { id: "normalisering",     href: "07-normalisering.html",      label: "7 · Normalisering",        ready: true },
-    { id: "sql-programmering", href: "08-sql-programmering.html",  label: "8 · Views & programmering",  ready: false },
-    { id: "sikkerhet",         href: "09-sikkerhet.html",          label: "9 · Sikkerhet",            ready: false },
-    { id: "indekser",          href: "10-indekser.html",           label: "10 · Indekser",  ready: false },
-    { id: "mock",              href: "mock.html",                  label: "Mock-eksamen",             ready: false }
+    { id: "sql-programmering", href: "08-sql-programmering.html",  label: "8 · Views & programmering",  ready: true },
+    { id: "sikkerhet",         href: "09-sikkerhet.html",          label: "9 · Sikkerhet",            ready: true },
+    { id: "indekser",          href: "10-indekser.html",           label: "10 · Indekser",  ready: true },
+    { id: "mock",              href: "mock.html",                  label: "Mock-eksamen",             ready: true }
   ];
 
   function buildNav() {
@@ -1702,7 +1702,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261125m";
+  IN.VERSION = "20261125n";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
@@ -1768,7 +1768,7 @@
      Tre eller flere callouts rett etter hverandre blir én nøytral liste med små merkelapper.
      Alt innhold beholdes: merkelappen blir en liten etikett + uthevet tittel, teksten står uendret. */
   var HUSK_T = { felle: "Felle", sensor: "Sensor", begrep: "Begrep", snarvei: "Vårt råd", uni: "Teknisk", eli5: "5-åring", eksempel: "Eksempel" };
-  var HUSK_STRIP = /^(vanlig\s+felle|felle|universitetsnivå|teknisk|snarvei på eksamen|snarvei|vårt råd|eksempel|5-åring|som for en 5-åring)\s*[:·–-]?\s*/i;
+  var HUSK_STRIP = /^(vanlig\s+felle|felle|universitetsnivå|teknisk|snarvei på eksamen|snarvei|vårt råd|eksempel|5-åring|som for en 5-åring)(?![a-zæøå])\s*[:·–-]?\s*/i;
   IN.huskLists = function (root) {
     var seen = [];
     qsa(".callout", root || document).forEach(function (c) {

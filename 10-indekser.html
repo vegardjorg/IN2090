@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blokk 10 · Indekser · IN2090</title>
+  <meta name="description" content="Indekser i IN2090 på oversiktsnivå: hva en indeks er, disk mot RAM, B-tre og hash, når en indeks hjelper, PRIMARY KEY og CREATE INDEX, og hva indekser koster ved skriving – med en demo som teller diskblokker med og uten indeks.">
+  <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261125n">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261125n">
+  <style>
+    .ix-demo { border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg); padding: var(--d-md); background: var(--color-surface-container-lowest); }
+    .ix-lbl { margin-top: .2rem; font-weight: 600; }
+    .ix-demo .btn-row { margin: .3rem 0 .5rem; }
+    .ix-sql { margin: .4rem 0; }
+    .ix-teller { font-weight: 600; margin-top: .4rem; }
+    .ix-tekst { min-height: 3em; margin: .3rem 0 .6rem; }
+    .ix-cap { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--color-on-surface-variant); margin: .6rem 0 .3rem; }
+    .ix-ingen { margin: 0; }
+    .ix-tre { display: flex; flex-direction: column; align-items: center; gap: var(--d-sm); }
+    .ix-lover, .ix-hash, .ix-blokker { display: grid; gap: var(--d-sm); width: 100%; }
+    .ix-lover { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ix-hash { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+    .ix-blokker { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .ix-node, .ix-blokk {
+      border: 1px solid var(--color-outline-variant); border-radius: var(--radius-md); padding: 6px;
+      background: var(--color-surface); display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start; min-width: 0;
+    }
+    .ix-rot { justify-content: center; }
+    .ix-nlbl { flex: 1 0 100%; font-size: var(--text-xs); color: var(--color-on-surface-variant); }
+    .ix-node.lest, .ix-blokk.lest { background: var(--color-surface-container-high); }
+    .ix-node.na, .ix-blokk.na { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+    .ix-chip {
+      font-family: var(--font-mono); font-size: var(--text-xs); padding: 1px 5px; border-radius: var(--radius);
+      border: 1px solid var(--color-outline-variant); background: var(--color-surface-container-lowest); color: var(--color-on-surface);
+    }
+    .ix-chip small { margin-left: 2px; color: var(--color-on-surface-variant); }
+    .ix-chip.key { font-weight: 700; }
+    .ix-chip.hit, .ix-rad.hit { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-color: var(--color-on-tone-ok); }
+    .ix-chip.hit small { color: inherit; }
+    .ix-blokk { flex-direction: column; flex-wrap: nowrap; gap: 2px; }
+    .ix-blokk .ix-nlbl { flex: none; }
+    .ix-rad { display: grid; grid-template-columns: 2.2em 1fr 2.5em; gap: 4px; font-family: var(--font-mono); font-size: var(--text-xs); padding: 1px 4px; border-radius: var(--radius); border: 1px solid transparent; }
+    .ix-rad span:last-child { text-align: right; }
+    .ix-sum { margin: .7rem 0 0; padding: 6px 10px; border-radius: var(--radius-md); background: var(--color-tone-info); color: var(--color-on-tone-info); }
+    .ix-flyt { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: .5rem 0; }
+    .ix-flyt span.pill { white-space: normal; }
+    @media (max-width: 560px) { .ix-lover { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body data-page="indekser">
+  <a class="skip-link" href="#main">Hopp til innhold</a>
+  <header id="topnav"></header>
+  <main id="main" class="wrap">
+    <div class="pagehead">
+      <h1>Blokk 10 · Indekser</h1>
+      <p class="lead">Indekser har aldri vært spurt om på eksamen, og kurset tar dem bare på oversiktsnivå. Denne siden er derfor kort: hva en indeks er, de to hovedtypene B-tre og hash, når en indeks hjelper, og hvordan du lager en med <span class="mono">CREATE INDEX</span>.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Indekser">
+      <button data-tab="indeks">Hva er en indeks?</button>
+      <button data-tab="strukturer">B-tre og hash</button>
+      <button data-tab="nar">Når hjelper den?</button>
+      <button data-tab="lage">CREATE INDEX</button>
+      <button data-tab="test">Sant/usant</button>
+    </div>
+
+    <!-- ===================== 1 · HVA ER EN INDEKS? ===================== -->
+    <section data-panel="indeks">
+      <h3>Hva er en indeks?</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        En <b>indeks</b> (indeksstruktur) er en datastruktur ved siden av tabellen som lar databasen raskt finne radene med bestemte verdier i én eller flere kolonner.
+        <ul>
+          <li>Både <span class="mono">WHERE pris = 45</span> og en join på <span class="mono">a.x = b.y</span> er i bunn og grunn et søk etter bestemte verdier i en kolonne. Indeksen gjør det søket raskt.</li>
+          <li>Databaser lagrer data på <b>disk</b>, ikke i RAM. Å lese fra disk tar omtrent <b>10 000 ganger</b> så lang tid. Indeksene er derfor bygget for å gi <b>så få diskoppslag som mulig</b>.</li>
+          <li>To hovedtyper: <b>tre-baserte</b> (B-tre) og <b>hash-baserte</b>.</li>
+        </ul></div>
+      <div id="ex-indeks"></div>
+
+      <h4>Prøv selv: finn rader med og uten indeks</h4>
+      <p class="small muted">Tabellen <span class="mono">vare(vnr, navn, pris)</span> ligger i seks diskblokker. Velg spørring og indeks, og gå steg for steg. Hvert steg leser én blokk: en indeksnode, en hash-adresse eller en datablokk. Grønt er treff. Tallene er laget for guiden, og indeksene er forenklet.</p>
+      <div id="ix-demo"></div>
+
+      <div class="callout eksempel"><span class="lbl">Hva skjer med store tabeller?</span>
+        Med seks blokker er forskjellen liten. Uten indeks vokser antall blokker som leses med tabellen, mens et B-tre bare får noen få nivåer selv for millioner av rader.
+        I demonstrasjonen på lysarkene (F13-01) ble det samme oppslaget kjørt på to kopier av en tabell med 10 millioner tall: med indeks tok det under ett millisekund, uten indeks rundt 300 millisekunder.</div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-indeks"></div>
+    </section>
+
+    <!-- ===================== 2 · B-TRE OG HASH ===================== -->
+    <section data-panel="strukturer">
+      <h3>B-tre og hash</h3>
+      <div class="grid cols-2">
+        <div class="callout begrep"><span class="lbl">B-tre</span>
+          <ul>
+            <li>Et tre der hver node kan ha <b>mange barn</b>.</li>
+            <li>Hver node er like stor som en <b>diskblokk</b>, så én node koster ett diskoppslag. Mange barn per node gir et lavt tre og få oppslag.</li>
+            <li>Verdiene i løvnodene ligger sortert og har <b>pekere til radene</b> sine i tabellen.</li>
+            <li>Effektivt for oppslag på konkrete verdier <b>og</b> for intervallsøk (<span class="mono">&lt;</span>, <span class="mono">&gt;</span>, <span class="mono">BETWEEN</span>).</li>
+          </ul></div>
+        <div class="callout begrep"><span class="lbl">Hash</span>
+          <ul>
+            <li>En <b>hash-funksjon</b> oversetter verdien til en adresse.</li>
+            <li>På adressen ligger en liste med <b>pekere til radene</b> som har verdien.</li>
+            <li>Enda mer effektivt enn B-tre for oppslag på én <b>konkret verdi</b> (<span class="mono">=</span>).</li>
+            <li>Kan <b>ikke</b> brukes for intervaller. Da må hver mulig verdi i intervallet slås opp for seg.</li>
+          </ul></div>
+      </div>
+      <div id="ex-strukturer"></div>
+
+      <div class="table-wrap"><table class="cmp-table">
+        <thead><tr><th>Betingelse</th><th>B-tre</th><th>Hash</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">pris = 45</td><td>ja, noen få oppslag</td><td>ja, best</td></tr>
+          <tr><td class="mono">pris BETWEEN 10 AND 15</td><td>ja, les bortover i løvene</td><td>nei, ett oppslag per verdi</td></tr>
+          <tr><td class="mono">pris &lt; 20</td><td>ja</td><td>nei</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small muted">Velg «B-tre på pris» og «Hash på pris» i demoen i første fane for å se forskjellen på <span class="mono">=</span> og <span class="mono">BETWEEN</span>.</p>
+
+      <div class="callout eksempel"><span class="lbl">Andre indeksstrukturer</span>
+        Det finnes mange flere, tilpasset ulike typer data: tekstsøk, koordinater og romlige data, og sammensatte data som JSON og XML. Kurset nevner dem bare.</div>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor hjelper ikke hash på <span class="mono">BETWEEN</span>?</summary>
+          <p>Hash-funksjonen sprer verdiene utover adressene uten noen rekkefølge. 10 og 11 kan havne langt fra hverandre. B-treet holder verdiene sortert, så naboverdier ligger ved siden av hverandre.</p></details>
+        <details class="grense"><summary>Hvorfor ikke et binærtre?</summary>
+          <p>Med bare to barn per node blir treet mye høyere, og hvert nivå er et nytt diskoppslag. B-treet har mange barn per node nettopp for å holde antall diskoppslag nede.</p></details>
+        <ul>
+          <li><b>Ingen algoritmer her.</b> Innsetting i og splitting av B-tre-noder er ikke pensum i IN2090. Det holder å kunne hva strukturene er gode til.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-strukturer"></div>
+    </section>
+
+    <!-- ===================== 3 · NÅR HJELPER DEN? ===================== -->
+    <section data-panel="nar">
+      <h3>Når hjelper en indeks?</h3>
+      <div class="callout begrep"><span class="lbl">Begrep</span>
+        <ul>
+          <li>En indeks hjelper når databasen skal <b>finne bestemte verdier</b> i en kolonne: en betingelse i <span class="mono">WHERE</span> eller en <b>join</b> på kolonnen.</li>
+          <li><span class="mono">PRIMARY KEY</span> gir <b>automatisk</b> en B-tre-indeks på primærnøkkelen. Joins over primærnøkler er derfor alltid ganske effektive.</li>
+          <li>Søker eller joiner du ofte på <b>andre kolonner</b>, for eksempel en fremmednøkkel eller et navn, må du lage indeksen selv.</li>
+          <li>Databasen <b>velger selv</b> om indeksen skal brukes. Spørringen skrives likt, og svaret blir det samme. Bare tiden endres.</li>
+        </ul></div>
+      <div id="ex-nar"></div>
+
+      <h4>Hvor databasen bestemmer det: spørreprosessering i korte trekk</h4>
+      <div class="ix-flyt" aria-label="Stegene i spørreprosesseringen">
+        <span class="pill">sjekk av spørringen</span><span aria-hidden="true">→</span>
+        <span class="pill">spørretre i relasjonsalgebra</span><span aria-hidden="true">→</span>
+        <span class="pill">ekvivalente varianter</span><span aria-hidden="true">→</span>
+        <span class="pill">kostnad for hver</span><span aria-hidden="true">→</span>
+        <span class="pill">billigste velges, spørreplan</span><span aria-hidden="true">→</span>
+        <span class="pill">evaluering</span>
+      </div>
+      <p class="small">Kostnaden anslås ut fra statistikk om databasen (antall rader, antall ulike verdier i kolonnene), skrankene og hvilke indekser som finnes. Med <span class="mono">EXPLAIN</span> foran en spørring får du se planen uten at spørringen kjøres, og <span class="mono">EXPLAIN ANALYZE</span> kjører den og måler. <b>Å forstå spørreplaner er ikke pensum</b> (F13-02).</p>
+
+      <div class="callout felle"><span class="lbl">Feller</span>
+        <details class="grense"><summary>Hvorfor må søket uten indeks lese hele tabellen, også når første rad traff?</summary>
+          <p>Flere rader kan ha samme verdi, og radene ligger i ingen bestemt rekkefølge. Uten indeks vet databasen ikke at det ikke finnes flere treff lenger ut.</p></details>
+        <details class="grense"><summary>Lager <span class="mono">REFERENCES</span> en indeks?</summary>
+          <p>Nei. Lysarkene nevner bare <span class="mono">PRIMARY KEY</span> som gir indeks automatisk, og PostgreSQL lager ikke indeks for en fremmednøkkel. Joiner du ofte på den, lag indeksen selv.</p></details>
+      </div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-nar"></div>
+    </section>
+
+    <!-- ===================== 4 · CREATE INDEX ===================== -->
+    <section data-panel="lage">
+      <h3>CREATE INDEX</h3>
+      <div class="callout begrep"><span class="lbl">Syntaks</span>
+        <div id="sql-syntaks"></div>
+        <ul>
+          <li><span class="mono">navn</span> er indeksens navn, <span class="mono">tabell</span> tabellen og <span class="mono">kolonner</span> en liste med kolonnene som skal indekseres.</li>
+          <li>Databasen lager en passende indeks, typisk et B-tre.</li>
+          <li>Lister du <b>flere kolonner</b>, blir det <b>én</b> indeks over alle kolonnene samtidig, ikke én per kolonne.</li>
+        </ul></div>
+      <div id="sql-eksempel"></div>
+      <div id="ex-lage"></div>
+
+      <div class="callout felle"><span class="lbl">Hva koster en indeks?</span>
+        <p class="small muted">Dette punktet står ikke på lysarkene, men er grunnen til at man ikke bare indekserer alt.</p>
+        <ul>
+          <li><b>Skriving blir dyrere.</b> Ved hver <span class="mono">INSERT</span>, <span class="mono">UPDATE</span> og <span class="mono">DELETE</span> må hver indeks på tabellen også oppdateres. Mange indekser betyr mer arbeid per endring.</li>
+          <li><b>Plass.</b> Indeksen er en egen struktur som også ligger på disk.</li>
+          <li><b>Tommelfingerregel:</b> lag indeks på kolonner du ofte søker eller joiner på, ikke på alle kolonner.</li>
+        </ul></div>
+
+      <h4>Test deg selv</h4>
+      <div id="quiz-lage"></div>
+    </section>
+
+    <!-- ===================== SANT/USANT ===================== -->
+    <section data-panel="test">
+      <h3>Sant eller usant?</h3>
+      <p class="muted small">Påstander fra hele blokken. Merket viser hvilken fane påstanden hører til.</p>
+      <div id="tf-indekser"></div>
+    </section>
+  </main>
+
+  <footer class="footer">IN2090-guide · Blokk 10 · Indekser · <a href="index.html">Til forsiden</a></footer>
+
+  <script src="assets/js/core.js?v=20261125n"></script>
+  <script src="assets/js/symboler.js?v=20261125n"></script>
+  <script src="assets/js/sql-lang.js?v=20261125n"></script>
+  <script src="assets/js/pseudocode.js?v=20261125n"></script>
+  <script src="assets/js/side-indekser.js?v=20261125n"></script>
+  <script>
+  (function () {
+    "use strict";
+    var IN = window.IN, D = IN.indekser;
+    function safe(navn, fn) { try { fn(); } catch (e) { if (window.console) console.error("[10-indekser] " + navn, e); } }
+
+    /* ---------- Forklaringer på tre nivåer ---------- */
+    var EX = {
+      "ex-indeks": {
+        eli5: "<p>Tenk på en tykk kokebok uten register bakerst. Skal du finne alle oppskrifter med kanel, må du bla gjennom hver eneste side. Med et register slår du opp «kanel» og får sidetallene med en gang. En indeks er registeret til en tabell.</p><p>Bøkene står dessuten i en kjeller (disken), og hver tur ned dit tar lang tid. Derfor handler alt om å gå så få turer som mulig.</p>",
+        normal: "<p>Uten indeks må databasen lese hele tabellen for å finne radene som passer i en <span class=\"mono\">WHERE</span> eller en join. Med en indeks på kolonnen slår den opp verdien i indeksen og følger pekerne rett til radene.</p><p>Fordi både tabellen og indeksen ligger på disk, er det <b>antall diskoppslag</b> som avgjør hvor lang tid det tar, ikke hvor mange tall som sammenlignes i minnet.</p>",
+        teknisk: "<p>Et oppslag på en verdi og en join er begge et søk etter rader med bestemte verdier i en kolonne. Uten indeks blir søket en gjennomlesing av hele tabellen, og arbeidet vokser i takt med antall rader. En indeksstruktur lar databasen gå rett til de aktuelle radene.</p><p>Siden indeksen ligger på disk og en disklesing koster i størrelsesorden 10 000 ganger en minnelesing, måles kostnaden i diskblokker. Begge hovedtypene, B-tre og hash, er laget for å holde det tallet lavt.</p>"
+      },
+      "ex-strukturer": {
+        eli5: "<p><b>B-tre</b> er som en ordbok med faner: først fanen for riktig bokstav, så riktig side, så ordet. Ordene står i rekkefølge, så vil du ha alle ord fra «kake» til «kanel», blar du bare bortover.</p><p><b>Hash</b> er som et postrom der et lite regnestykke på navnet ditt sier hvilken hylle posten din ligger i. For ett navn går det fortest av alt. Men hyllene står ikke i alfabetisk rekkefølge, så skal du ha posten til alle fra «Berg» til «Dahl», må du regne ut og sjekke ett og ett navn.</p>",
+        normal: "<p>B-treet er lavt fordi hver node har mange barn. Et oppslag går fra roten ned til et løv, og hvert nivå er ett diskoppslag. I løvet ligger verdiene sortert, så et intervall leses ved å gå bortover.</p><p>Hash-indeksen regner ut adressen direkte fra verdien, så et oppslag på én verdi trenger nesten bare ett oppslag i indeksen. Til gjengjeld sier adressene ingenting om hvilke verdier som er store eller små.</p>",
+        teknisk: "<p>Høyden på et B-tre vokser svært sakte med antall rader, fordi hvert nivå ganger opp antall verdier med antall barn per node. Med noder på størrelse med en diskblokk får hver node plass til mange nøkler, og selv store tabeller får få nivåer. Den sorterte rekkefølgen i løvene gir både likhetssøk og intervallsøk.</p><p>Hash-indeksen bruker en hash-funksjon fra verdi til adresse. Flere verdier kan havne på samme adresse, og da sjekkes verdien i lista. Likhetssøk blir svært raskt, men et intervall må brytes ned i ett oppslag per mulig verdi, og det går bare når verdiene er diskrete, som hele tall.</p>"
+      },
+      "ex-nar": {
+        eli5: "<p>Registeret i kokeboka hjelper når du leter etter noe bestemt. Det er ikke du som bestemmer om kokken bruker registeret. Kokken ser selv om det lønner seg.</p>",
+        normal: "<p>Typiske steder en indeks hjelper: <span class=\"mono\">WHERE</span> med en bestemt verdi eller et intervall på kolonnen, og joins på kolonnen. Primærnøkkelen har alltid en indeks. For alt annet må du lage den selv.</p><p>Du skriver ikke indeksen inn i spørringen. Databasen ser hvilke indekser som finnes, og bruker dem når den regner ut den billigste måten å svare på.</p>",
+        teknisk: "<p>Før en spørring kjøres, sjekkes den og oversettes til et spørretre i relasjonsalgebra. Treet kan skrives om til ekvivalente varianter som gir samme svar, men ulik kostnad. Kostnaden anslås fra statistikk, skranker og tilgjengelige indekser, og den billigste varianten blir en spørreplan.</p><p>En indeks er altså noe databasen kan velge å bruke. Den endrer aldri resultatet, bare hvor mange diskblokker som må leses.</p>"
+      },
+      "ex-lage": {
+        eli5: "<p>Du ber databasen lage et register for én kolonne, for eksempel prisen. Men hver gang en ny vare legges inn eller får ny pris, må registeret også rettes. Lager du register for alt, blir det mye retting.</p>",
+        normal: "<p>Én linje er nok: <span class=\"mono\">CREATE INDEX navn ON tabell(kolonne);</span>. Etterpå brukes indeksen automatisk når databasen mener den hjelper.</p><p>En indeks over flere kolonner, som <span class=\"mono\">vare(kategori, pris)</span>, er én indeks over kombinasjonen av verdiene.</p>",
+        teknisk: "<p><span class=\"mono\">CREATE INDEX</span> bygger en ny indeksstruktur, typisk et B-tre, over kolonnene du oppgir, og holder den oppdatert når tabellen endres. Det er prisen du betaler: lesing på de indekserte kolonnene blir raskere, mens hver endring av tabellen også må skrive til indeksen.</p>"
+      }
+    };
+    Object.keys(EX).forEach(function (id) {
+      safe(id, function () { IN.explain("#" + id, EX[id], { label: "Forklaring:" }); });
+    });
+
+    /* ---------- SQL ---------- */
+    safe("sql", function () {
+      IN.sqlBlock(IN.qs("#sql-syntaks"), "CREATE INDEX navn ON tabell(kolonner);");
+      IN.sqlBlock(IN.qs("#sql-eksempel"),
+        "-- indeks på pris: raskere WHERE pris = … og BETWEEN\nCREATE INDEX pris_idx ON vare(pris);\n\n-- med en kolonne kategori i tillegg: én indeks over begge kolonnene samtidig\nCREATE INDEX kat_pris_idx ON vare(kategori, pris);");
+    });
+
+    /* ---------- Demo ---------- */
+    safe("ix-demo", function () { D.demo("#ix-demo"); });
+
+    /* ---------- Flervalg per fane ---------- */
+    Object.keys(D.quiz).forEach(function (fane) {
+      safe("quiz-" + fane, function () { IN.quiz("#quiz-" + fane, D.quiz[fane], { id: "indekser-" + fane }); });
+    });
+
+    /* ---------- Sant/usant ---------- */
+    safe("tf-indekser", function () {
+      IN.tfTest("#tf-indekser", D.tf.map(function (it) {
+        return { s: it.s, answer: it.answer, explain: it.explain, tema: D.faner[it.fane] || it.fane, kilde: false };
+      }), { id: "indekser-tf" });
+    });
+  })();
+  </script>
+</body>
+</html>
