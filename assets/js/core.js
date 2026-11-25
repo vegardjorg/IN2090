@@ -413,7 +413,7 @@
        liste: nummererte punkter, svarknapper og nedtrekket «Forklaring» under hvert punkt
        bunn:  «Sjekk svar» + «↺ Nullstill»
      Bryteren er én global innstilling for alle sett og sider (localStorage in2090:svar-straks,
-     standard av). Regel for begge: du kan alltid endre svaret (unntak: lock etter sjekk).
+     standard på; bare et lagret «0» slår den av). Regel for begge: du kan alltid endre svaret (unntak: lock etter sjekk).
      Når tilbakemelding vises (bryteren på, eller etter «Sjekk svar»), blir valget grønt/rødt
      med ✓/✗, riktig svar markeres, og et galt valg åpner forklaringen sin.
      «Sjekk svar» åpner forklaringen under alle gale punkter og lukker de andre. */
@@ -421,10 +421,10 @@
   function straksEvent(on) { try { document.dispatchEvent(new CustomEvent("in:svar-straks", { detail: !!on })); } catch (e) {} }
   IN.svarStraks = {
     KEY: STRAKS_KEY,
-    get: function () { return IN.store.get(STRAKS_KEY, "0") === "1"; },
+    get: function () { return IN.store.get(STRAKS_KEY, "1") !== "0"; },
     set: function (on) { IN.store.set(STRAKS_KEY, on ? "1" : "0"); straksEvent(on); }
   };
-  window.addEventListener("storage", function (e) { if (e.key === STRAKS_KEY) straksEvent(e.newValue === "1"); });
+  window.addEventListener("storage", function (e) { if (e.key === STRAKS_KEY) straksEvent(e.newValue !== "0"); });
   function plain(html) { var d = document.createElement("div"); d.innerHTML = html; return (d.textContent || "").trim(); }
 
   /* ---------- Kildehenvisning på et punkt (sant/usant, flervalg) ----------
@@ -1702,7 +1702,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261125n";
+  IN.VERSION = "20261125p";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;

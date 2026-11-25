@@ -93,7 +93,7 @@
         teknisk: "Grammatikken tillater et uttrykk etter WHERE, og <span class=\"mono\">count(*) > 1</span> er et uttrykk, så parseren godtar spørringen. Feilen fanges i navne- og regelsjekken, som vet at aggregater bare kan regnes ut per gruppe, altså i SELECT, HAVING og ORDER BY. HAVING er «en slags WHERE for grupper» (F09-02 lysark 11)."
       },
       rettet: S("SELECT fid, count(*)", "FROM bok", "GROUP BY fid", "HAVING count(*) > 1;"),
-      sensor: "−2 for aggregat i WHERE i stedet for HAVING (H20, H23, H25)."
+      sensor: "−2 for aggregat i WHERE i stedet for HAVING (H23, H25, og i én oppgave i H20)."
     },
     {
       id: "alias", tittel: "SELECT-alias brukt i WHERE", nivaa: "eksamen", tema: "Navn og regler",

@@ -143,7 +143,7 @@
           "Koble hvert lån til låneren gjennom fremmednøkkelen " + m("lid") + ". Indre join beholder bare lån som har en låner.",
           "Dette er " + m("utlån ⋈<sub>u.lid = l.lid</sub> låner") + ", altså σ på kryssproduktet. Kryssproduktet har 6 · 5 = 30 rader, og betingelsen beholder de 6 som hører sammen.",
           { q: "Hvorfor ON og ikke NATURAL JOIN?",
-            a: "NATURAL JOIN kobler på alle kolonner med likt navn. Kommer forfatter med senere, deler den kolonnen " + m("navn") + " med låner, og svaret blir galt uten feilmelding. Sensor har trukket for dette (H19 og H20)." }),
+            a: "NATURAL JOIN kobler på alle kolonner med likt navn. Kommer forfatter med senere, deler den kolonnen " + m("navn") + " med låner, og svaret blir galt uten feilmelding. Sensor har trukket for dette (−2 i H19, −1 i H20)." }),
         L("  INNER JOIN bok AS b ON (u.bid = b.bid)",
           "Så finner vi boka med samme boknummer og legger den til i bunken.",
           "Samme mønster en gang til: koble lånet til boka via " + m("bid") + ".",
@@ -215,7 +215,7 @@
           "HAVING filtrerer <i>grupper</i> etter at de er telt. Svaret er Ibsen med 2.",
           "HAVING er en slags WHERE for grupper. Den evalueres etter aggregatene og før SELECT.",
           { q: "Hvorfor HAVING count(*) >= 2 og ikke WHERE count(*) >= 2 eller HAVING antall >= 2?",
-            a: "I WHERE finnes ikke gruppene ennå, så et aggregat der er en feil. Sensor trekker −2 for aggregat i WHERE (H20, H23, H25). Navnet " + m("antall") + " lages først i SELECT, som kommer etter HAVING, så du må skrive aggregatet på nytt." })
+            a: "I WHERE finnes ikke gruppene ennå, så et aggregat der er en feil. Sensor trekker −2 for aggregat i WHERE (H23 og H25). Navnet " + m("antall") + " lages først i SELECT, som kommer etter HAVING, så du må skrive aggregatet på nytt." })
       ] },
 
     { id: "notexists", label: "NOT EXISTS", tittel: "Lånere som aldri har lånt noe",
@@ -339,7 +339,7 @@
       ] },
     { id: "view", label: "VIEW", oppgave: "Lag et view som viser hver boktittel og hvor mange ganger boka er lånt ut, mest lånt først. Bøker som aldri er lånt, skal med.",
       linjer: [
-        ["CREATE VIEW utlånstall AS", "VIEW-oppgaver har vært med hvert år. Uten CREATE VIEW har sensor trukket −3."],
+        ["CREATE VIEW utlånstall AS", "VIEW-oppgaver har vært med hvert år. Uten CREATE VIEW trakk sensor −3 (H20)."],
         ["SELECT b.tittel, count(u.lid) AS ganger", "count på en kolonne fra utlån, så bøker uten lån får 0."],
         ["FROM bok AS b", "Alle bøker skal med, så bok står til venstre."],
         ["  LEFT JOIN utlån AS u ON (b.bid = u.bid)", "Ytre join beholder Folkeeventyr."],
@@ -354,7 +354,7 @@
       q: "Hva gir denne spørringen?",
       options: ["Lånere som har levert alle lånene sine", "Lånere som har levert minst ett lån", "Lånere som ikke har noe ute nå", "Alle lånere som har lånt noe"],
       answer: 1,
-      explain: "WHERE ser på ett lån om gangen. Én levert bok er nok til at låneren kommer med. Ada er med selv om hun fortsatt har Peer Gynt ute. Svaret er Ada, Bo og Cato. «Alle levert» krever NOT EXISTS, EXCEPT eller en telling i HAVING. Sensor trakk 3 poeng for å blande «for alle» og «finnes» (H20).",
+      explain: "WHERE ser på ett lån om gangen. Én levert bok er nok til at låneren kommer med. Ada er med selv om hun fortsatt har Peer Gynt ute. Svaret er Ada, Bo og Cato. «Alle levert» krever NOT EXISTS, EXCEPT eller en telling i HAVING.",
       kilde: [K("Eksamen H2020 oppgave 4 («for alle» mot «finnes»)")] },
     { sql: S("SELECT f.navn", "FROM forfatter AS f", "WHERE NOT EXISTS (", "  SELECT *", "  FROM bok AS b", "  WHERE b.fid = f.fid AND b.år >= 1900", ");"),
       q: "Hvilke forfattere gir den?",
@@ -421,7 +421,7 @@
     { oppgave: "Tittel og lånedato for hvert lån.",
       sql: S("SELECT b.tittel, u.dato", "FROM bok AS b, utlån AS u", "WHERE u.dato >= '2026-01-01';"),
       feil: [2, 3], rett: "WHERE b.bid = u.bid AND u.dato >= '2026-01-01';  (eller INNER JOIN … ON)",
-      forklaring: "Det mangler en join-betingelse. Uten den blir det et kryssprodukt: hver bok sammen med hvert lån, 6 · 6 = 36 rader. Sensor trekker −1 for manglende eller feil join." },
+      forklaring: "Det mangler en join-betingelse. Uten den blir det et kryssprodukt: hver bok sammen med hvert lån, 6 · 6 = 36 rader. Sensor trekker −1 for manglende eller feil tabeller i joinen (H20, H23, H25)." },
     { oppgave: "Hver låner med antall lån.",
       sql: S("SELECT l.navn, b.tittel, count(*) AS antall", "FROM utlån AS u", "  INNER JOIN låner AS l ON (u.lid = l.lid)", "  INNER JOIN bok AS b ON (u.bid = b.bid)", "GROUP BY l.lid, l.navn;"),
       feil: [1, 5], rett: "SELECT l.navn, count(*) AS antall  (dropp b.tittel, og joinen mot bok trengs ikke)",
@@ -437,7 +437,7 @@
     ["«minst n», «mer enn n»", "HAVING " + m("count(…) &gt;= n"), "Aggregat i WHERE.", ["05-sql-videre.html#fane=aggregering", "Aggregering"]],
     ["«flest», «høyest», «den største»", "ORDER BY … DESC LIMIT 1, eller " + m("max") + " i en delspørring", "Uavgjort: LIMIT 1 gir bare én.", ["05-sql-videre.html#fane=with", "WITH"]],
     ["«unike», «hvilke», «ingen duplikater»", "DISTINCT", "En join kan gi samme rad flere ganger.", ["04-sql.html#fane=distinct", "DISTINCT"]],
-    ["«sortert», «nyeste først»", "ORDER BY, og DESC for synkende", "Manglende ORDER BY gir −2.", ["04-sql.html#fane=distinct", "ORDER BY"]],
+    ["«sortert», «nyeste først»", "ORDER BY, og DESC for synkende", "Manglende ORDER BY gir −2 (H23, H25).", ["04-sql.html#fane=distinct", "ORDER BY"]],
     ["«som inneholder …», «begynner med …»", "LIKE med " + m("%"), "= i stedet for LIKE, eller LIKE uten %.", ["04-sql.html#fane=anatomi", "LIKE"]],
     ["«eller»", "OR, med parentes rundt", "AND i stedet for OR.", ["04-sql.html#fane=anatomi", "Feller"]],
     ["«mangler …», «ikke registrert»", "IS NULL", "= NULL gir 0 rader.", ["05-sql-videre.html#fane=null", "NULL"]],
@@ -486,11 +486,11 @@
     "WHERE fid = 1",
     "GROUP BY navn");
   D.skrivDarligFeil = [
-    m("fid = 1") + " er en ID lest av eksempeldataene. Spørringen skal virke selv om Ibsen får en annen ID. Sensor har trukket 1–2 poeng for hardkodede ID-er (H19, H20).",
+    m("fid = 1") + " er en ID lest av eksempeldataene. Spørringen skal virke selv om Ibsen får en annen ID. Sensor trakk −1 for en slik hardkodet ID (H20).",
     "Indre join fjerner Bo, Dina og låneren Ibsen, som skulle vært med med 0. Sensor har trukket −2 for indre join der rader med 0 skal med (H19 2.5).",
     "NATURAL JOIN gir riktig kobling her, men bare fordi tabellene tilfeldigvis ikke deler andre kolonnenavn. Joines forfatter inn, kobles det også på " + m("navn") + ".",
     m("GROUP BY navn") + " slår sammen to lånere som heter det samme. Grupper på " + m("lid") + ".",
-    "Ingen ORDER BY. Manglende ORDER BY gir −2.",
+    "Ingen ORDER BY. Manglende ORDER BY gir −2 (H23, H25).",
     "Ingen semikolon. Det gir ikke trekk, men skriv det likevel."
   ];
   D.skrivGod = S(
@@ -531,7 +531,7 @@
       "Ingen trekk for å kun ha primærnøkkel i GROUP BY men andre attributter (fra samme tabell) i SELECT (støttes av PostgreSQL)",
       "Ingen trekk for enkle syntaksfeil man enkelt ville funnet ut av om man hadde mulighet til å kjøre spørringen"
     ],
-    kilde: "Sensorveiledning: UiO, IN2090, eksamen H2025, del 2 (SQL). Den samme lista står i H2020 og H2023."
+    kilde: "Sensorveiledning: UiO, IN2090, eksamen H2025, del 2 (SQL). Den samme lista står i H2023. H2020 har linja om primærnøkkel i GROUP BY."
   };
 
   /* RA-svar på eksamen */
@@ -561,6 +561,6 @@
     { s: "Et navn laget med AS i SELECT kan brukes i ORDER BY.", answer: true,
       explain: "ORDER BY evalueres etter SELECT. I WHERE og HAVING finnes navnet ikke." },
     { s: "En enkel skrivefeil i SQL, som et manglende komma, gir alltid trekk på eksamen.", answer: false,
-      explain: "Sensorveiledningene H23–H25 sier at enkle syntaksfeil man ville funnet ved å kjøre spørringen, ikke gir trekk. Feil klausul eller feil operator er ikke en skrivefeil." }
+      explain: "Sensorveiledningene H23 og H25 sier at enkle syntaksfeil man ville funnet ved å kjøre spørringen, ikke gir trekk. Feil klausul eller feil operator er ikke en skrivefeil." }
   ];
 })();
