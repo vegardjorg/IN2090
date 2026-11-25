@@ -36,7 +36,7 @@
     if (!host || !deck || !deck.kort || !deck.kort.length) return null;
     opts = opts || {};
     var el = IN.el, uid = "pg" + (++N_OM);
-    var dir = 0, kø = [], kan = {}, cur = null, snudd = false, runde = 0;
+    var dir = 0, kø = [], kan = {}, cur = null, snudd = false, runde = 0, pos = 0;
     var byId = {};
     deck.kort.forEach(function (k) { byId[k.id] = k; });
 
@@ -56,57 +56,62 @@
       if (IN.progress && IN.progress.solved) IN.progress.solved("pugg", deck.id + "-" + dir, n, deck.kort.length);
     }
 
-    /* ---------- Oppsett ---------- */
+    /* ---------- Oppsett ----------
+       Kortet har tre faste soner: spørsmål, knapperad, svar. Spørsmåls- og svarsonen får høyden
+       til det høyeste kortet i stokken (målt ved første visning og når bredden endrer seg), så
+       knappene står på samme sted fra kort til kort og ingenting hopper når du snur. */
     host.innerHTML = "";
     var root = el("div", { class: "pg", tabindex: "-1", role: "group", "aria-label": "Puggekort: " + (deck.tittel || deck.id) });
     host.appendChild(root);
-    if (deck.intro) root.appendChild(el("div", { class: "pg-intro", html: deck.intro }));
 
-    var verktøy = el("div", { class: "pg-tools" });
-    root.appendChild(verktøy);
+    var kort = el("div", { class: "pg-kort" });
+    root.appendChild(kort);
+    var topp = el("div", { class: "pg-topp" });
+    kort.appendChild(topp);
+    var status = el("span", { class: "pg-status", "aria-live": "polite" });
+    topp.appendChild(status);
     var retningKnapper = [];
     if (deck.vend) {
       var navn = deck.retning || ["Forside → bakside", "Bakside → forside"];
       var grp = el("div", { class: "pg-dir", role: "group", "aria-label": "Retning" });
       navn.forEach(function (t, i) {
-        var b = el("button", { class: "btn sm", type: "button", "aria-pressed": i === 0 ? "true" : "false", text: t });
-        b.addEventListener("click", function () { if (dir !== i) { dir = i; start(); } });
+        var b = el("button", { type: "button", "aria-pressed": i === 0 ? "true" : "false", text: t });
+        b.addEventListener("click", function () { if (dir !== i) { dir = i; start(); maal(true); } });
         retningKnapper.push(b); grp.appendChild(b);
       });
-      verktøy.appendChild(grp);
+      topp.appendChild(grp);
     }
-    var status = el("div", { class: "pg-status", "aria-live": "polite" });
-    verktøy.appendChild(status);
     var bar = el("div", { class: "pg-bar", "aria-hidden": "true" }, el("span"));
-    root.appendChild(bar);
+    kort.appendChild(bar);
 
-    var kort = el("div", { class: "pg-kort" });
     var forside = el("div", { class: "pg-side pg-for" });
-    var skille = el("div", { class: "pg-skille", "aria-hidden": "true" });
-    var bakside = el("div", { class: "pg-side pg-bak", id: uid + "-bak" });
-    kort.appendChild(forside); kort.appendChild(skille); kort.appendChild(bakside);
-    root.appendChild(kort);
-
     var knapper = el("div", { class: "pg-knapper" });
-    var bSnu = el("button", { class: "btn primary", type: "button", "aria-controls": uid + "-bak", text: "Vis svaret" });
-    var bKan = el("button", { class: "btn pg-kan", type: "button", text: "✓ Kan den" });
-    var bMer = el("button", { class: "btn pg-mer", type: "button", text: "↻ Øv mer" });
-    knapper.appendChild(bSnu); knapper.appendChild(bMer); knapper.appendChild(bKan);
-    root.appendChild(knapper);
-    root.appendChild(el("p", { class: "small muted pg-hint", text: "Si svaret høyt eller skriv det ned før du snur. Vær ærlig: «Kan den» bare når du hadde det helt riktig. Tastatur: mellomrom snur, J = kan, F = øv mer." }));
+    var bakside = el("div", { class: "pg-side pg-bak", id: uid + "-bak", "aria-live": "polite" });
+    kort.appendChild(forside); kort.appendChild(knapper); kort.appendChild(bakside);
 
-    var ferdig = el("div", { class: "pg-ferdig", hidden: "" });
-    root.appendChild(ferdig);
+    var bSnu = el("button", { class: "btn primary pg-snu", type: "button", "aria-controls": uid + "-bak", html: "Vis svaret <kbd>mellomrom</kbd>" });
+    var bMer = el("button", { class: "btn pg-mer", type: "button", html: "↻ Øv mer <kbd>F</kbd>" });
+    var bKan = el("button", { class: "btn pg-kan", type: "button", html: "✓ Kan den <kbd>J</kbd>" });
+    var bNy = el("button", { class: "btn primary pg-snu", type: "button", text: "↺ Øv hele stokken på nytt" });
+    var bForr = el("button", { class: "btn pg-nav", type: "button", "aria-label": "Forrige kort (pil venstre)", title: "Forrige kort (←)", text: "‹" });
+    var bNeste = el("button", { class: "btn pg-nav", type: "button", "aria-label": "Neste kort uten å svare (pil høyre)", title: "Neste kort (→)", text: "›" });
+    knapper.appendChild(bForr); knapper.appendChild(bSnu); knapper.appendChild(bMer); knapper.appendChild(bKan); knapper.appendChild(bNy); knapper.appendChild(bNeste);
 
     var bunn = el("div", { class: "pg-bunn" });
-    var bReset = el("button", { class: "btn sm ghost", type: "button", text: "↺ Nullstill kortstokken" });
-    bunn.appendChild(bReset);
-    root.appendChild(bunn);
     var liste = el("details", { class: "pg-liste" });
-    liste.appendChild(el("summary", { text: "Alle kortene i stokken" }));
-    var listeInnhold = el("div");
-    liste.appendChild(listeInnhold);
-    root.appendChild(liste);
+    var listeSum = el("summary", { text: "Alle kortene" });
+    liste.appendChild(listeSum);
+    var bReset = el("button", { class: "btn sm ghost", type: "button", text: "↺ Nullstill" });
+    bunn.appendChild(liste); bunn.appendChild(bReset);
+    root.appendChild(bunn);
+    var listeInnhold = el("div", { class: "pg-liste-inn" });
+    root.appendChild(listeInnhold);
+
+    var forkl = el("details", { class: "pg-forkl" });
+    forkl.appendChild(el("summary", { text: "Om denne stokken" }));
+    if (deck.intro) forkl.appendChild(el("div", { class: "pg-intro", html: deck.intro }));
+    forkl.appendChild(el("p", { class: "small muted", text: "Svar høyt eller på papir før du snur. Trykk «Kan den» bare når du hadde det helt riktig; da forsvinner kortet. «Øv mer» legger det tilbake noen plasser lenger ned." }));
+    root.appendChild(forkl);
 
     /* ---------- Tegning av én side ---------- */
     function tegnSide(n, s) {
@@ -122,42 +127,81 @@
       if (s.pre) n.appendChild(el("pre", { class: "pg-pre", text: s.pre }));
       if (s.etter) n.appendChild(el("div", { class: "pg-tekst pg-etter", html: s.etter }));
     }
+    function tegnBak(n, k) {
+      tegnSide(n, baksideAv(k));
+      if (k.kilde) n.appendChild(el("p", { class: "pg-kilde", text: "Kilde: " + k.kilde }));
+    }
     function forsideAv(k) { return dir === 0 ? k.a : k.b; }
     function baksideAv(k) { return dir === 0 ? k.b : k.a; }
+
+    /* ---------- Fast høyde: mål høyeste for- og bakside i stokken ---------- */
+    var maaltBredde = 0, maaltDir = -1;
+    function maal(tving) {
+      var w = forside.clientWidth;
+      if (!w || (!tving && w === maaltBredde && dir === maaltDir)) return;
+      maaltBredde = w; maaltDir = dir;
+      var m = el("div", { class: "pg-side", "aria-hidden": "true", style: "position:absolute;left:-9999px;top:0;visibility:hidden;width:" + w + "px" });
+      kort.appendChild(m);
+      var hFor = 0, hBak = 0;
+      deck.kort.forEach(function (k) {
+        tegnSide(m, forsideAv(k)); hFor = Math.max(hFor, m.offsetHeight);
+        tegnBak(m, k); hBak = Math.max(hBak, m.offsetHeight);
+      });
+      kort.removeChild(m);
+      forside.style.minHeight = hFor + "px";
+      bakside.style.minHeight = hBak + "px";
+    }
+    if (typeof ResizeObserver === "function") {
+      var ventRO = 0;
+      new ResizeObserver(function () { clearTimeout(ventRO); ventRO = setTimeout(function () { maal(false); }, 30); }).observe(kort);
+    }
 
     /* ---------- Flyt ---------- */
     function oppdaterStatus() {
       var n = deck.kort.length, k = Object.keys(kan).length;
-      status.textContent = "Kan " + k + " av " + n + " · " + kø.length + " igjen i bunken";
+      status.innerHTML = "";
+      status.appendChild(el("b", { text: "Kan " + k + "/" + n }));
+      status.appendChild(document.createTextNode(kø.length ? " · kort " + (pos % kø.length + 1) + " av " + kø.length : " · ingen igjen"));
+      bForr.disabled = bNeste.disabled = kø.length < 2;
       bar.firstChild.style.width = (n ? Math.round(100 * k / n) : 0) + "%";
       retningKnapper.forEach(function (b, i) { b.setAttribute("aria-pressed", i === dir ? "true" : "false"); });
+      listeSum.textContent = "Alle kortene (" + n + ")";
+    }
+    function knappeModus(m) { // "snu" | "svar" | "ferdig"
+      bSnu.hidden = m !== "snu"; bMer.hidden = m !== "svar"; bKan.hidden = m !== "svar"; bNy.hidden = m !== "ferdig";
+      knapper.setAttribute("data-modus", m);
+    }
+    function plassholder() {
+      bakside.innerHTML = "";
+      bakside.appendChild(el("div", { class: "pg-plass", html: "<span>Svaret kommer her når du snur kortet.</span>" +
+        "<span class=\"pg-plass-pc\">Mellomrom snur · J kan · F øv mer · ← → blar</span>" +
+        "<span class=\"pg-plass-mob\">Sveip kortet til siden for å bla</span>" }));
     }
     function visNeste() {
+      maal(false);
       snudd = false;
       cur = kø.length ? kø[0] : null;
-      var tom = !cur;
-      kort.hidden = tom; knapper.hidden = tom; ferdig.hidden = !tom;
-      root.classList.toggle("pg-snudd", false);
-      if (tom) {
-        ferdig.innerHTML = "";
-        ferdig.appendChild(el("p", { class: "pg-ferdig-t", html: "<b>Alle kortene sitter.</b> Ta stokken igjen om noen dager, eller nullstill den nå for en ny runde." }));
-        ferdig.appendChild(el("button", { class: "btn primary", type: "button", text: "↺ Øv hele stokken på nytt", onclick: nullstill }));
+      root.classList.remove("pg-snudd");
+      if (!cur) {
+        forside.innerHTML = "";
+        forside.appendChild(el("div", { class: "pg-tekst pg-ferdig", html: "<b>Alle kortene sitter.</b><br>Ta stokken igjen om noen dager, eller øv hele stokken på nytt nå." }));
+        bakside.innerHTML = "";
+        knappeModus("ferdig");
         oppdaterStatus(); tegnListe();
         return;
       }
       tegnSide(forside, forsideAv(cur));
-      bakside.innerHTML = ""; bakside.hidden = true; skille.hidden = true;
-      bSnu.hidden = false; bKan.hidden = true; bMer.hidden = true;
+      plassholder();
+      knappeModus("snu");
       oppdaterStatus();
     }
     function snu() {
       if (!cur || snudd) return;
+      maal(false);
       snudd = true;
-      tegnSide(bakside, baksideAv(cur));
-      if (cur.kilde) bakside.appendChild(el("p", { class: "pg-kilde small muted", text: "Kilde: " + cur.kilde }));
-      bakside.hidden = false; skille.hidden = false;
+      tegnBak(bakside, cur);
       root.classList.add("pg-snudd");
-      bSnu.hidden = true; bKan.hidden = false; bMer.hidden = false;
+      knappeModus("svar");
       bMer.focus();
     }
     function svar(satt) {
@@ -171,23 +215,24 @@
       }
       visNeste();
       tegnListe();
-      (kø.length ? bSnu : ferdig.querySelector("button") || root).focus();
+      (kø.length ? bSnu : bNy).focus();
     }
     function start() {
       kan = last();
-      kø = bland(deck.kort.filter(function (k) { return !kan[k.id]; }));
+      kø = bland(deck.kort.filter(function (k) { return !kan[k.id]; })); pos = 0;
       runde++;
       visNeste(); tegnListe();
     }
     function nullstill() {
       kan = {}; lagre();
-      kø = bland(deck.kort.slice());
+      kø = bland(deck.kort.slice()); pos = 0;
       visNeste(); tegnListe();
       bSnu.focus();
     }
 
     /* ---------- Lista over alle kort (med «Ta tilbake» for dem du kan) ---------- */
     function tegnListe() {
+      listeInnhold.hidden = !liste.open;
       if (!liste.open) return;
       listeInnhold.innerHTML = "";
       var ul = el("ul", { class: "pg-liste-ul" });
@@ -212,7 +257,79 @@
     }
     liste.addEventListener("toggle", tegnListe);
 
+    /* ---------- Bla uten å svare ----------
+       bla(steg) roterer bunken: neste kort legges bakerst, forrige hentes fram igjen. pos sier hvor
+       i runden du er. Knappene og tastene gir en kort skli-inn; på mobil følger kortet fingeren. */
+    var rolig = false;
+    try { rolig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    function bla(steg) {
+      if (kø.length < 2) return;
+      if (steg > 0) { kø.push(kø.shift()); pos++; }
+      else { kø.unshift(kø.pop()); pos = (pos - 1 + kø.length) % kø.length; }
+      visNeste();
+    }
+    function sett(x, ms) { // flytt kortet x px sidelengs, med eller uten overgang
+      kort.style.transition = ms ? "transform " + ms + "ms ease-out, opacity " + ms + "ms ease-out" : "none";
+      kort.style.transform = x ? "translateX(" + x + "px) rotate(" + (x / 40).toFixed(2) + "deg)" : "";
+      kort.style.opacity = x ? String(Math.max(0.35, 1 - Math.abs(x) / (kort.offsetWidth * 1.4))) : "";
+    }
+    var animTimer = 0;
+    function glidInn(steg) { // nytt kort sklir inn fra siden det kommer fra
+      if (rolig) return;
+      clearTimeout(animTimer);
+      sett(steg * Math.min(90, kort.offsetWidth * 0.25), 0);
+      void kort.offsetWidth;
+      sett(0, 160);
+    }
+    function blaAnim(steg) { if (kø.length < 2) return; bla(steg); glidInn(steg); }
+    bForr.addEventListener("click", function () { blaAnim(-1); });
+    bNeste.addEventListener("click", function () { blaAnim(1); });
+
+    /* Dra med fingeren: kortet følger, slipp langt nok ut for neste/forrige, ellers fjærer det tilbake.
+       touch-action: pan-y på kortet lar siden scrolle loddrett som vanlig. */
+    var dra = null, varDra = false;
+    kort.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" || !e.isPrimary || kø.length < 2) return;
+      var pre = e.target.closest && e.target.closest(".pg-pre");
+      if (pre && pre.scrollWidth > pre.clientWidth + 2) return; // la brede skjemaer scrolle selv
+      dra = { x: e.clientX, y: e.clientY, dx: 0, låst: false, id: e.pointerId };
+    });
+    kort.addEventListener("pointermove", function (e) {
+      if (!dra || e.pointerId !== dra.id) return;
+      var dx = e.clientX - dra.x, dy = e.clientY - dra.y;
+      if (!dra.låst) {
+        if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) { dra = null; return; } // loddrett: vanlig scroll
+        if (Math.abs(dx) < 8) return;
+        dra.låst = true;
+        try { kort.setPointerCapture(e.pointerId); } catch (er) {}
+      }
+      dra.dx = dx;
+      sett(dx, 0);
+    });
+    function slipp(e) {
+      if (!dra || (e && e.pointerId !== dra.id)) return;
+      var d = dra; dra = null;
+      if (!d.låst) return;
+      varDra = true; setTimeout(function () { varDra = false; }, 50);
+      var w = kort.offsetWidth, steg = d.dx < 0 ? 1 : -1;
+      if (Math.abs(d.dx) < Math.min(90, w * 0.22)) { sett(0, 180); return; } // ikke langt nok: tilbake
+      if (rolig) { sett(0, 0); bla(steg); return; }
+      sett(-steg * w * 1.1, 150);
+      clearTimeout(animTimer);
+      animTimer = setTimeout(function () {
+        bla(steg);
+        sett(steg * w * 0.6, 0);
+        void kort.offsetWidth;
+        sett(0, 170);
+      }, 150);
+    }
+    kort.addEventListener("pointerup", slipp);
+    kort.addEventListener("pointercancel", function (e) { if (dra && dra.låst) { dra = null; sett(0, 180); } else dra = null; });
+    // Et drag skal ikke også trykke på knappen det startet på
+    kort.addEventListener("click", function (e) { if (varDra) { e.stopPropagation(); e.preventDefault(); } }, true);
+
     bSnu.addEventListener("click", snu);
+    bNy.addEventListener("click", nullstill);
     bKan.addEventListener("click", function () { svar(true); });
     bMer.addEventListener("click", function () { svar(false); });
     bReset.addEventListener("click", function () {
@@ -220,14 +337,24 @@
       try { ok = window.confirm("Nullstille kortstokken? Alle kortene kommer tilbake i bunken."); } catch (e) {}
       if (ok) nullstill();
     });
-    root.addEventListener("keydown", function (e) {
-      if (e.altKey || e.ctrlKey || e.metaKey) return;
-      var t = e.target && e.target.tagName;
-      if (t === "INPUT" || t === "TEXTAREA" || t === "SUMMARY") return;
-      var k = e.key;
-      if ((k === " " || k === "Enter") && !snudd && cur) { if (t === "BUTTON" && e.target !== bSnu) return; e.preventDefault(); snu(); }
+
+    /* ---------- Hurtigtaster ----------
+       Virker for kortstokken som er synlig, uten at du må klikke i den først (så lenge fokus står på
+       siden eller i kortstokken, ikke i et skjemafelt eller på en annen knapp/fane). */
+    document.addEventListener("keydown", function (e) {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented) return;
+      if (!root.offsetParent) return; // kortstokken vises ikke (annen fane)
+      var t = e.target, tag = t && t.tagName;
+      var iStokken = root.contains(t), påSiden = t === document.body || t === document.documentElement || !t;
+      if (!iStokken && !påSiden) return;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || tag === "SUMMARY") return;
+      var k = e.key, påKnapp = tag === "BUTTON";
+      if ((k === " " || k === "Enter") && !snudd && cur) { if (påKnapp && t !== bSnu) return; e.preventDefault(); snu(); }
       else if (snudd && (k === "j" || k === "J" || k === "1")) { e.preventDefault(); svar(true); }
       else if (snudd && (k === "f" || k === "F" || k === "2")) { e.preventDefault(); svar(false); }
+      else if (k === "ArrowRight") { e.preventDefault(); blaAnim(1); }
+      else if (k === "ArrowLeft") { e.preventDefault(); blaAnim(-1); }
+      else if ((k === "s" || k === "S") && !snudd && cur) { e.preventDefault(); snu(); }
     });
 
     start();

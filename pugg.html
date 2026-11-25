@@ -7,48 +7,71 @@
   <title>Puggekort · IN2090</title>
   <meta name="description" content="Puggekort i IN2090: ER-symboler, lesing av kardinalitet og deltagelse, realisering, relasjonsalgebra-tegn, FD og normalformer og SQL-regler. Kortene du kan forsvinner, de andre kommer igjen til de sitter.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126b">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126b">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126e">
   <style>
     /* Puggekort: sidespesifikt */
     .pg { max-width: 760px; outline: none; }
     .pg [hidden] { display: none !important; }
-    .pg-intro { margin-bottom: .6rem; }
-    .pg-tools { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between; margin: .4rem 0; }
-    .pg-dir { display: flex; flex-wrap: wrap; gap: .35rem; }
-    .pg-dir .btn[aria-pressed="true"] { background: var(--color-primary-container); border-color: var(--color-primary); font-weight: 600; }
-    .pg-status { font-size: .92rem; color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; }
-    .pg-bar { height: 6px; border-radius: 3px; background: var(--color-surface-container-high, var(--color-surface-container)); overflow: hidden; margin-bottom: .8rem; }
+    .pg { overflow-x: hidden; overflow-x: clip; padding-bottom: 2px; }
+    .pg-kort { touch-action: pan-y; will-change: transform; }
+    .pg-plass { flex-direction: column; gap: .25rem; }
+    .pg-plass-pc, .pg-plass-mob { font-size: .8rem; opacity: .85; }
+    .pg-plass-mob { display: none; }
+    @media (hover: none) and (pointer: coarse) { .pg-plass-pc { display: none; } .pg-plass-mob { display: inline; } }
+    /* Kortet: topplinje, fremdrift, spørsmål, fast knapperad, svar */
+    .pg-kort { position: relative; border: 1px solid var(--color-outline-variant); border-radius: 12px; background: var(--color-surface-container-lowest);
+      color: var(--color-on-surface); padding: .55rem .9rem .7rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .pg-topp { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: center; justify-content: space-between; min-height: 30px; }
+    .pg-status { font-size: .88rem; color: var(--color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pg-status b { color: var(--color-on-surface); }
+    .pg-dir { display: inline-flex; border: 1px solid var(--color-outline-variant); border-radius: 999px; overflow: hidden; }
+    .pg-dir button { font: inherit; font-size: .8rem; padding: .22rem .65rem; border: 0; background: transparent; color: var(--color-on-surface-variant); cursor: pointer; }
+    .pg-dir button + button { border-left: 1px solid var(--color-outline-variant); }
+    .pg-dir button[aria-pressed="true"] { background: var(--color-primary-container); color: var(--color-on-surface); font-weight: 600; }
+    .pg-dir button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+    .pg-bar { height: 4px; border-radius: 2px; background: var(--color-surface-container-high, var(--color-surface-container)); overflow: hidden; margin: .35rem 0 .5rem; }
     .pg-bar > span { display: block; height: 100%; width: 0; background: var(--color-tone-ok, var(--color-primary)); transition: width .25s; }
-    .pg-kort { border: 1px solid var(--color-outline-variant); border-radius: 14px; background: var(--color-surface-container-lowest); color: var(--color-on-surface);
-      padding: 1rem 1.1rem; min-height: 9rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-    .pg-side { overflow-wrap: anywhere; }
-    .pg-tekst { font-size: 1.05rem; line-height: 1.55; }
-    .pg-tekst p { margin: .3rem 0; }
-    .pg-tekst ol { margin: .3rem 0 .3rem 1.3rem; padding: 0; }
-    .pg-etter { font-size: .95rem; color: var(--color-on-surface-variant); margin-top: .4rem; }
-    .pg-fig { margin: .2rem 0; }
-    .pg-fig .exam-fig-h svg { max-width: 100%; height: auto; }
-    .pg-pre { font-family: var(--font-mono, ui-monospace, monospace); font-size: 14px; line-height: 1.5; padding: .55rem .75rem; margin: .3rem 0;
+    .pg-side { overflow-wrap: anywhere; box-sizing: border-box; }
+    .pg-for { display: flex; flex-direction: column; justify-content: center; }
+    .pg-tekst { font-size: 1.02rem; line-height: 1.5; }
+    .pg-tekst p { margin: .25rem 0; }
+    .pg-tekst ol { margin: .25rem 0 .25rem 1.3rem; padding: 0; }
+    .pg-etter { font-size: .9rem; color: var(--color-on-surface-variant); margin-top: .25rem; }
+    .pg-fig { margin: 0; }
+    .pg-fig .exam-fig-h svg { max-width: 100%; max-height: 200px; width: auto; height: auto; display: block; margin: 0 auto; }
+    .pg-pre { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13.5px; line-height: 1.45; padding: .45rem .7rem; margin: .2rem 0;
       border-radius: 8px; background: var(--color-surface-container); border: 1px solid var(--color-outline-variant); overflow-x: auto; white-space: pre; }
-    .pg-skille { border-top: 2px dashed var(--color-outline-variant); margin: .8rem 0; }
-    .pg-tegn { font-family: var(--font-mono, ui-monospace, monospace); font-size: 1.7rem; display: inline-block; padding: .4rem 0; }
+    .pg-tegn { font-family: var(--font-mono, ui-monospace, monospace); font-size: 1.6rem; display: inline-block; padding: .2rem 0; }
     .pg-tegn sub { font-size: .55em; }
-    .pg-kilde { margin: .6rem 0 0; }
-    .pg-knapper { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0 .3rem; }
-    .pg-knapper .btn { min-height: 44px; min-width: 8.5rem; font-size: 1rem; }
-    .pg-kan { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-color: transparent; font-weight: 600; }
-    .pg-mer { font-weight: 600; }
-    .pg-hint { margin: .2rem 0 .8rem; }
-    .pg-ferdig { border: 1px solid var(--color-outline-variant); border-radius: 14px; padding: 1rem 1.1rem; background: var(--color-surface-container-lowest); }
-    .pg-ferdig-t { margin-top: 0; }
-    .pg-bunn { margin: .6rem 0; }
-    .pg-liste { margin: .4rem 0 1rem; }
-    .pg-liste > summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
-    .pg-liste-ul { list-style: none; padding: 0; margin: .3rem 0; }
-    .pg-liste-ul li { display: flex; gap: .6rem; align-items: center; justify-content: space-between; padding: .35rem .2rem; border-bottom: 1px solid var(--color-outline-variant); font-size: .93rem; }
+    .pg-kilde { margin: .35rem 0 0; font-size: .78rem; color: var(--color-on-surface-variant); }
+    .pg-ferdig { text-align: center; }
+    /* Knapperaden står fast mellom spørsmål og svar; samme høyde i alle tilstander */
+    .pg-knapper { display: grid; grid-template-columns: 44px 1fr 1fr 44px; gap: .5rem; padding: .55rem 0; margin: .45rem 0;
+      border-top: 1px dashed var(--color-outline-variant); border-bottom: 1px dashed var(--color-outline-variant); }
+    .pg-knapper .btn { min-height: 42px; margin: 0; font-size: .98rem; font-weight: 600; justify-content: center; }
+    .pg-knapper .pg-snu { grid-column: 2 / 4; }
+    .pg-knapper .pg-nav { min-width: 0; padding: 0; font-size: 1.5rem; line-height: 1; font-weight: 400; }
+    .pg-knapper .pg-nav:disabled { opacity: .35; cursor: default; }
+    .pg-kan { background: var(--color-tone-ok); color: var(--color-on-tone-ok); border-color: transparent; }
+    .pg-knapper kbd { font: 500 .7rem var(--font-mono, ui-monospace, monospace); padding: .05rem .3rem; margin-left: .45rem; border-radius: 4px;
+      border: 1px solid currentColor; opacity: .6; }
+    @media (hover: none) { .pg-knapper kbd { display: none; } }
+    .pg-plass { height: 100%; min-height: 3rem; display: flex; align-items: center; justify-content: center; text-align: center;
+      font-size: .88rem; color: var(--color-on-surface-variant); opacity: .7; border-radius: 8px; background: var(--color-surface-container); }
+    .pg-bak .pg-plass { position: absolute; inset: 0; }
+    .pg-bak { position: relative; min-height: 3rem; }
+    /* Under kortet: liste, nullstill og forklaring */
+    .pg-bunn { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin: .4rem 0 0; }
+    .pg-liste > summary { cursor: pointer; font-size: .9rem; padding: .3rem 0; color: var(--color-on-surface-variant); }
+    .pg-liste-inn { margin: .2rem 0 .6rem; }
+    .pg-liste-ul { list-style: none; padding: 0; margin: 0; }
+    .pg-liste-ul li { display: flex; gap: .6rem; align-items: center; justify-content: space-between; padding: .3rem .2rem; border-bottom: 1px solid var(--color-outline-variant); font-size: .9rem; }
     .pg-li-kan .pg-li-t { color: var(--color-on-surface-variant); }
     .pg-li-t code, .pg-li-t .pg-tegn { font-size: 1em; padding: 0; }
+    .pg-forkl { margin: .3rem 0 1rem; }
+    .pg-forkl > summary { cursor: pointer; font-size: .9rem; padding: .3rem 0; color: var(--color-on-surface-variant); }
+    .pg-intro p { margin: .3rem 0; }
   </style>
 </head>
 <body data-page="pugg">
@@ -58,7 +81,7 @@
   <main id="main" class="wrap">
     <div class="pagehead">
       <h1>Puggekort</h1>
-      <p class="lead">Øv i volum til figurene og tegnene sitter. Se på kortet, svar i hodet eller på papir, og snu. Kortene du kan, merker du, så forsvinner de. De andre kommer igjen og igjen til de sitter.</p>
+      <p class="lead">Svar, snu, og si om det satt. Kortene du kan, forsvinner. De andre kommer igjen til de sitter.</p>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Kortstokker">
@@ -83,6 +106,7 @@
         <li><b>Vis svaret</b> (eller mellomrom) snur kortet. Svar før du snur, ellers lurer du bare deg selv.</li>
         <li><b>✓ Kan den</b> (J) tar kortet ut av bunken. Det huskes i denne nettleseren til du nullstiller.</li>
         <li><b>↻ Øv mer</b> (F) legger kortet tilbake noen plasser lenger ned, så det kommer igjen snart.</li>
+        <li><b>‹ og ›</b> (piltastene, eller sveip på mobil) blar til forrige eller neste kort uten å svare. Kjapt når du bare vil se gjennom stokken.</li>
         <li><b>Nullstill kortstokken</b> tar alle kortene inn igjen. Under «Alle kortene i stokken» kan du også ta tilbake enkeltkort.</li>
         <li>Stokkene med to retninger (ER-symboler, relasjonsalgebra) husker hver retning for seg. Øv begge veier: på eksamen skal du <i>tegne</i>, ikke bare kjenne igjen.</li>
         <li>Blir et kort rettet eller endret, kommer det tilbake i bunken av seg selv.</li>
@@ -95,11 +119,11 @@
 
   <footer class="footer">IN2090-guide · Puggekort</footer>
 
-  <script src="assets/js/core.js?v=20261126b"></script>
-  <script src="assets/js/symboler.js?v=20261126b"></script>
-  <script src="assets/js/viz-er.js?v=20261126b"></script>
-  <script src="assets/js/pugg.js?v=20261126b"></script>
-  <script src="assets/js/data-pugg.js?v=20261126b"></script>
+  <script src="assets/js/core.js?v=20261126e"></script>
+  <script src="assets/js/symboler.js?v=20261126e"></script>
+  <script src="assets/js/viz-er.js?v=20261126e"></script>
+  <script src="assets/js/pugg.js?v=20261126e"></script>
+  <script src="assets/js/data-pugg.js?v=20261126e"></script>
   <script>
   (function () {
     "use strict";
