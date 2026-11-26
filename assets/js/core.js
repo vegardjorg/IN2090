@@ -1730,8 +1730,9 @@
      Ett felles tips (#sym-tip) med delegerte lyttere på document, så ingen lyttere per symbol:
      hover (mus), fokus (tastatur: første forekomst av hvert symbol per boks får tabindex), trykk (touch).
      Tipset legges OVER symbolet, så det ikke kolliderer med linjetipset (#pc-tip) under pseudokodelinja. */
-  var SYM_BOX = ".sp-explain, .callout, .explain-body, .et-content, .et-pf-body, .qz-exp, .qz-prompt, .pc-exp-body, .bigo-why";
-  var SYM_SKIP = "code, kbd, pre, samp, a, button, input, textarea, select, label, svg, script, style, .sym, .pseudo, .parsons, .kbd, .tagline, [contenteditable]";
+  var SYM_BOX = ".sp-explain, .callout, .explain-body, .et-content, .et-pf-body, .qz-exp, .qz-prompt, .pc-exp-body, .bigo-why, " +
+    "main p, main li, main td, main dd, main figcaption";   // 2090: også vanlig prosa (RA- og FD-symbolene står mest der)
+  var SYM_SKIP = "code, kbd, pre, samp, a, button, input, textarea, select, label, svg, script, style, .sym, .pseudo, .parsons, .kbd, .tagline, [contenteditable], .pg-kort, .dra";   // 2090: ikke i puggekort og dra-øvinger (tipset kunne røpe svaret)
   var symSt = { tip: null, cur: null, at: 0, ptr: "mouse", bound: false };
   IN.symbolTips = function (root) {
     var SY = IN.SYMBOLER;
@@ -1770,8 +1771,14 @@
     if (!t) { t = symSt.tip = el("div", { id: "sym-tip", class: "pc-tip sym-tip", role: "tooltip" }); document.body.appendChild(t); }
     clear(t);
     t.appendChild(el("span", { class: "sym-tip-h" }, [el("b", { text: e.vis }), " – " + e.navn]));
-    t.appendChild(el("span", { class: "sym-tip-t", text: e.txt }));
-    if (e.eks) t.appendChild(el("span", { class: "sym-tip-e", text: "Eksempel: " + e.eks }));
+    // 2090: i et spørsmål som ikke er rettet ennå viser tipset bare navnet, så forklaringen ikke røper svaret.
+    var q = s.closest(".qz-prompt") && s.closest(".qz-item");
+    if (q && !/is-(right|wrong|blank)/.test(q.className)) {
+      t.appendChild(el("span", { class: "sym-tip-e", text: "Hele forklaringen vises når svarene er rettet." }));
+    } else {
+      t.appendChild(el("span", { class: "sym-tip-t", text: e.txt }));
+      if (e.eks) t.appendChild(el("span", { class: "sym-tip-e", text: "Eksempel: " + e.eks }));
+    }
     t.hidden = false;
     if (symSt.cur && symSt.cur !== s) symSt.cur.removeAttribute("aria-describedby");
     symSt.cur = s; symSt.at = Date.now();
@@ -1983,7 +1990,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261126q";
+  IN.VERSION = "20261126r";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
