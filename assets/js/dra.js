@@ -166,6 +166,7 @@
     var storeKey = spec.id ? "in2090:dra:" + side + ":" + spec.id : null;
     var fp = fingerprint(ns);
     var st = emptyState(ns, opts.shuffle), checked = false, reported = false, open = {};
+    var flyttet = false;   // sorteringsmodus: ✓/✗ underveis først etter første flytt (stokkingen alene røper ingenting)
     var sel = null, kb = null, target = null;   // kb: { from } når brikken er løftet med tastaturet
     var drag = null, suppressClick = false;
     var itemById = {}, zoneById = {};
@@ -176,14 +177,14 @@
     if (storeKey && IN.store) {
       try {
         var saved = JSON.parse(IN.store.get(storeKey, "null"));
-        if (saved && saved.h === fp && validState(ns, saved.s)) { st = saved.s; checked = !!saved.c; }
+        if (saved && saved.h === fp && validState(ns, saved.s)) { st = saved.s; checked = !!saved.c; flyttet = !!saved.m; }
       } catch (e) {}
     }
-    function persist() { if (storeKey && IN.store) IN.store.set(storeKey, JSON.stringify({ s: st, c: checked, h: fp })); }
+    function persist() { if (storeKey && IN.store) IN.store.set(storeKey, JSON.stringify({ s: st, c: checked, h: fp, m: flyttet })); }
     function instant() { return follow ? !!(IN.svarStraks && IN.svarStraks.get()) : !!opts.instant; }
     function locked() { return !!(opts.lock && checked); }
     function counts() { return grade(ns, st); }
-    function feedbackOn() { return instant() || checked; }
+    function feedbackOn() { return checked || (instant() && (mode !== "sort" || flyttet)); }
     // I sorteringsmodus er alle linjene «plassert» fra start. Med svar med en gang ville riktig plass
     // («→ plass 4») for hver linje røpt hele svaret før du har flyttet noe. Der viser vi bare ✓/✗
     // underveis; fasitplassene og forklaringene kommer først ved «Sjekk svar».
@@ -395,7 +396,7 @@
     function scoreHtml(c) {
       if (checked) return '<b class="ok">✓ ' + c.right + ' riktig</b> · <b class="no">✗ ' + c.wrong + " galt</b>" +
         (c.blank ? ' · <span class="muted">' + c.blank + " ikke plassert</span>" : "") + " · " + c.right + "/" + c.total;
-      if (mode === "sort") return c.total + " linjer" + (instant() ? ' · <b class="ok">' + c.right + " på riktig plass</b>" : "");
+      if (mode === "sort") return c.total + " linjer" + (instant() && flyttet ?' · <b class="ok">' + c.right + " på riktig plass</b>" : "");
       return c.answered + " av " + c.total + " plassert" + (instant() && c.answered ? ' · <b class="ok">' + c.right + " riktig</b>" : "");
     }
     function paint() {
@@ -418,6 +419,7 @@
       b.classList.remove("dra-moved"); void b.offsetWidth; b.classList.add("dra-moved");
     }
     function afterMove(id, msg) {
+      flyttet = true;
       persist();
       var s = stateOf(id);
       if (s === "wrong") open[id] = true;
@@ -651,7 +653,7 @@
       say(c.right + " av " + c.total + " riktig. " + c.wrong + " galt" + (c.blank ? ", " + c.blank + " ikke plassert" : "") + ".");
     }
     function doReset() {
-      st = emptyState(ns, opts.shuffle); checked = false; reported = false; open = {}; sel = null; kb = null; target = null;
+      st = emptyState(ns, opts.shuffle); checked = false; reported = false; open = {}; flyttet = false; sel = null; kb = null; target = null;
       persist();
       while (res.firstChild) res.removeChild(res.firstChild);
       paint(); say("Nullstilt.");
