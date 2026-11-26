@@ -33,7 +33,7 @@
   }
   function strek(x1, y1, x2, y2) { return "<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" class=\"er-line\"/>"; }
   function tekst(x, y, t, kl) { return "<text x=\"" + x + "\" y=\"" + y + "\" text-anchor=\"middle\" class=\"" + kl + "\">" + t + "</text>"; }
-  function G(id, figur, svar) { return { id: id, kilde: K_GRUNN, a: "<div class=\"pg-mini-h\">" + figur + "</div>", b: svar }; }
+  function G(id, figur, svar, spm) { var k = { id: id, kilde: K_GRUNN, a: "<div class=\"pg-mini-h\">" + figur + "</div>", b: svar }; if (spm) k.spm = spm; return k; }
   var K_GRUNN = "F05-01 s4–9, F05-02 s2–5, F05-03 s3–5";
   var grunnsymboler = [
     G("g-rekt", mini(160, 60, rekt(20, 10, 120, 40, "er-ent"), "rektangel"),
@@ -51,17 +51,17 @@
     G("g-stiplet-oval", mini(160, 50, oval(80, 25, 55, 18, "er-attr er-derived"), "stiplet oval"),
       "<b>Stiplet oval</b> = utledbart attributt: kan regnes ut fra andre data (f.eks. alder fra fødselsdato). Tas ikke med ved realisering."),
     G("g-understrek", mini(160, 50, oval(80, 25, 55, 18, "er-attr") + tekst(80, 29, "navn", "er-attr-t er-key"), "oval med understreket navn"),
-      "<b>Understreket navn i ovalen</b> = nøkkelattributt: verdien er unik for hver entitet."),
+      "<b>Understreket navn i ovalen</b> = nøkkelattributt: verdien er unik for hver entitet.", "Hva betyr det understrekede navnet i ovalen?"),
     G("g-stiplet-understrek", mini(160, 50, oval(80, 25, 55, 18, "er-attr") + tekst(80, 29, "navn", "er-attr-t") + "<line x1=\"64\" y1=\"33\" x2=\"96\" y2=\"33\" class=\"er-pkey-u\"/>", "oval med stiplet understrek"),
-      "<b>Stiplet understrek</b> = svak nøkkel på en svak entitet. Den identifiserer bare sammen med nøkkelen til den identifiserende entiteten."),
+      "<b>Stiplet understrek</b> = svak nøkkel på en svak entitet. Den identifiserer bare sammen med nøkkelen til den identifiserende entiteten.", "Hva betyr den stiplede understreken under navnet?"),
     G("g-sammensatt", mini(200, 100, strek(100, 32, 55, 75) + strek(100, 32, 145, 75) + oval(100, 25, 45, 16, "er-attr") + oval(55, 80, 40, 14, "er-attr") + oval(145, 80, 40, 14, "er-attr"), "oval med to ovaler under"),
-      "<b>Oval med egne ovaler under</b> = sammensatt attributt (f.eks. navn = fornavn + etternavn). Ved realisering beholdes bare bladene."),
+      "<b>Oval med egne ovaler under</b> = sammensatt attributt (f.eks. navn = fornavn + etternavn). Ved realisering beholdes bare bladene.", "Hva betyr det at ovalen har egne ovaler under seg?"),
     G("g-enkel-strek", mini(220, 60, strek(90, 30, 140, 30) + rekt(10, 12, 80, 36, "er-ent") + rombe(175, 30, 70, 46, 0, "er-rel"), "enkel strek mellom entitet og relasjon"),
-      "<b>Enkel strek</b> mellom entitet og relasjon = partiell deltakelse: en entitet <i>kan</i> stå utenfor relasjonen (minst 0)."),
+      "<b>Enkel strek</b> mellom entitet og relasjon = partiell deltakelse: en entitet <i>kan</i> stå utenfor relasjonen (minst 0).", "Hva betyr den enkle streken mellom rektangelet og romben?"),
     G("g-dobbel-strek", mini(220, 60, strek(90, 27.5, 140, 27.5) + strek(90, 32.5, 140, 32.5) + rekt(10, 12, 80, 36, "er-ent") + rombe(175, 30, 70, 46, 0, "er-rel"), "dobbel strek mellom entitet og relasjon"),
-      "<b>Dobbel strek</b> mellom entitet og relasjon = total deltakelse: hver entitet <i>må</i> være med i relasjonen minst én gang."),
+      "<b>Dobbel strek</b> mellom entitet og relasjon = total deltakelse: hver entitet <i>må</i> være med i relasjonen minst én gang.", "Hva betyr den doble streken mellom rektangelet og romben?"),
     G("g-tall", mini(220, 60, strek(90, 30, 140, 30) + rekt(10, 12, 80, 36, "er-ent") + rombe(175, 30, 70, 46, 0, "er-rel") + tekst(128, 24, "N", "er-kard"), "bokstaven N på streken ved rombe"),
-      "<b>1, N eller M på streken</b> (nær romben) = kardinalitet. Tallet ved entitet E sier hvor mange E den andre siden kan kobles til: 1 = høyst én, N/M = mange.")
+      "<b>1, N eller M på streken</b> (nær romben) = kardinalitet. Tallet ved entitet E sier hvor mange E den andre siden kan kobles til: 1 = høyst én, N/M = mange.", "Hva betyr bokstaven N på streken ved romben?")
   ];
 
   /* ============================================================
@@ -72,57 +72,92 @@
     tittel: "ER-symboler",
     vend: true,
     retning: ["Figur → betydning", "Betydning → figur"],
+    spm: ["Hva betyr dette ER-symbolet?", "Hvordan tegnes dette i ER? Skisser det før du snur."],
     intro: "<p>Først grunnsymbolene alene (rektangel, rombe, oval, doble og stiplede former, streker), så de samme symbolene i små figurer. Snu retningen for å øve andre veien: da får du betydningen og skal se figuren for deg (tegn den gjerne på papir).</p>",
     kort: grunnsymboler.concat([
-      { id: "entitet", kilde: K_ER,
+      { id: "entitet", kilde: K_ER, spm: "Hva betyr rektangelet ANSATT?",
         a: { er: fig([E("e", "ANSATT", [0, 0], [A("Navn")])]) },
         b: "<b>Entitet(stype)</b>: rektangel med navnet i STORE bokstaver. Ovalene rundt er attributtene." },
-      { id: "svak", kilde: K_SVAK,
+      { id: "svak", kilde: K_SVAK, spm: "Hva betyr det doble rektangelet ROM, den doble romben HAR og den stiplede understreken under Romnr?",
         a: { er: fig([E("b", "BYGNING", [0, 0], [A("Bnr", { nokkel: true })]), E("r", "ROM", [2, 0], [A("Romnr", { delvisNokkel: true })], true)],
                      [R("h", "HAR", [1, 0], [L("b", "1", false), L("r", "N", true)], [], true)]) },
         b: "<b>Svak entitet</b> (dobbelt rektangel, ROM) med <b>identifiserende relasjon</b> (dobbel rombe, HAR) til den identifiserende entiteten BYGNING. Romnr er en <b>svak nøkkel</b> (stiplet understrek). Den svake siden har alltid total deltakelse (dobbel strek), og det står 1 ved BYGNING." },
-      { id: "relasjon", kilde: K_ER,
+      { id: "relasjon", kilde: K_ER, spm: "Hva betyr romben TAR, og hva sier M og N på strekene?",
         a: { er: fig([E("s", "STUDENT", [0, 0]), E("e", "EMNE", [2, 0])], [R("t", "TAR", [1, 0], [L("s", "M"), L("e", "N")])]) },
         b: "<b>Relasjon(stype)</b>: rombe med strek til hver entitet som deltar. Bokstavene ved strekene er kardinaliteten (her mange-til-mange)." },
-      { id: "attributt", kilde: K_ER,
+      { id: "attributt", kilde: K_ER, spm: "Hva betyr ovalen Tittel?",
         a: { er: fig([E("e", "BOK", [0, 0], [A("Tittel")])]) },
         b: "<b>Attributt</b>: oval koblet til entiteten (eller relasjonen) med en strek." },
-      { id: "nokkel", kilde: K_ER,
+      { id: "nokkel", kilde: K_ER, spm: "Hva betyr det understrekede attributtet ISBN?",
         a: { er: fig([E("e", "BOK", [0, 0], [A("ISBN", { nokkel: true }), A("Tittel")])]) },
         b: "<b>Nøkkelattributt</b>: navnet er understreket. To bøker kan ikke ha samme ISBN." },
-      { id: "to-nokler", kilde: K_ER,
+      { id: "to-nokler", kilde: K_ER, spm: "Hva betyr det at både Regnr og Chassisnr er understreket hver for seg?",
         a: { er: fig([E("e", "BIL", [0, 0], [A("Regnr", { nokkel: true }), A("Chassisnr", { nokkel: true }), A("Farge")])]) },
         b: "<b>To uavhengige nøkler</b>: hver er understreket for seg. Regnr alene identifiserer en bil, og Chassisnr alene gjør det også. (Det betyr <i>ikke</i> at de to sammen er nøkkelen.)" },
-      { id: "delvis", kilde: K_SVAK,
+      { id: "delvis", kilde: K_SVAK, spm: "Hva betyr den stiplede understreken under Romnr?",
         a: { er: fig([E("r", "ROM", [0, 0], [A("Romnr", { delvisNokkel: true }), A("Areal")], true)]) },
         b: "<b>Svak nøkkel</b> (stiplet understrek) på en svak entitet. Den skiller bare rommene <i>innenfor samme bygning</i>; full identifikasjon får du sammen med nøkkelen til den identifiserende entiteten." },
-      { id: "sammensatt", kilde: K_ER,
+      { id: "sammensatt", kilde: K_ER, spm: "Hva betyr det at Navn har egne ovaler (Fornavn, Etternavn)?",
         a: { er: fig([E("e", "PERSON", [0, 0], [A("Pnr", { nokkel: true }), A("Navn", { deler: [A("Fornavn"), A("Etternavn")] })])]) },
         b: "<b>Sammensatt attributt</b>: Navn er bygd av egne ovaler (Fornavn, Etternavn). Ved realisering beholdes bare bladene." },
-      { id: "sammensatt-nokkel", kilde: K_ER,
+      { id: "sammensatt-nokkel", kilde: K_ER, spm: "Hva betyr det at Id er understreket og har ovalene Selskap og Løpenr under seg?",
         a: { er: fig([E("e", "FLY", [0, 0], [A("Id", { nokkel: true, deler: [A("Selskap"), A("Løpenr")] }), A("Modell")])]) },
         b: "<b>Sammensatt nøkkel</b>: forelderen (Id) er understreket. Det er kombinasjonen Selskap + Løpenr som identifiserer, ikke hver del for seg." },
-      { id: "flerverdi", kilde: K_ER,
+      { id: "flerverdi", kilde: K_ER, spm: "Hva betyr den doble ovalen Telefon?",
         a: { er: fig([E("e", "PERSON", [0, 0], [A("Pnr", { nokkel: true }), A("Telefon", { flerverdi: true })])]) },
         b: "<b>Flerverdiattributt</b> (dobbel oval): en person kan ha flere telefonnumre. Et flerverdiattributt kan aldri være nøkkel." },
-      { id: "avledet", kilde: K_ER,
+      { id: "avledet", kilde: K_ER, spm: "Hva betyr den stiplede ovalen Alder?",
         a: { er: fig([E("e", "PERSON", [0, 0], [A("Pnr", { nokkel: true }), A("Fødselsdato"), A("Alder", { avledet: true })])]) },
         b: "<b>Utledbart attributt</b> (stiplet oval): Alder kan regnes ut fra Fødselsdato. Det tas ikke med når modellen realiseres." },
-      { id: "relattr", kilde: K_ER,
+      { id: "relattr", kilde: K_ER, spm: "Hva betyr ovalen Karakter som henger på romben TAR?",
         a: { er: fig([E("s", "STUDENT", [0, 0]), E("e", "EMNE", [2, 0])], [R("t", "TAR", [1, 0], [L("s", "M"), L("e", "N")], [A("Karakter")])]) },
         b: "<b>Attributt på en relasjon</b>: Karakter hører til kombinasjonen student + emne, ikke til en av dem alene. Et relasjonsattributt er aldri nøkkel." },
-      { id: "total", kilde: K_ER,
+      { id: "total", kilde: K_ER, spm: "Hva betyr den doble streken ved ANSATT og den enkle streken ved AVDELING?",
         a: { er: fig([E("a", "ANSATT", [0, 0]), E("d", "AVDELING", [2, 0])], [R("j", "JOBBER_I", [1, 0], [L("a", "N", true), L("d", "1", false)])]) },
         b: "<b>Dobbel strek = total deltakelse</b> (minst 1): hver ansatt <i>må</i> jobbe i en avdeling. <b>Enkel strek = partiell</b> (minst 0): en avdeling kan stå uten ansatte." },
-      { id: "kard-lesing", kilde: K_ER,
+      { id: "kard-lesing", kilde: K_ER, spm: "Hva betyr 1 ved FORLAG og N ved BOK?",
         a: { er: fig([E("b", "BOK", [0, 0]), E("f", "FORLAG", [2, 0])], [R("u", "UTGITT_AV", [1, 0], [L("b", "N"), L("f", "1")])]) },
         b: "<b>Lesing av kardinalitet</b>: tallet ved en entitet E sier hvor mange E den <i>andre</i> siden kan kobles til. 1 ved FORLAG: en bok har høyst ett forlag. N ved BOK: et forlag kan ha mange bøker." },
-      { id: "ternaer", kilde: K_TER,
+      { id: "ternaer", kilde: K_TER, spm: "Hva betyr én rombe med tre entiteter, og hvordan leses N, M og K?",
         a: { er: fig([E("l", "LEVERANDØR", [0, 0]), E("d", "DEL", [2, 0]), E("p", "PROSJEKT", [1, 1])],
                      [R("v", "LEVERER", [1, 0], [L("l", "N"), L("d", "M"), L("p", "K")])]) },
         b: "<b>Ternær relasjon</b>: én rombe med tre deltakere. Tallet ved E sier: gitt én kombinasjon av de to andre, hvor mange E. En ternær relasjon er <i>ikke</i> det samme som tre binære." }
     ])
   };
+
+  /* Retning «betydning → figur»: baksideteksten navngir symbolet («Dobbel rombe = …») og ville
+     røpt svaret. bFor er en beskrivelse uten symbolnavnet; svaret er figuren på forsiden (k.a). */
+  var BFOR = {
+    "g-rekt": "En entitetstype, f.eks. ANSATT.",
+    "g-dobbel-rekt": "En svak entitetstype: den kan bare identifiseres sammen med den identifiserende entiteten.",
+    "g-rombe": "En relasjonstype, f.eks. JOBBER_I, med streker til entitetene som deltar.",
+    "g-dobbel-rombe": "En identifiserende relasjon mellom en svak entitet og dens identifiserende entitet.",
+    "g-oval": "Et attributt.",
+    "g-dobbel-oval": "Et flerverdiattributt, f.eks. flere telefonnumre for samme person.",
+    "g-stiplet-oval": "Et utledbart attributt, f.eks. alder, som kan regnes ut fra fødselsdato.",
+    "g-understrek": "Et nøkkelattributt: verdien er unik for hver entitet.",
+    "g-stiplet-understrek": "En svak nøkkel på en svak entitet.",
+    "g-sammensatt": "Et sammensatt attributt, f.eks. navn = fornavn + etternavn.",
+    "g-enkel-strek": "Partiell deltakelse: en entitet kan stå utenfor relasjonen (minst 0).",
+    "g-dobbel-strek": "Total deltakelse: hver entitet må være med i relasjonen minst én gang.",
+    "g-tall": "Kardinaliteten «mange» på den ene siden av en relasjon.",
+    "entitet": "Entitetstypen ANSATT med attributtet Navn.",
+    "svak": "ROM kan bare identifiseres sammen med BYGNING (nøkkel Bnr), via relasjonen HAR. Romnr skiller rommene innenfor én bygning. En bygning har mange rom.",
+    "relasjon": "Relasjonstypen TAR mellom STUDENT og EMNE, mange-til-mange.",
+    "attributt": "Entitetstypen BOK med attributtet Tittel.",
+    "nokkel": "Entitetstypen BOK, der ISBN er unik for hver bok, og attributtet Tittel.",
+    "to-nokler": "BIL, der Regnr alene og Chassisnr alene hver identifiserer en bil, og attributtet Farge.",
+    "delvis": "ROM, som bare kan identifiseres sammen med en annen entitet. Romnr skiller rommene innenfor den. Også attributtet Areal.",
+    "sammensatt": "PERSON med nøkkel Pnr og attributtet Navn, som består av Fornavn og Etternavn.",
+    "sammensatt-nokkel": "FLY, identifisert av kombinasjonen Selskap + Løpenr (samlet som Id), og attributtet Modell.",
+    "flerverdi": "PERSON med nøkkel Pnr og Telefon, der en person kan ha flere telefonnumre.",
+    "avledet": "PERSON med nøkkel Pnr, Fødselsdato og Alder, som kan regnes ut fra fødselsdatoen.",
+    "relattr": "STUDENT TAR EMNE (mange-til-mange), og Karakter hører til kombinasjonen student + emne.",
+    "total": "ANSATT JOBBER_I AVDELING: hver ansatt må jobbe i én avdeling, en avdeling kan ha mange ansatte eller ingen.",
+    "kard-lesing": "BOK UTGITT_AV FORLAG: en bok har høyst ett forlag, et forlag kan ha mange bøker. Ingen må delta.",
+    "ternaer": "Én relasjon LEVERER mellom LEVERANDØR, DEL og PROSJEKT, med N, M og K."
+  };
+  symboler.kort.forEach(function (k) { if (BFOR[k.id]) k.bFor = BFOR[k.id]; });
 
   /* ============================================================
      2. ER-lesing i volum: alle kombinasjoner av 1/N og total/partiell
@@ -253,6 +288,7 @@
     tittel: "Relasjonsalgebra",
     vend: true,
     retning: ["Tegn → betydning", "Betydning → tegn"],
+    spm: ["Hva heter dette, hva gjør det, og hva tilsvarer det i SQL?", "Hvordan skrives dette i relasjonsalgebra?"],
     intro: "<p>Tegnene i relasjonsalgebraen slik kurset skriver dem, med hva de tilsvarer i SQL. Divisjon og ytre join i relasjonsalgebra er ikke pensum.</p>",
     kort: [
       ra("sigma", "σ<sub>betingelse</sub>(R)", "Seleksjon", "Velger <i>radene</i> som oppfyller betingelsen. Tilsvarer <code>WHERE</code>."),
@@ -272,7 +308,7 @@
      5. FD og normalformer
      ============================================================ */
   var K_FD = "F07-02 s2–11, Waaler FD-notat (07) s2–16", K_NF = "F07-03 s5–9, F08-01 s5, F08-02 s6–7, Waaler NF-notat (08) s9–24";
-  function q(id, k, a, b) { return { id: id, kilde: k, a: a, b: b }; }
+  function q(id, k, a, b, spm) { var o = { id: id, kilde: k, a: a, b: b }; if (spm) o.spm = spm; return o; }
   var fd = {
     id: "fd",
     tittel: "FD og normalformer",
@@ -329,6 +365,7 @@
     tittel: "Begreper",
     vend: true,
     retning: ["Begrep → forklaring", "Forklaring → begrep"],
+    spm: ["Hva betyr begrepet?", "Hvilket begrep forklares her?"],
     intro: "<p>Ordene kurset bruker. Forklar begrepet med egne ord før du snur, eller snu retningen og finn ordet ut fra forklaringen.</p>",
     kort: [
       q("database", "F01-01", "Database", "En samling data som er organisert slik at den er lett å lagre, finne og endre."),
@@ -337,20 +374,20 @@
       q("tuppel", "F02-01", "Tuppel", "En rad i en relasjon: én verdi for hvert attributt."),
       q("attributt", "F02-01", "Attributt", "En kolonne i en relasjon. Har et navn og et domene (en type)."),
       q("domene", "F02-01", "Domene", "Mengden lovlige verdier et attributt kan ha, f.eks. heltall eller tekst."),
-      q("skjema-instans", "F02-01 s6, F08-02 s3", "Signatur, skjema og instans", "<b>Signaturen</b> er navnet og attributtene, f.eks. Ansatt(Anr, Navn). Et <b>relasjonsskjema</b> er en mengde signaturer. <b>Instansen</b> er tuplene som ligger i relasjonen på et gitt tidspunkt."),
+      q("skjema-instans", "F02-01 s6, F08-02 s3", "Signatur, skjema og instans", "<b>Signaturen</b> er navnet og attributtene, f.eks. Ansatt(Anr, Navn). Et <b>relasjonsskjema</b> er en mengde signaturer. <b>Instansen</b> er tuplene som ligger i relasjonen på et gitt tidspunkt.", ["Hva betyr hvert av de tre begrepene?", "Hvilke tre begreper forklares her?"]),
       q("sn", K_FD, "Supernøkkel (SN)", "En mengde attributter som identifiserer hvert tuppel: to ulike tupler kan aldri være like på alle attributtene i den."),
       q("kn", K_FD, "Kandidatnøkkel (KN)", "En minimal supernøkkel: fjerner du ett attributt, er den ikke lenger supernøkkel."),
       q("pn", "F06-02 s4", "Primærnøkkel (PN)", "Den kandidatnøkkelen du velger å bruke til å identifisere tuplene."),
       q("fn", "F04-01, F06-02", "Fremmednøkkel (FN)", "Attributter som må ha en verdi som finnes i en kandidatnøkkel (oftest PN) i en annen (eller samme) relasjon. I SQL: REFERENCES."),
       q("nokkelattributt", K_NF, "Nøkkelattributt", "Et attributt som er med i minst én kandidatnøkkel."),
-      q("entitet", "F05-01", "Entitet vs. entitetstype", "En <b>entitet</b> er én konkret ting (en bestemt ansatt). <b>Entitetstypen</b> er klassen av like ting (ANSATT), tegnet som rektangel."),
+      q("entitet", "F05-01", "Entitet vs. entitetstype", "En <b>entitet</b> er én konkret ting (en bestemt ansatt). <b>Entitetstypen</b> er klassen av like ting (ANSATT), tegnet som rektangel.", ["Hva er forskjellen på de to?", "Hvilke to begreper skilles her?"]),
       q("relasjonstype", "F05-02", "Relasjonstype (i ER)", "En sammenheng mellom entitetstyper, f.eks. JOBBER_I mellom ANSATT og AVDELING. Tegnes som rombe. Ikke det samme som en relasjon (tabell) i relasjonsmodellen."),
       q("kardinalitet", "F05-02 s3–4", "Kardinalitet", "Høyeste antall en entitet kan kobles til gjennom en relasjon: 1 eller mange (N/M)."),
-      q("deltakelse", "F05-02 s4", "Deltakelse (total/partiell)", "Laveste antall: <b>total</b> (dobbel strek) betyr at hver entitet må være med minst én gang; <b>partiell</b> (enkel strek) betyr at den kan stå utenfor."),
+      q("deltakelse", "F05-02 s4", "Deltakelse (total/partiell)", "Laveste antall: <b>total</b> (dobbel strek) betyr at hver entitet må være med minst én gang; <b>partiell</b> (enkel strek) betyr at den kan stå utenfor.", ["Hva betyr total og partiell deltakelse, og hvordan tegnes de?", "Hvilket begrep forklares her, med begge variantene?"]),
       q("svak-entitet", K_SVAK, "Svak entitet", "En entitetstype med en nøkkel (svak nøkkel) som bare er unik sammen med nøkkelen til den identifiserende entiteten, via en identifiserende relasjon."),
       q("skranke", "F04-01 s6–10, F04-02", "Skranke", "En regel dataene må følge, f.eks. NOT NULL, UNIQUE, PRIMARY KEY, REFERENCES eller CHECK. DBMS-et avviser endringer som bryter den."),
       q("null", "F03-02 s13–15", "NULL", "Markør for en ukjent eller manglende verdi. Sammenligning med NULL gir ukjent (NULL), ikke sann eller usann."),
-      q("mengde-multimengde", "F02-03, F10-02", "Mengde vs. multimengde", "En <b>mengde</b> har ingen duplikater (relasjonsalgebra). En <b>multimengde</b> kan ha duplikater (SQL, så lenge du ikke bruker DISTINCT eller UNION/INTERSECT/EXCEPT uten ALL)."),
+      q("mengde-multimengde", "F02-03, F10-02", "Mengde vs. multimengde", "En <b>mengde</b> har ingen duplikater (relasjonsalgebra). En <b>multimengde</b> kan ha duplikater (SQL, så lenge du ikke bruker DISTINCT eller UNION/INTERSECT/EXCEPT uten ALL).", ["Hva er forskjellen på de to?", "Hvilke to begreper skilles her?"]),
       q("fd-begrep", K_FD, "Funksjonell avhengighet (FD)", "X → Y: to tupler som er like på X, er også like på Y."),
       q("tapsfri", K_NF, "Tapsfri dekomponering", "En oppdeling av R i mindre relasjoner der en naturlig join av delene gir tilbake nøyaktig R, uten ekstra (falske) tupler."),
       q("view", "F04-03 s3, s7", "View", "En lagret spørring med navn som kan brukes som en tabell. Dataene lagres ikke på nytt (med mindre det er et materialisert view)."),
@@ -401,6 +438,7 @@
   var sqlMonstre = {
     id: "sql-monstre",
     tittel: "SQL-mønstre",
+    spm: "Skriv SQL-spørringen mot skjemaet over.",
     intro: "<p>Oppgavetypene som går igjen på eksamen, hver med sitt faste mønster. Skriv spørringen på papir før du snur. Det finnes ofte flere riktige svar; baksiden viser ett vanlig.</p>",
     kort: [
       sm("m-null-ordre", "Antall ordre per kunde, <b>også kunder med 0 ordre</b>.",
