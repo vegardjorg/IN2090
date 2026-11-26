@@ -184,6 +184,10 @@
     function locked() { return !!(opts.lock && checked); }
     function counts() { return grade(ns, st); }
     function feedbackOn() { return instant() || checked; }
+    // I sorteringsmodus er alle linjene «plassert» fra start. Med svar med en gang ville riktig plass
+    // («→ plass 4») for hver linje røpt hele svaret før du har flyttet noe. Der viser vi bare ✓/✗
+    // underveis; fasitplassene og forklaringene kommer først ved «Sjekk svar».
+    function revealKey() { return checked || mode !== "sort"; }
     function stateOf(id) {                    // "" | "right" | "wrong" | "blank"
       if (!feedbackOn()) return "";
       var v = valueOf(ns, st, id);
@@ -330,9 +334,9 @@
       b._mark.textContent = s === "right" ? "✓" : s === "wrong" ? "✗" : "";
       b.setAttribute("aria-pressed", isSel ? "true" : "false");
       b.disabled = locked();
-      if (s === "wrong") { b._fas.hidden = false; b._fas.textContent = "→ " + (mode === "sort" ? "plass " + (ns.key[id] + 1) : zoneName(ns.key[id])); }
+      if (s === "wrong" && revealKey()) { b._fas.hidden = false; b._fas.textContent = "→ " + (mode === "sort" ? "plass " + (ns.key[id] + 1) : zoneName(ns.key[id])); }
       else { b._fas.hidden = true; b._fas.textContent = ""; }
-      b._sr.textContent = s === "right" ? " Riktig." : s === "wrong" ? " Feil. Riktig: " + keyText(id) + "." : "";
+      b._sr.textContent = s === "right" ? " Riktig." : s === "wrong" ? (revealKey() ? " Feil. Riktig: " + keyText(id) + "." : " Feil plass.") : "";
     }
     function paintBoard() {
       if (mode === "sort") {
@@ -368,7 +372,7 @@
       var any = false;
       expOrder.forEach(function (it) {
         var r = expRows[it.id], s = stateOf(it.id);
-        var show = !!s;
+        var show = !!s && revealKey();
         r.li.hidden = !show;
         if (!show) return;
         any = true;
@@ -419,7 +423,7 @@
       if (s === "wrong") open[id] = true;
       paint();
       flash(id);
-      say(msg + (s === "right" ? " Riktig." : s === "wrong" ? " Feil. Riktig: " + keyText(id) + "." : ""));
+      say(msg + (s === "right" ? " Riktig." : s === "wrong" ? (revealKey() ? " Feil. Riktig: " + keyText(id) + "." : " Feil plass.") : ""));
       var c = counts();
       if (instant() && !checked && !reported && c.answered === c.total && mode !== "sort") { reported = true; report(); }
     }
