@@ -3,7 +3,7 @@
    Data for blokk 0 (00-begreper.html): eksempelrelasjonene Rom og Booking, nøkkelreglene,
    flervalg per fane, sant/usant og to dra-øvinger.
    Alt er formulert med egne ord. Rom og Booking er guidens egne eksempler.
-   Kildelinjene peker på lysark (F01-01, F02-01, 02-eksempler, F04-01) og Waaler 08-notat.
+   Kildelinjene peker på lysark (F01-01, F02-01, 02-eksempler, F04-01, F07-02) og Waaler 08-notat.
    Feltet «sitat» brukes ikke.
    IN.dataBegreper = { rom, booking, regler, quiz, tf, faner, dra }
    Klassisk script. Lastes etter core.js.
@@ -74,7 +74,7 @@
       { q: "Reglene for Rom gir kandidatnøklene {romkode} og {bygning, romnr}. Hva er {romkode, etasje}?",
         options: ["En kandidatnøkkel", "En supernøkkel, men ikke en kandidatnøkkel", "Ikke en supernøkkel", "En fremmednøkkel"], answer: 1,
         explain: "Den inneholder {romkode}, så ingen to rom kan ha like verdier i den. Men etasje kan fjernes uten at den slutter å være en supernøkkel, så den er ikke minimal.",
-        kilde: K("02-eksempler lysark 3–4 (finn super- og kandidatnøkler)") },
+        kilde: K("02-eksempler lysark 3–4 (finn super- og kandidatnøkler), F07-02 lysark 7 (minimal)") },
       { q: "I instansen av Rom har ingen to rader samme verdier i {bygning, etasje}. Hva kan du konkludere?",
         options: ["{bygning, etasje} er en supernøkkel", "{bygning, etasje} er en kandidatnøkkel", "Ingenting om nøkkelen: dataene kan bare vise at noe ikke er en nøkkel", "Romkode er overflødig"], answer: 2,
         explain: "Nøkler er regler for alle lovlige tilstander. To rom i samme etasje i samme bygning er lov, selv om det tilfeldigvis ikke finnes nå. Instansen kan motbevise en nøkkel, men aldri bevise den.",
@@ -103,9 +103,9 @@
     { fane: "relasjon", s: "En signatur består av relasjonens navn og attributtene (med domener), og et relasjonsskjema er en mengde signaturer.", answer: true,
       explain: "Signaturen forteller hva du trenger for å bruke relasjonen. Skjemaet er signaturene for hele databasen.", kilde: K("F02-01 lysark 6") },
     { fane: "nokler", s: "Enhver kandidatnøkkel er en supernøkkel.", answer: true,
-      explain: "En kandidatnøkkel er en minimal supernøkkel.", kilde: K("02-eksempler lysark 3") },
+      explain: "En kandidatnøkkel er en minimal supernøkkel.", kilde: K("F07-02 lysark 7–8") },
     { fane: "nokler", s: "Hvis X er en supernøkkel, er også enhver mengde som inneholder X en supernøkkel.", answer: true,
-      explain: "Er to rader ulike i X, er de også ulike i en større mengde. Derfor er hele relasjonen alltid en supernøkkel.", kilde: K("02-eksempler lysark 3") },
+      explain: "Er to rader ulike i X, er de også ulike i en større mengde. Derfor er hele relasjonen alltid en supernøkkel.", kilde: K("F07-02 lysark 7–8") },
     { fane: "nokler", s: "En relasjon kan ha flere primærnøkler.", answer: false,
       explain: "Den kan ha flere kandidatnøkler, men vi velger én av dem som primærnøkkel. I SQL får de andre UNIQUE NOT NULL.", kilde: K("F04-01 lysark 8") },
     { fane: "nokler", s: "Et attributt som ikke er med i primærnøkkelen, er et ikke-nøkkelattributt.", answer: false,

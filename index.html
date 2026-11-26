@@ -7,7 +7,7 @@
   <title>IN2090 – interaktiv eksamensguide</title>
   <meta name="description" content="Interaktiv eksamensguide for IN2090 Databaser og datamodellering. Slik ser eksamen ut, og alle eksamensoppgavene fra H2019 til H2025.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
   <style>
     /* Fargene på eksamensdelene i IN2090 (styles.css har 2010-delene) */
     .a4-er   { --a4-c: var(--c-sorted); }
@@ -97,10 +97,10 @@
         </div>
         <ul>
           <li><b>SQL skrives som tekst</b>, uten database å kjøre mot. Enkle syntaksfeil du ville funnet ved
-            kjøring, gir ikke trekk (H2023–H2025). Manglende tabeller, betingelser eller GROUP BY gir trekk.</li>
+            kjøring, gir ikke trekk (står i sensorveiledningen for H2023 og H2025). Manglende tabeller, betingelser eller GROUP BY gir trekk.</li>
           <li><b>Skriv antakelsene dine</b> som kommentar med <code>--</code>. Er oppgaveteksten uklar, godtar
             sensor rimelige tolkninger.</li>
-          <li><b>Gjetteregelen avhenger av oppgaven.</b> Radantall gir +2 for riktig og −0,5 for galt, så gjett.
+          <li><b>Gjetteregelen avhenger av oppgaven.</b> Radantall gir +2 for riktig og −0,5 for galt: en blind gjetning lønner seg når færre enn fem svar er mulige, så snevre inn og svar.
             JA/NEI gir ±1, så la være når du er usikker.</li>
           <li><b>Vis stegene.</b> Realisering: understrek kandidatnøkler, skriv fremmednøkler som
             <code>T(A) -&gt; S(B)</code> og forklar valgene. Dekomponering: nøkler og FD-er for hver delrelasjon.</li>
@@ -111,7 +111,7 @@
         <div class="a4-sechead">
           <h2 id="a4-kart-h">Oppgavekart H2019–H2025</h2>
           <p>Oppgavene i den rekkefølgen de kom, med nummer og poeng. Lenkene går rett til oppgaven.
-            <span class="tag a4-auto">auto</span> = rettet automatisk, ofte med minuspoeng. Det finnes ingen ordinær eksamen fra 2021 og 2022 i kildene.</p>
+            <span class="tag a4-auto">auto</span> = rettet automatisk, ofte med minuspoeng. For H2025 sier ikke sensorveiledningen det, men poengregelen per svar tyder på det. Det finnes ingen ordinær eksamen fra 2021 og 2022 i kildene.</p>
         </div>
         <div id="task-map" class="a4-map"></div>
       </section>
@@ -140,8 +140,8 @@
     IN2090-guide · laget for eksamensøving · fungerer frakoblet (file://) og på GitHub Pages.
   </footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
   <script>
   (function () {
     var IN = window.IN, el = IN.el;
@@ -271,7 +271,7 @@
         text: "5–6 spørringer på eksempeldataene: hvor mange rader gir hver? Rettes automatisk, +2 for riktig og −0,5 for galt. Testen er presis semantikk: DISTINCT, LIMIT/OFFSET, NULL, NOT EXISTS, NATURAL og FULL JOIN.",
         links: [["sql-videre", "radantall", "Hvor mange rader?", recent("rad")], ["sql-videre", "null", "NULL"], ["sql", "distinct", "DISTINCT og ORDER BY"]] },
       { key: "sql", part: "Del 2, resten", name: "Skriv 5–6 spørringer", short: "SQL-spørringer", pts: "33–40 p", w: 38,
-        text: "Først 2–3 enkle på 5 p (join, WHERE, ORDER BY), så 2–3 store på 7–10 p: VIEW hvert år, WITH og aggregat, «flest/høyest» med ORDER BY og LIMIT, «også de med 0» med LEFT JOIN. Alle bruker årets databaseskjema.",
+        text: "Først 2–4 enkle på 5 p (join, WHERE, ORDER BY), så 2–4 større på 7–10 p: VIEW hvert år, WITH og aggregat, «flest/høyest» med ORDER BY og LIMIT, «også de med 0» med LEFT JOIN. Alle bruker årets databaseskjema.",
         links: [["sql", "skriv-sql", "Skriv SQL"], ["sql", "bygg", "Bygg spørringen"], ["sql-videre", "aggregering", "Aggregering"], ["sql-videre", "with", "WITH"], ["sql-videre", "ytre-join", "Ytre join"]],
         anchor: "eo-temaer" },
       { key: "norm", part: "Del 3", name: "FD og normalisering", short: "FD og NF", pts: "20–27 p", w: 21,
@@ -314,8 +314,8 @@
         links: [["sql-videre", "aggregering", "Aggregering"], ["sql-videre", "delsporringer", "Delspørringer"], ["sql-videre", "with", "WITH"], ["sql-videre", "ytre-join", "Ytre join"],
                 ["sql-videre", "null", "NULL"], ["sql-videre", "mengde", "Mengdeoperatorer"], ["sql-videre", "for-alle", "«For alle»"], ["sql-videre", "eksamen", "Eksamensoppgaver"]] },
       { name: "ER-modellering", n: 5, pts: "16–30 p", often: "Alltid, først",
-        items: "Kravtekst til ER-diagram: entiteter, relasjoner, kardinalitet, total deltakelse, svake entiteter, ternære relasjoner. Fra 2023 også å lese et diagram.",
-        tip: "Gå gjennom kravteksten punkt for punkt. Kardinalitet på feil side koster −0,5, manglende −1.",
+        items: "Kravtekst til ER-diagram: entiteter, relasjoner, kardinalitet, total deltakelse, svake entiteter, ternære relasjoner. I 2023 og 2024 også å lese et diagram.",
+        tip: "Gå gjennom kravteksten punkt for punkt. Riktig kardinalitet på feil side koster −0,5 (H2023). Feil kardinalitet eller manglende total deltakelse koster −1, og mangler kardinaliteten på hele relasjonen, −2.",
         links: [["er", "notasjon", "Tegneguide"], ["er", "attributter", "Attributter"], ["er", "relasjoner", "Relasjoner"], ["er", "svake", "Svake entiteter"],
                 ["er", "ternaere", "Ternære"], ["er", "tekst-til-diagram", "Fra tekst til diagram"], ["er", "lese", "Lese et diagram"], ["er", "eksamen", "Eksamensoppgaver"]] },
       { name: "SQL grunnleggende", n: 5, pts: "10–22 p", often: "Alltid",

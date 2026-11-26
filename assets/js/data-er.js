@@ -257,8 +257,8 @@
       sel: { ent: STERKE },
       text: {
         eli5: "Konserter er også ting, men starttidspunktet er bare unikt <i>på én scene</i>. To scener kan ha konsert kl. 20. Konserten trenger scenen for å bli unik, så vi venter med den til slutt.",
-        normal: "KONSERT har ingen egen nøkkel: starttidspunktet er «bare unikt på den scenen» (pkt. 4). Den er altså svak. Etter kursets rekkefølge tegnes den til slutt, når eieren SCENE er på plass.",
-        teknisk: "Pkt. 4 sier at Start bare er unik innenfor en scene. Det gjør KONSERT til en svak entitet med SCENE som eier. Vi utsetter den, slik at både eieren og den identifiserende relasjonen er tegnet når den svake nøkkelen skal fullføres."
+        normal: "KONSERT har ingen egen nøkkel: starttidspunktet er «bare unikt på den scenen» (pkt. 4). Den er altså svak. Etter kursets rekkefølge tegnes den til slutt, når den identifiserende entiteten SCENE er på plass.",
+        teknisk: "Pkt. 4 sier at Start bare er unik innenfor en scene. Det gjør KONSERT til en svak entitet med SCENE som identifiserende entitet. Vi utsetter den, slik at både SCENE og den identifiserende relasjonen er tegnet når den svake nøkkelen skal fullføres."
       } },
     { tag: "Steg 3 · attributter (ARTIST)",
       sel: { ent: STERKE, attr: ["ARTIST"] },
@@ -307,7 +307,7 @@
       text: {
         eli5: "Nå kommer konserten. Den får dobbel boks fordi den trenger scenen, og starttidspunktet får stiplet strek under. Den doble romben PÅ viser hvilken scene som gjør konserten unik.",
         normal: "KONSERT: dobbelt rektangel, Start med stiplet understrek, Slutt vanlig og Varighet stiplet oval. PÅ er dobbel rombe med 1 ved SCENE og N og dobbel strek ved KONSERT. Streken ved SCENE er enkel: «trenger ikke ha noen» (pkt. 4).",
-        teknisk: "Den identifiserende relasjonen har låst form: 1 ved eieren og total deltakelse for den svake. Full nøkkel for KONSERT blir (Scene.Navn, Start). Eierens nøkkel legges <i>ikke</i> inn som attributt i ER, den kommer først ved realiseringen (pkt. 4)."
+        teknisk: "Den identifiserende relasjonen har låst form: 1 ved den identifiserende entiteten og total deltakelse for den svake. Full nøkkel for KONSERT blir (Scene.Navn, Start). Nøkkelen til SCENE legges <i>ikke</i> inn som attributt i ER, den kommer først ved realiseringen (pkt. 4)."
       } },
     { tag: "Steg 6 · SPILLER",
       sel: { ent: ALLE, attr: ALLE, rel: ["KONTRAKT", "SJEF", "VAKT", "PA", "SPILLER"], relAttr: ["VAKT", "SPILLER"], kard: ["KONTRAKT", "SJEF", "VAKT", "PA", "SPILLER"] },
@@ -363,9 +363,9 @@
         options: ["KONSERT i vanlig rektangel med Start understreket.",
                   "KONSERT i dobbelt rektangel, Start med stiplet understrek, dobbel rombe til SCENE, 1 ved SCENE og dobbel strek ved KONSERT.",
                   "KONSERT i dobbelt rektangel, vanlig rombe til SCENE.",
-                  "SCENE i dobbelt rektangel, fordi den eier konsertene."],
+                  "SCENE i dobbelt rektangel, fordi konsertene er avhengige av den."],
         answer: 1,
-        explain: "Det er den svake entiteten som får dobbel boks og stiplet nøkkel, og relasjonen til eieren skal være en dobbel rombe. C mangler den identifiserende relasjonen (−1 hos sensor).",
+        explain: "Det er den svake entiteten som får dobbel boks og stiplet nøkkel, og relasjonen til den identifiserende entiteten skal være en dobbel rombe. C mangler den identifiserende relasjonen (−1 hos sensor).",
         kilde: K("F05-03 lysark 3–5") }
     ],
     ternaere: [
@@ -407,9 +407,9 @@
     { s: "«Nøyaktig én» tegnes med 1 alene.", answer: false, blokk: "notasjon",
       explain: "Det krever også dobbel strek ved entiteten selv. 1 alene betyr «høyst én».", kilde: K("F05-02 lysark 3–4") },
     { s: "En svak entitet har alltid total deltakelse i den identifiserende relasjonen.", answer: true, blokk: "svake",
-      explain: "Den kan ikke finnes uten eieren.", kilde: K("F05-03 lysark 3–5") },
-    { s: "En svak entitet kan bare ha én eier.", answer: false, blokk: "svake",
-      explain: "Den kan ha flere eiere og flere nivåer.", kilde: K("F05-03 lysark 5") },
+      explain: "Den kan ikke finnes uten den identifiserende entiteten.", kilde: K("F05-03 lysark 3–5") },
+    { s: "En svak entitet kan bare ha én identifiserende entitet.", answer: false, blokk: "svake",
+      explain: "Den kan ha flere identifiserende entiteter og flere nivåer.", kilde: K("F05-03 lysark 5") },
     { s: "En ternær relasjon kan alltid byttes ut med tre binære uten at noe går tapt.", answer: false, blokk: "ternaere",
       explain: "Da går kombinasjonen av de tre tapt.", kilde: K("F06-01 lysark 7") },
     { s: "Hver forekomst av en ternær relasjon relaterer nøyaktig tre entiteter.", answer: true, blokk: "ternaere",

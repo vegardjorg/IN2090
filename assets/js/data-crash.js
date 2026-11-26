@@ -172,13 +172,13 @@
       { id: "1b", tittel: "Svake entiteter og ternære relasjoner", vekt: 7, min: "E", tid: 35, tidG: 50,
         hvorfor: "Nesten alle ER-oppgavene har en svak entitet, og ofte en ternær relasjon. De gir flest poeng per punkt (H2023 og H2024: 3 p for den svake entiteten). Manglende markering av svak entitet eller identifiserende relasjon koster −1 til −2.",
         kjerne: t(
-          "En svak entitet er som et romnummer: «rom 101» betyr ingenting alene, du må vite hvilket bygg. Derfor henger den alltid fast i eieren sin. En ternær relasjon er når tre ting må nevnes samtidig for at det skal gi mening, som «lærer, fag og klasse» i en timeplan.",
-          "<p><b>Svak entitet</b> = dobbelt rektangel. Den kan bare identifiseres sammen med eieren, gjennom en <b>identifiserende relasjon</b> (dobbel rombe). Den svake entiteten har alltid total deltakelse (dobbel strek) og 1 ved eiersiden. Den <b>delvise nøkkelen</b> har stiplet understrek.</p><p><b>Ternær relasjon</b> = én rombe med tre streker. Kardinaliteten ved en entitet svarer på: gitt én kombinasjon av de to andre, hvor mange av denne?</p>",
-          "<p>En ternær relasjon er ikke det samme som tre binære: tre binære husker bare parene, ikke hvilken trippel som faktisk hører sammen. Velg ternær når kravteksten knytter tre ting til én hendelse (en anbefaling er gitt av én bruker, om ett produkt, til én annen bruker). En svak entitet kan ha flere eiere og flere nivåer. Nøkkelen blir eierens nøkkel pluss den delvise nøkkelen.</p>"),
+          "En svak entitet er som et romnummer: «rom 101» betyr ingenting alene, du må vite hvilket bygg. Derfor henger den alltid fast i den identifiserende entiteten sin. En ternær relasjon er når tre ting må nevnes samtidig for at det skal gi mening, som «lærer, fag og klasse» i en timeplan.",
+          "<p><b>Svak entitet</b> = dobbelt rektangel. Den kan bare identifiseres sammen med den identifiserende entiteten, gjennom en <b>identifiserende relasjon</b> (dobbel rombe). Den svake entiteten har alltid total deltakelse (dobbel strek) og 1 ved den identifiserende entiteten. Den <b>svake nøkkelen</b> har stiplet understrek.</p><p><b>Ternær relasjon</b> = én rombe med tre streker. Kardinaliteten ved en entitet svarer på: gitt én kombinasjon av de to andre, hvor mange av denne?</p>",
+          "<p>En ternær relasjon er ikke det samme som tre binære: tre binære husker bare parene, ikke hvilken trippel som faktisk hører sammen. Velg ternær når kravteksten knytter tre ting til én hendelse (en anbefaling er gitt av én bruker, om ett produkt, til én annen bruker). En svak entitet kan ha flere identifiserende entiteter og flere nivåer. Nøkkelen blir nøkkelen til den identifiserende entiteten pluss den svake nøkkelen.</p>"),
         les: [["er", "svake", "fig-svak", "ER → Svake entiteter"], ["er", "ternaere", "fig-ternaer", "ER → Ternære relasjoner"], ["er", "ternaere", "fig-trebinaere", "Ternær mot tre binære"]],
         oppskrift: [
-          "Spør: kan denne tingen identifiseres alene? Hvis nei: dobbelt rektangel, stiplet delvis nøkkel, dobbel rombe til eieren.",
-          "Tegn dobbel strek fra den svake entiteten og 1 ved eieren.",
+          "Spør: kan denne tingen identifiseres alene? Hvis nei: dobbelt rektangel, stiplet svak nøkkel, dobbel rombe til den identifiserende entiteten.",
+          "Tegn dobbel strek fra den svake entiteten og 1 ved den identifiserende entiteten.",
           "Spør: knytter teksten tre ting til samme hendelse? Da en ternær rombe.",
           "Sett kardinalitet på hver av de tre strekene: «gitt de to andre, hvor mange av denne?»",
           "Forklar valget av ternær med én setning."
@@ -188,16 +188,16 @@
         ekstra: ["H2019-1_2", "H2020-M3", "H2020-M2", "H2025-1_1"],
         sjekk: [{ type: "quiz", items: [
           { q: "Et rom identifiseres med romnummer innenfor et bygg. Hvordan modellerer du ROM?", options: ["Vanlig entitet med romnummer som nøkkel", "Svak entitet: stiplet romnummer, dobbel rombe til BYGG, dobbel strek fra ROM og 1 ved BYGG", "Flerverdiattributt på BYGG", "Ternær relasjon mellom ROM, BYGG og romnummer"], answer: 1,
-            explain: "Romnummeret er bare unikt innenfor bygget. Da er ROM en svak entitet med BYGG som eier." },
+            explain: "Romnummeret er bare unikt innenfor bygget. Da er ROM en svak entitet med BYGG som identifiserende entitet." },
           { q: "UNDERVISER(LÆRER, FAG, KLASSE) er ternær, med 1 ved LÆRER. Hva betyr det?", options: ["Hver lærer underviser bare ett fag", "Gitt et fag og en klasse, er det høyst én lærer", "Det finnes bare én lærer", "Hver klasse har én lærer i alle fag"], answer: 1,
             explain: "I en ternær relasjon leser du kardinaliteten ved en entitet med de to andre faste." },
           { q: "Hvorfor kan du ikke alltid bytte en ternær relasjon med tre binære?", options: ["Det kan du alltid", "Tre binære husker bare parene, ikke hvilken kombinasjon av tre som hører sammen", "Binære relasjoner kan ikke ha kardinalitet", "Ternære relasjoner er ikke lov i kurset"], answer: 1,
             explain: "Fra parene (lærer, fag), (fag, klasse) og (lærer, klasse) kan du ikke alltid gjenskape hvilke tripler som faktisk finnes." },
-          { q: "Hva står ved eiersiden av en identifiserende relasjon?", options: ["N", "1", "M", "Ingenting"], answer: 1,
-            explain: "En svak entitet har nøyaktig én eier: 1 ved eieren og dobbel strek fra den svake entiteten." }
+          { q: "Hva står ved den identifiserende entiteten i en identifiserende relasjon?", options: ["N", "1", "M", "Ingenting"], answer: 1,
+            explain: "Gjennom hver identifiserende relasjon har en svak entitet nøyaktig én identifiserende entitet: 1 ved den identifiserende entiteten og dobbel strek fra den svake entiteten." }
         ] }],
         feller: [
-          "Svak entitet uten dobbel rombe, eller med vanlig (heltrukken) understrek på den delvise nøkkelen.",
+          "Svak entitet uten dobbel rombe, eller med vanlig (heltrukken) understrek på den svake nøkkelen.",
           "Glemt dobbel strek fra den svake entiteten.",
           "Tre binære relasjoner der teksten beskriver én hendelse med tre deltakere."
         ] },
@@ -206,7 +206,7 @@
         hvorfor: "H2023 og H2024 hadde en oppgave der du leser et diagram med meningsløse navn og svarer JA eller NEI på påstander (5 p, ±1). Det er raske poeng hvis du kan lesereglene, og minuspoeng hvis du gjetter.",
         kjerne: t(
           "Du får et kart med rare navn og skal svare på om påstander om kartet stemmer. Det er som å lese et skilt: du må vite hva tallene og de doble strekene betyr.",
-          "<p>Tallet ved entitet E sier hvor mange E den andre siden kan relateres til. Dobbel strek betyr at alle av den entiteten må være med i relasjonen. En svak entitet identifiseres av eierens nøkkel og sin delvise nøkkel. Navnene betyr ingenting, så les bare symbolene.</p>",
+          "<p>Tallet ved entitet E sier hvor mange E den andre siden kan relateres til. Dobbel strek betyr at alle av den entiteten må være med i relasjonen. En svak entitet identifiseres av nøkkelen til den identifiserende entiteten og sin svake nøkkel. Navnene betyr ingenting, så les bare symbolene.</p>",
           "<p>Påstandene tester typisk: øvre skranke (kan en A ha flere B?), nedre skranke (kan en A stå uten B?), nøkler i svake entiteter, og om en relasjon er ternær. Med ±1 er forventningen 0 ved gjetting, så svar bare når du har lest symbolet.</p>"),
         les: [["er", "lese", null, "ER → Lese diagrammer"], ["er", "lese", "fig-krypto", "Øvingsdiagrammet med meningsløse navn"]],
         oppskrift: [
@@ -237,13 +237,13 @@
         hvorfor: "Kommer hvert år (7–15 p, typisk 10–12) med samme instruks. Sensor gir 0,5–1 p per entitet og 1–1,5 p per relasjon. Trekk på −0,5 for manglende attributt, manglende markering av KN, PN eller FN og for hvert valg som ikke er forklart (H2020: −2 hvis ingen valg er forklart). Å realisere den identifiserende relasjonen en gang til gir også trekk.",
         kjerne: t(
           "Du gjør tegningen om til tabeller. Hver boks blir en tabell. Strekene blir «henvisninger» fra en tabell til en annen, som en lapp der det står «se kunde nr. 7». Noen ganger trenger du en egen tabell bare for å holde styr på hvem som hører sammen med hvem.",
-          "<p>Fast rekkefølge: <b>entiteter</b> → <b>svake entiteter</b> (PN = eierens PN + delvis nøkkel, pluss FN) → <b>1-1</b> (FN på én side, eller sammensmelting hvis begge har total deltakelse) → <b>1-N</b> (FN på N-siden) → <b>M-N</b> (egen relasjon, PN = begge FN-ene) → <b>flerverdi</b> (egen relasjon, KN = alle attributtene) → <b>ternære</b> (alltid egen relasjon).</p><p>Svarform: <code>Lån(lnr, bok, dager)</code>, så linjer med <code>KN: {lnr}</code>, <code>PN: {lnr}</code> og <code>FN: bok → Bok(bnr)</code>. Ingen datatyper, ingen SQL. Forklar hvert valg i én setning.</p>",
+          "<p>Fast rekkefølge: <b>entiteter</b> → <b>svake entiteter</b> (PN = PN-en til den identifiserende entiteten + svak nøkkel, pluss FN) → <b>1-1</b> (FN på én side, eller sammensmelting hvis begge har total deltakelse) → <b>1-N</b> (FN på N-siden) → <b>M-N</b> (egen relasjon, PN = begge FN-ene) → <b>flerverdi</b> (egen relasjon, KN = alle attributtene) → <b>ternære</b> (alltid egen relasjon).</p><p>Svarform: <code>Lån(lnr, bok, dager)</code>, så linjer med <code>KN: {lnr}</code>, <code>PN: {lnr}</code> og <code>FN: bok → Bok(bnr)</code>. Ingen datatyper, ingen SQL. Forklar hvert valg i én setning.</p>",
           "<p>Mål: færrest mulig relasjoner og NULL-verdier. 1-N kan også realiseres som egen relasjon, men FN på N-siden gir færre relasjoner. Har N-siden partiell deltakelse, blir FN-en NULL for noen rader, og det kan være verdt å nevne. Ternær: står det 1 ved én entitet, utgjør FN-ene til de to andre en KN. Relasjonsattributter blir aldri del av KN eller PN. Utledbare attributter droppes, og av sammensatte beholdes bare bladene.</p>"),
         les: [["realisering", "algoritmen", "algo-pseudo", "Realisering → Algoritmen"], ["realisering", "en-til-en", null, "Realisering → 1-1"], ["realisering", "naere", null, "Realisering → Ternære og N-ære"]],
         oppskrift: [
           "Gå gjennom diagrammet i fast rekkefølge: entiteter, svake, 1-1, 1-N, M-N, flerverdi, ternære.",
           "Skriv hver relasjon som <code>Navn(attributter)</code> med KN, PN og FN på egne linjer.",
-          "Svak entitet: ta med eierens PN som FN og la den være en del av PN. Ikke lag en egen relasjon for den identifiserende relasjonen.",
+          "Svak entitet: ta med PN-en til den identifiserende entiteten som FN og la den være en del av PN. Ikke lag en egen relasjon for den identifiserende relasjonen.",
           "1-1 og 1-N: si hvor FN-en havner og hvorfor (gjerne «færre NULL-verdier»).",
           "Sjekk at hvert attributt i diagrammet står et sted, og at ingen relasjon mangler PN."
         ],
@@ -257,8 +257,8 @@
             explain: "PN i en M-N-relasjon er FN-ene til begge sider. Relasjonsattributter blir aldri del av PN." },
           { q: "PERSON(pnr) har flerverdiattributtet telefon. Hvordan realiseres det?", options: ["Kolonnen telefon i Person", "Telefon(pnr, telefon) med KN {pnr, telefon} og FN pnr → Person(pnr)", "Telefon(telefon) med PN {telefon}", "Det droppes"], answer: 1,
             explain: "Flerverdiattributter blir egen relasjon der alle attributtene sammen er KN." },
-          { q: "Den svake entiteten ROM (delvis nøkkel romnr) har eier BYGG(bnr). Hva er PN i Rom?", options: ["{romnr}", "{bnr, romnr}", "{bnr}", "Rom trenger en egen relasjon for den identifiserende relasjonen"], answer: 1,
-            explain: "PN = eierens PN + den delvise nøkkelen. Den identifiserende relasjonen er dermed realisert og skal ikke realiseres en gang til." },
+          { q: "Den svake entiteten ROM (svak nøkkel romnr) har identifiserende entitet BYGG(bnr). Hva er PN i Rom?", options: ["{romnr}", "{bnr, romnr}", "{bnr}", "Rom trenger en egen relasjon for den identifiserende relasjonen"], answer: 1,
+            explain: "PN = PN-en til den identifiserende entiteten + den svake nøkkelen. Den identifiserende relasjonen er dermed realisert og skal ikke realiseres en gang til." },
           { q: "1-1 der bare den ene siden har total deltakelse. Kan du smelte sammen til én relasjon?", options: ["Ja, alltid", "Nei: sammensmelting krever total deltakelse på begge sider. Legg FN på én side, helst den med total deltakelse", "Ja, hvis begge har samme PN", "Nei, 1-1 krever alltid egen relasjon"], answer: 1,
             explain: "Med FN på siden med total deltakelse blir den aldri NULL." }
         ] }],
@@ -302,7 +302,7 @@
         kjerne: t(
           "Du er databasen. Du får noen små tabeller og en spørring, og skal gjøre jobben for hånd: ta radene, kast de som ikke passer, og tell hva som er igjen. Det vanskelige er de rare reglene, for eksempel at «ukjent» (NULL) aldri er lik noe, heller ikke seg selv.",
           "<p>Kjør spørringen i den rekkefølgen databasen gjør: FROM og JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT/OFFSET. Tell rader etter hvert steg.</p><p>Regler å kunne: sammenligning med NULL gir NULL, så raden faller bort i WHERE. Aggregat uten GROUP BY gir alltid én rad (også når WHERE fjerner alt: <code>count(*)</code> blir 0). LEFT JOIN beholder alle rader fra venstre, FULL JOIN fra begge. UNION fjerner duplikater, UNION ALL gjør det ikke. EXCEPT ALL trekker fra antall forekomster.</p>",
-          "<p>NATURAL JOIN joiner på alle like kolonnenavn. En NATURAL self-join (<code>t NATURAL JOIN t</code>) gir tilbake tabellen bare når ingen verdier er NULL, fordi en rad med NULL ikke matcher seg selv. <code>LIMIT n OFFSET m</code> hopper over m rader og tar så høyst n. <code>count(kol)</code> teller ikke NULL, <code>count(*)</code> teller rader.</p><p>Poengregelen +2/−0,5 gjør at det lønner seg å svare selv når du må gjette (forventning +0,125 med fire alternativer).</p>"),
+          "<p>NATURAL JOIN joiner på alle like kolonnenavn. En NATURAL self-join (<code>t AS t1 NATURAL JOIN t AS t2</code>, samme tabell to ganger krever alias) gir tilbake tabellen bare når ingen verdier er NULL, fordi en rad med NULL ikke matcher seg selv. <code>LIMIT n OFFSET m</code> hopper over m rader og tar så høyst n. <code>count(kol)</code> teller ikke NULL, <code>count(*)</code> teller rader.</p><p>Poengregelen +2/−0,5 gjør at det lønner seg å svare selv når du må gjette (forventning +0,125 med fire alternativer).</p>"),
         les: [["sql-videre", "radantall", "del1-radantall", "SQL videregående → Hvor mange rader?"], ["sql-videre", "null", null, "SQL videregående → NULL"], ["sql-videre", "mengde", "so-demo", "SQL videregående → Mengdeoperasjoner"]],
         oppskrift: [
           "Skriv ned radene i hver tabell (eller pek på dem i vedlegget).",
@@ -323,7 +323,7 @@
             explain: "OFFSET 4 hopper over fire rader. Bare én er igjen, og LIMIT 2 tar høyst to." },
           { q: "t(a) har verdiene 1, NULL og 3. Hvor mange rader gir SELECT * FROM t WHERE a != 1?", options: ["1", "2", "3", "0"], answer: 0,
             explain: "NULL != 1 gir NULL, ikke sann, så den raden faller bort. Bare 3 blir igjen." },
-          { q: "t har 4 forskjellige rader, og én av dem har NULL i en kolonne. Hvor mange rader gir SELECT * FROM t NATURAL JOIN t?", options: ["4", "3", "16", "0"], answer: 1,
+          { q: "t har 4 forskjellige rader, og én av dem har NULL i en kolonne. Hvor mange rader gir SELECT * FROM t AS t1 NATURAL JOIN t AS t2?", options: ["4", "3", "16", "0"], answer: 1,
             explain: "NATURAL JOIN sammenligner alle kolonnene. Raden med NULL matcher ikke seg selv, fordi NULL = NULL gir NULL." },
           { q: "Du står mellom to alternativer på et radantall-spørsmål (+2/−0,5). Lønner det seg å svare?", options: ["Nei", "Ja: 0,5 · 2 − 0,5 · 0,5 = +0,75"], answer: 1,
             explain: "Forventet gevinst er positiv så lenge sjansen for riktig svar er over 20 %." }

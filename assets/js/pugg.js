@@ -144,12 +144,12 @@
       kort.appendChild(m);
       var hFor = 0, hBak = 0;
       deck.kort.forEach(function (k) {
-        tegnSide(m, forsideAv(k)); hFor = Math.max(hFor, m.offsetHeight);
-        tegnBak(m, k); hBak = Math.max(hBak, m.offsetHeight);
+        m.className = "pg-side pg-for"; tegnSide(m, forsideAv(k)); hFor = Math.max(hFor, m.getBoundingClientRect().height);
+        m.className = "pg-side pg-bak"; tegnBak(m, k); hBak = Math.max(hBak, m.getBoundingClientRect().height);
       });
       kort.removeChild(m);
-      forside.style.minHeight = hFor + "px";
-      bakside.style.minHeight = hBak + "px";
+      forside.style.minHeight = Math.ceil(hFor) + "px";
+      bakside.style.minHeight = Math.ceil(hBak) + "px";
     }
     if (typeof ResizeObserver === "function") {
       var ventRO = 0;
@@ -238,6 +238,8 @@
       var ul = el("ul", { class: "pg-liste-ul" });
       deck.kort.forEach(function (k) {
         var s = forsideAv(k), tekst = k.navn || (typeof s === "string" ? s : s.html);
+        if (tekst && tekst.indexOf("<svg") >= 0) tekst = ""; // grunnsymbol: navngi fra baksiden
+        if (!tekst && s && s.pre) tekst = s.pre.split("\n").slice(0, 2).join(" · ").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; });
         if (!tekst) { // Figur på forsiden: bruk starten av baksiden som navn i lista
           var bs = baksideAv(k), tmp = document.createElement("div");
           tmp.innerHTML = typeof bs === "string" ? bs : (bs.html || bs.pre || "");

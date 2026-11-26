@@ -7,8 +7,8 @@
   <title>Blokk 3 · Relasjonsalgebra · IN2090</title>
   <meta name="description" content="Relasjonsalgebra i IN2090: π, σ, ρ, kryssprodukt, join med betingelse og naturlig join, union, snitt og differanse, navngitte resultater og RA-trær. Med stegvis evaluering av uttrykkstrær, fellen med naturlig join, oversettelse mellom SQL og RA, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126h">
   <style>
     /* Blokk 3 · relasjonsalgebra (sidens egen stil) */
     .ra-ops { width: 100%; }
@@ -69,6 +69,7 @@
     <div class="pagehead">
       <h1>Blokk 3 · Relasjonsalgebra</h1>
       <p class="lead">Relasjonsalgebra (RA) er det presise språket under SQL: operatorer som tar relasjoner og gir nye relasjoner. RA har vært lite spurt om på eksamen, men H2025 hadde 5 poeng, og RA gjør SQL lettere å forstå. Her lærer du alle operatorene i kurset, lager og evaluerer uttrykkstrær steg for steg, og oversetter mellom SQL og RA.</p>
+      <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=ra-tegn">Relasjonsalgebra</a> · <a href="pugg.html#fane=sql-regler">SQL-regler</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_3"><b>H2025</b> · Relasjonsalgebra på båtskjemaet · <span class="pts">5p</span></a>
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-2_4"><b>H2024</b> · UNION skrevet om (samme idé) · <span class="pts">5p</span></a>
@@ -127,7 +128,7 @@
           <p>Kursets relasjonsalgebra har bare operatorene i tabellen over. Ytre join finnes bare i SQL i kurset (blokk 5). «For alle»-spørsmål løses med differanse, se fanen <a href="#fane=mengde">∪, ∩ og ∖</a>.</p></details>
         <ul>
           <li><b>Skrivemåte.</b> Kurset skriver betingelser og attributtlister med senket skrift. Har du ikke senket skrift, skriv for eksempel <span class="mono">π_{navn}(…)</span>. Det viktige er at operator, betingelse og argument er tydelige.</li>
-          <li><b>Differanse</b> skrives <span class="mono">\</span> i lysarkene om relasjonsalgebra (her ∖). Naturlig join står som <span class="mono">⋈</span> uten senket skrift, men ett lysark bruker <span class="mono">⋆</span>. Begge betyr det samme.</li>
+          <li><b>Differanse</b> skrives <span class="mono">\</span> i lysarkene om relasjonsalgebra (her ∖). Naturlig join står som <span class="mono">⋈</span> uten senket skrift, men noen lysark og ukesoppgavene for uke 2 bruker <span class="mono">⋆</span>. Begge betyr det samme.</li>
         </ul></div>
 
       <h4>Test deg selv</h4>
@@ -241,7 +242,7 @@
       <div class="callout begrep"><span class="lbl">Begrep</span>
         Et RA-uttrykk kan tegnes som et tre. <b>Bladene</b> er relasjonene, og hver <b>indre node</b> er en operator med betingelse eller attributtliste i senket skrift.
         Unære operatorer (π, σ, ρ) har ett barn, binære (×, ⋈, ∪, ∩, ∖) har to. Treet evalueres <b>nedenfra og opp</b>, og roten gir svaret.
-        Når en database får en SQL-spørring, oversettes den først til et slikt tre.</div>
+        Når en database får en SQL-spørring, parses og sjekkes den, og så oversettes den til et slikt tre som optimaliseres.</div>
       <div id="ex-tre"></div>
 
       <p class="small muted">Velg et eksempel, eller skriv ditt eget uttrykk over tabellene Student, Emne, Tatt, Foreleser, Kunde og Båt. Klikk på en node i treet for å hoppe til steget. Grønt er rader som beholdes, rødt rader som faller bort, og markerte kolonner er dem operatoren bruker.</p>
@@ -335,21 +336,21 @@
 
   <footer class="footer">IN2090-guide · Blokk 3 · Relasjonsalgebra · <a href="04-sql.html">Neste: blokk 4, SQL</a></footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
-  <script src="assets/js/sql-lang.js?v=20261126f"></script>
-  <script src="assets/js/pseudocode.js?v=20261126f"></script>
-  <script src="assets/js/stepplayer.js?v=20261126f"></script>
-  <script src="assets/js/viz-relation.js?v=20261126f"></script>
-  <script src="assets/js/viz-er.js?v=20261126f"></script>
-  <script src="assets/js/data-ra.js?v=20261126f"></script>
-  <script src="assets/js/side-ra.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126f"></script>
-  <script src="assets/js/bank.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
+  <script src="assets/js/sql-lang.js?v=20261126h"></script>
+  <script src="assets/js/pseudocode.js?v=20261126h"></script>
+  <script src="assets/js/stepplayer.js?v=20261126h"></script>
+  <script src="assets/js/viz-relation.js?v=20261126h"></script>
+  <script src="assets/js/viz-er.js?v=20261126h"></script>
+  <script src="assets/js/data-ra.js?v=20261126h"></script>
+  <script src="assets/js/side-ra.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261126h"></script>
+  <script src="assets/js/bank.js?v=20261126h"></script>
   <script>
   (function () {
     "use strict";
@@ -429,7 +430,7 @@
       var a = "π_{navn, tittel}(σ_{by = 'Oslo' ∧ kar = 'A'}(Student ⋈ Tatt ⋈ Emne))";
       var b = "π_{navn, tittel}(σ_{by = 'Oslo'}(Student) ⋈ σ_{kar = 'A'}(Tatt) ⋈ Emne)";
       IN.qs("#sql-eks-ra").appendChild(IN.el("div", { class: "ra-mini-expr mono", html: IN.ra.html(IN.ra.parse(a)[0].expr) }));
-      IN.qs("#sql-eks-ra").appendChild(IN.el("p", { class: "small", html: "USING (snr) og USING (kode) blir naturlig join, fordi snr og kode er de eneste felles navnene i hvert steg. WHERE blir σ, SELECT blir π ytterst." }));
+      IN.qs("#sql-eks-ra").appendChild(IN.el("p", { class: "small", html: "USING (snr) blir join på snr (⋈ med snr senket), og USING (kode) join på kode. Her er det det samme som naturlig join, fordi snr og kode er de eneste felles navnene i hvert steg. Har tabellene flere felles navn, joiner naturlig join på alle, mens USING bare joiner på de nevnte. WHERE blir σ, SELECT blir π ytterst." }));
       var host = IN.qs("#sql-traer"), all = { active: function () { return false; }, done: function () { return true; } };
       [[a, "Rett fra SQL-en: σ over hele joinen"], [b, "Samme svar: σ flyttet ned til hver sin tabell"]].forEach(function (p) {
         var f = IN.el("figure");

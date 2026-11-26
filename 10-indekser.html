@@ -7,8 +7,8 @@
   <title>Blokk 10 · Indekser · IN2090</title>
   <meta name="description" content="Indekser i IN2090 på oversiktsnivå: hva en indeks er, disk mot RAM, B-tre og hash, når en indeks hjelper, PRIMARY KEY og CREATE INDEX, og hva indekser koster ved skriving – med en demo som teller diskblokker med og uten indeks.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126h">
   <style>
     .ix-demo { border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg); padding: var(--d-md); background: var(--color-surface-container-lowest); }
     .ix-lbl { margin-top: .2rem; font-weight: 600; }
@@ -98,7 +98,7 @@
           <ul>
             <li>Et tre der hver node kan ha <b>mange barn</b>.</li>
             <li>Hver node er like stor som en <b>diskblokk</b>, så én node koster ett diskoppslag. Mange barn per node gir et lavt tre og få oppslag.</li>
-            <li>Verdiene i løvnodene ligger sortert og har <b>pekere til radene</b> sine i tabellen.</li>
+            <li>Løvnodene har <b>pekere til radene</b> i tabellen. (B+-tre-detalj, ikke pensum: løvene er sortert og lenket sammen, derfor er intervallsøk billige.)</li>
             <li>Effektivt for oppslag på konkrete verdier <b>og</b> for intervallsøk (<span class="mono">&lt;</span>, <span class="mono">&gt;</span>, <span class="mono">BETWEEN</span>).</li>
           </ul></div>
         <div class="callout begrep"><span class="lbl">Hash</span>
@@ -115,7 +115,7 @@
         <thead><tr><th>Betingelse</th><th>B-tre</th><th>Hash</th></tr></thead>
         <tbody>
           <tr><td class="mono">pris = 45</td><td>ja, noen få oppslag</td><td>ja, best</td></tr>
-          <tr><td class="mono">pris BETWEEN 10 AND 15</td><td>ja, les bortover i løvene</td><td>nei, ett oppslag per verdi</td></tr>
+          <tr><td class="mono">pris BETWEEN 10 AND 15</td><td>ja, effektivt intervallsøk</td><td>nei, ett oppslag per verdi</td></tr>
           <tr><td class="mono">pris &lt; 20</td><td>ja</td><td>nei</td></tr>
         </tbody>
       </table></div>
@@ -206,11 +206,11 @@
 
   <footer class="footer">IN2090-guide · Blokk 10 · Indekser · <a href="index.html">Til forsiden</a></footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
-  <script src="assets/js/sql-lang.js?v=20261126f"></script>
-  <script src="assets/js/pseudocode.js?v=20261126f"></script>
-  <script src="assets/js/side-indekser.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
+  <script src="assets/js/sql-lang.js?v=20261126h"></script>
+  <script src="assets/js/pseudocode.js?v=20261126h"></script>
+  <script src="assets/js/side-indekser.js?v=20261126h"></script>
   <script>
   (function () {
     "use strict";

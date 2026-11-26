@@ -480,7 +480,7 @@
     h2025: mkRel("R", "ABCD", ["A → B", "B → C"]),
     trening: mkRel("Trening", ["utøver", "øvelse", "trener"], ["utøver, øvelse → trener", "trener → øvelse"]),
     // KN = {A, B} (A og B står aldri til høyre, AB⁺ = ABCDE). Før: AB → E, som ga eneste KN = {A, B, C}.
-    nfEks3: mkRel("R", "ABCDE", ["AB → C", "B → D", "BC → D", "D → E"]),
+    nfEks3: mkRel("R", "ABCDE", ["AB → C", "BC → D", "D → E"]),
     h2024_32: mkRel("R", "ABCDEF", ["DE → F", "ACE → B", "B → A", "B → D"]),
     h2019_32: mkRel("R", "ABCDEF", ["A → C", "B → D", "AB → F", "AD → E"]),
     h2020_R2: mkRel("R", "ABCD", ["D → B", "C → AD", "B → D", "A → C"]),

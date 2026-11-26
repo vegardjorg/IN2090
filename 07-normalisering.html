@@ -7,10 +7,10 @@
   <title>Blokk 7 · Normalisering · IN2090</title>
   <meta name="description" content="Normalisering i IN2090: anomalier, normalformene 1NF–BCNF, kursets tre spørsmål per FD, hele relasjonens normalform, BCNF-dekomposisjon med S₁(Y⁺) og S₂(Y ∪ (X − Y⁺)), tapsfrihet og Fagins teorem, og svarmalen sensor vil se – med stegspillere, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126h">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261126h">
 </head>
 <body data-page="normalisering">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -19,6 +19,7 @@
     <div class="pagehead">
       <h1>Blokk 7 · Normalisering</h1>
       <p class="lead">Del 3 av eksamen har nesten alltid samme oppbygning: korte nøkkel- og FD-oppgaver, én normalformoppgave og én dekomposisjon til BCNF med forklaring. Her lærer du de tre spørsmålene per FD, kursets BCNF-algoritme, hvorfor den er tapsfri, og malen sensor gir poeng for. Tillukning og kandidatnøkler fra <a href="06-fd.html">blokk 6</a> brukes hele veien.</p>
+      <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=fd-oppgaver">FD-oppgaver</a> · <a href="pugg.html#fane=fd">FD og normalformer</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_3"><b>H2025</b> · Første BCNF-steg og tapsfrihet · <span class="pts">6p</span></a>
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_4"><b>H2025</b> · Legg til FD-er til BCNF · <span class="pts">5p</span></a>
@@ -239,7 +240,7 @@
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
-        Hvert år er det én dekomposisjon til BCNF (6–13 p):
+        Fra H2020 har hvert år hatt én dekomposisjon til BCNF (6–13 p). H2019 hadde ingen.
         <ul>
           <li>H2020 R3 (10 p), H2023 3.3 (10 p: 5 + 2,5 + 2,5), H2024 3.3 (13 p: 7 + 3 + 3). Alle ligger i spilleren.</li>
           <li>Trekk: −1 per manglende eller feil FD på en relasjon, −1 for feil tillukning, −1 for feil eller manglende KN, −3 når forklaringene mangler.</li>
@@ -314,7 +315,7 @@ R er på den laveste av disse: …NF.</pre></div>
       <div class="callout eksempel"><span class="lbl">Etter dekomposisjonen</span>
         <ul>
           <li>Algoritmen gir strukturen. Etterpå gir du tabellene meningsfulle navn og skranker (PN, FN). Data flyttes med <span class="mono">INSERT INTO Sᵢ SELECT DISTINCT Yᵢ FROM R;</span> for hver ny tabell.</li>
-          <li>Et BCNF-skjema kan likevel være dårlig. Splitter du for mye, er det fortsatt BCNF og tapsfritt, men tungvint. Med <span class="mono">S₁(Y⁺)</span> unngår du dette.</li>
+          <li>Et BCNF-skjema kan likevel være dårlig. Splitter du for mye, er det fortsatt BCNF og tapsfritt, men tungvint. Eksempelet i F08-03 oppstår når man skiller ut bare (Y, A) i stedet for Y⁺. Med <span class="mono">S₁(Y⁺)</span> unngår du den typen oppsplitting, men godt design er likevel mer enn BCNF.</li>
           <li>ER-realisering gir som regel BCNF, men garanterer bare 1NF, fordi ER ikke kan uttrykke alle FD-er.</li>
         </ul></div>
 
@@ -327,7 +328,7 @@ R er på den laveste av disse: …NF.</pre></div>
           <p>Det kreves for hver relasjon underveis, også de enkle.</p></details>
         <ul>
           <li><b>Annen rekkefølge enn løsningsforslaget?</b> Gir samme poeng hvis hvert steg er riktig.</li>
-          <li><b>Avkrysning med minuspoeng:</b> ved ±1 lønner det seg ikke å gjette. Ved +2/−0,5 (H2024 3.2) lønner det seg å gjette når du kan utelukke noe.</li>
+          <li><b>Avkrysning med minuspoeng:</b> ved ±1 lønner det seg ikke å gjette. Ved +2/−0,5 (H2024 3.2) har hver rute fire alternativer, og da lønner det seg alltid å svare, også ved rent gjett (forventet 2/4 − 0,5·3/4 = +0,125). Regelen er at en blind gjetning lønner seg ved færre enn fem alternativer.</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
@@ -361,23 +362,23 @@ R er på den laveste av disse: …NF.</pre></div>
 
   <footer class="footer">IN2090-guide · Blokk 7 · Normalisering · <a href="06-fd.html">Forrige: blokk 6, funksjonelle avhengigheter</a></footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
-  <script src="assets/js/sql-lang.js?v=20261126f"></script>
-  <script src="assets/js/pseudocode.js?v=20261126f"></script>
-  <script src="assets/js/stepplayer.js?v=20261126f"></script>
-  <script src="assets/js/varline.js?v=20261126f"></script>
-  <script src="assets/js/viz-relation.js?v=20261126f"></script>
-  <script src="assets/js/viz-er.js?v=20261126f"></script>
-  <script src="assets/js/data-fd.js?v=20261126f"></script>
-<script src="assets/js/dra.js?v=20261126f"></script>
-<script src="assets/js/data-dra.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126f"></script>
-  <script src="assets/js/bank.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
+  <script src="assets/js/sql-lang.js?v=20261126h"></script>
+  <script src="assets/js/pseudocode.js?v=20261126h"></script>
+  <script src="assets/js/stepplayer.js?v=20261126h"></script>
+  <script src="assets/js/varline.js?v=20261126h"></script>
+  <script src="assets/js/viz-relation.js?v=20261126h"></script>
+  <script src="assets/js/viz-er.js?v=20261126h"></script>
+  <script src="assets/js/data-fd.js?v=20261126h"></script>
+<script src="assets/js/dra.js?v=20261126h"></script>
+<script src="assets/js/data-dra.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261126h"></script>
+  <script src="assets/js/bank.js?v=20261126h"></script>
   <script>
   (function () {
     "use strict";

@@ -276,7 +276,7 @@
           "PRODUKT (ProduktID, Navn) og LEVERANDØR (ID, Epost som flerverdiattributt) knyttes med SELGER, som er M:N.",
           "BESTILLING får Bestillingsnummer som nøkkel, Dato, Pris og Leveringsadresse som et sammensatt attributt. Gateadresse er igjen sammensatt av Gatenavn og Nummer.",
           "PLASSERT er 1:N fra BRUKER til BESTILLING, med total deltakelse for BESTILLING («ingen bestillinger … uten å ha blitt plassert av en bruker»).",
-          "BESTILLINGSLINJE har et nummer som bare er unikt innen bestillingen, så den blir en svak entitet med Linjenummer som delvis nøkkel, eid av BESTILLING via den identifiserende relasjonen INNEHOLDER. Antall står på linjen.",
+          "BESTILLINGSLINJE har et nummer som bare er unikt innen bestillingen, så den blir en svak entitet med Linjenummer som svak nøkkel, eid av BESTILLING via den identifiserende relasjonen INNEHOLDER. Antall står på linjen.",
           "«En eller fler bestillingslinjer» gir også total deltakelse for BESTILLING i INNEHOLDER.",
           "Hver linje har nøyaktig ett produkt og nøyaktig én leverandør: to N:1-relasjoner med total deltakelse på linjesiden."
         ],
@@ -307,7 +307,7 @@
         avvik: ORM_AVVIK + " Den felles innledningen til modelleringsdelen står i oppgave 1.",
         losning: [
           "Anmeldelser: M:N-relasjonen ANMELDER mellom BRUKER og PRODUKT med attributtene Stjerner og Beskrivelse.",
-          "Ønskelister: navnet er bare unikt blant brukerens egne lister, så ØNSKELISTE blir en svak entitet (Navn som delvis nøkkel, Dato_laget) eid av BRUKER via den identifiserende relasjonen LAGER.",
+          "Ønskelister: navnet er bare unikt blant brukerens egne lister, så ØNSKELISTE blir en svak entitet (Navn som svak nøkkel, Dato_laget) eid av BRUKER via den identifiserende relasjonen LAGER.",
           "En ønskeliste kan inneholde mange produkter, og et produkt kan stå på mange lister: M:N-relasjonen INNEHOLDER_PRODUKT.",
           "Anbefalinger: en ternær relasjon ANBEFALER med tre ledd, to til BRUKER (rollene anbefaler og mottaker) og ett til PRODUKT. Alle sidene er «mange», og Dato står på relasjonen."
         ],
@@ -335,7 +335,7 @@
           "Uten Inspera bruker vi kursets tekstformat (KN, PN og FN på egne linjer) i stedet for understreking og fet skrift.",
         losning: [
           "Vanlige entiteter: Music_album (to KN, Id og WebPage), Record_house, Music_band (sammensatt ContactInfo blir Email og Phone) og Singer.",
-          "Svak entitet: Song får eierens Id pluss SongNr som PN, med FN til Music_album. CONSISTS_OF skal ikke bli en egen tabell.",
+          "Svak entitet: Song får Id fra den identifiserende entiteten pluss SongNr som PN, med FN til Music_album. CONSISTS_OF skal ikke bli en egen tabell.",
           "1:N RECORDED_BY og CREATED_BY: FN på N-siden (Music_album), og RecordingDate følger med.",
           "1:1 HAS_MANAGER (partiell på begge sider): FN i Music_band, fordi de fleste band trolig har en manager, mens de fleste sangere ikke er manager. AppointmentDate følger med.",
           "Rekursiv 1:N MENTORS: en mentee har én mentor, så FN-en Mentor legges i Singer og peker til Singer selv.",
@@ -643,7 +643,7 @@
         "<li><b>PRODUKT</b> (<u>ProduktID</u>, Navn) og <b>LEVERANDØR</b> (<u>ID</u>, Epost som flerverdiattributt), koblet med <b>SELGER</b> (M:N).</li>" +
         "<li><b>BESTILLING</b> (<u>Bestillingsnummer</u>, Dato, Pris, Leveringsadresse sammensatt av Land, By, Postkode og Gateadresse, der Gateadresse igjen består av Gatenavn og Nummer).</li>" +
         "<li><b>PLASSERT</b>: 1 ved BRUKER, N ved BESTILLING, total deltakelse for BESTILLING.</li>" +
-        "<li><b>BESTILLINGSLINJE</b> er en svak entitet med delvis nøkkel <u>Linjenummer</u> og Antall, eid av BESTILLING via den identifiserende relasjonen <b>INNEHOLDER</b> (1 ved BESTILLING, N ved linjen, total deltakelse på begge sider).</li>" +
+        "<li><b>BESTILLINGSLINJE</b> er en svak entitet med svak nøkkel <u>Linjenummer</u> og Antall, eid av BESTILLING via den identifiserende relasjonen <b>INNEHOLDER</b> (1 ved BESTILLING, N ved linjen, total deltakelse på begge sider).</li>" +
         "<li><b>HAR_PRODUKT</b> og <b>HAR_LEVERANDØR</b>: N ved BESTILLINGSLINJE og 1 ved PRODUKT og LEVERANDØR, total deltakelse for linjen.</li></ul>" +
         "<p>Kommentar på tegningen: «Modellen sikrer ikke at leverandøren på en linje faktisk selger produktet (SELGER). Det må sjekkes på annen måte.»</p>",
       er: ER_M2_SVAR,
@@ -652,7 +652,7 @@
     hvorfor: {
       eli5: "<p>En bestilling er som en handlelapp med nummererte linjer. Linje 1 og linje 2 gir bare mening på akkurat den lappen, og derfor henger linjene fast i bestillingen. På hver linje står ett produkt, én butikk som selger det, og hvor mange du vil ha.</p>",
       normal: "<p>Linjenummeret er bare unikt innen én bestilling, så bestillingslinjen er en svak entitet. Den kan ikke identifiseres uten bestillingsnummeret. «Ingen bestilling uten bruker» og «en eller flere linjer» blir total deltakelse. «Nøyaktig ett produkt og nøyaktig én leverandør» blir N:1-relasjoner med total deltakelse for linjen.</p>",
-      teknisk: "<p>Den svake entiteten har alltid total deltakelse i den identifiserende relasjonen. Her har også eieren total deltakelse, fordi en bestilling har minst én linje. Leveringsadressen er et sammensatt attributt i to nivåer. Epost-adressene til en leverandør er en mengde enkle verdier, altså et flerverdiattributt. SELGER (M:N) og koblingene fra linjen er uavhengige relasjoner, så ER-modellen kan ikke uttrykke at paret produkt–leverandør på linjen må finnes i SELGER. Den slags skranker skriver vi som kommentar. Det finnes en utvidelse av ER der en hel relasjon (her SELGER) kan behandles som en enhet som linjen kobles til. Den kalles også aggregering, men har ingenting med aggregering i SQL (sum, count) å gjøre, og den er utenfor pensum.</p>"
+      teknisk: "<p>Den svake entiteten har alltid total deltakelse i den identifiserende relasjonen. Her har også den identifiserende entiteten total deltakelse, fordi en bestilling har minst én linje. Leveringsadressen er et sammensatt attributt i to nivåer. Epost-adressene til en leverandør er en mengde enkle verdier, altså et flerverdiattributt. SELGER (M:N) og koblingene fra linjen er uavhengige relasjoner, så ER-modellen kan ikke uttrykke at paret produkt–leverandør på linjen må finnes i SELGER. Den slags skranker skriver vi som kommentar. Det finnes en utvidelse av ER der en hel relasjon (her SELGER) kan behandles som en enhet som linjen kobles til. Den kalles også aggregering, men har ingenting med aggregering i SQL (sum, count) å gjøre, og den står ikke i lysarkene.</p>"
     },
     sensor: {
       kilde: skilde("Modellering", 2),
@@ -668,7 +668,7 @@
       del: "3",
       tekst: "<ul>" +
         "<li><b>ANMELDER</b> (M:N) mellom BRUKER og PRODUKT med attributtene Stjerner og Beskrivelse.</li>" +
-        "<li><b>ØNSKELISTE</b> er en svak entitet med delvis nøkkel <u>Navn</u> og Dato_laget, eid av BRUKER via den identifiserende relasjonen <b>LAGER</b> (1 ved BRUKER, N og total deltakelse ved ØNSKELISTE).</li>" +
+        "<li><b>ØNSKELISTE</b> er en svak entitet med svak nøkkel <u>Navn</u> og Dato_laget, eid av BRUKER via den identifiserende relasjonen <b>LAGER</b> (1 ved BRUKER, N og total deltakelse ved ØNSKELISTE).</li>" +
         "<li><b>INNEHOLDER_PRODUKT</b> (M:N) mellom ØNSKELISTE og PRODUKT.</li>" +
         "<li><b>ANBEFALER</b> er ternær: to ledd til BRUKER med rollene <i>anbefaler</i> (K) og <i>mottaker</i> (N), og ett ledd til PRODUKT (M). Attributtet Dato står på relasjonen.</li></ul>",
       er: ER_M3_SVAR,
@@ -704,7 +704,7 @@
       etter: "<p><b>Valg:</b></p><ul>" +
         "<li>Music_album har to kandidatnøkler. Id er valgt som PN fordi den er kort og stabil.</li>" +
         "<li>ContactInfo er sammensatt, så bare delene Email og Phone tas med.</li>" +
-        "<li>SONG er svak: PN er eierens Id (Album_id) pluss SongNr. CONSISTS_OF realiseres ikke på nytt.</li>" +
+        "<li>SONG er svak: PN er Id (Album_id) fra den identifiserende entiteten pluss SongNr. CONSISTS_OF realiseres ikke på nytt.</li>" +
         "<li>RECORDED_BY og CREATED_BY (1:N): FN på N-siden i Music_album. Det sparer to tabeller, og RecordingDate følger med.</li>" +
         "<li>HAS_MANAGER (1:1, partiell på begge sider): FN-en Manager legges i Music_band, fordi de fleste band trolig har en manager, mens de fleste sangere ikke er manager. Det gir færre NULL. Manager er unik (1:1), men kan være NULL og er derfor ikke en kandidatnøkkel.</li>" +
         "<li>MENTORS (rekursiv 1:N): en mentee har én mentor, så Mentor legges i Singer og peker til Singer selv.</li>" +
@@ -715,7 +715,7 @@
     hvorfor: {
       eli5: "<p>Vi gjør tegningen om til tabeller etter en fast oppskrift. Hver boks blir en tabell. En sang får albumets nummer på seg, siden «spor 3» bare gir mening sammen med albumet. Når hvert album bare har ett plateselskap og ett band, skriver vi dem rett inn i albumtabellen. «Mange til mange» trenger en egen tabell.</p>",
       normal: "<p>Algoritmen går i fast rekkefølge: entiteter, svake entiteter, 1:1, 1:N, M:N og flerverdiattributter. 1:1 og 1:N løses med en fremmednøkkel på den siden som gir færrest NULL, og relasjonsattributtene følger med. M:N og flerverdiattributter blir alltid egne tabeller. Den rekursive MENTORS er bare en 1:N der begge ender er Singer.</p>",
-      teknisk: "<p>For en 1:N legger vi FN-en på N-siden, fordi hver rad der har høyst én verdi. For en 1:1 uten total deltakelse kan vi ikke slå sammen. Vi velger siden der fremmednøkkelen oftest har en verdi, og den blir unik, men ikke en kandidatnøkkel, fordi den kan være NULL. Den svake entiteten får PN = eierens PN + delvis nøkkel, og eierens PN er samtidig FN. Dermed er den identifiserende relasjonen allerede uttrykt, og en egen tabell ville vært overflødig (sensor trekker for det). Total deltakelse i HAS_MEMBER kan ikke uttrykkes med fremmednøkler og må eventuelt sikres med andre mekanismer.</p>"
+      teknisk: "<p>For en 1:N legger vi FN-en på N-siden, fordi hver rad der har høyst én verdi. For en 1:1 uten total deltakelse kan vi ikke slå sammen. Vi velger siden der fremmednøkkelen oftest har en verdi, og den blir unik, men ikke en kandidatnøkkel, fordi den kan være NULL. Den svake entiteten får PN = PN-en til den identifiserende entiteten + svak nøkkel, og den PN-en er samtidig FN. Dermed er den identifiserende relasjonen allerede uttrykt, og en egen tabell ville vært overflødig (sensor trekker for det). Total deltakelse i HAS_MEMBER kan ikke uttrykkes med fremmednøkler og må eventuelt sikres med andre mekanismer.</p>"
     },
     sensor: {
       kilde: skilde("Modellering", 4),
@@ -808,7 +808,7 @@
     hvorfor: {
       eli5: "<p>Vi går gjennom byene én og én og leter etter en eneste dag i romjula med regn eller vind. Finner vi ingen slik dag, skriver vi opp byen.</p>",
       normal: "<p>«Ikke noe regn og ikke noe vind i hele perioden» er det samme som «det finnes ingen dag i perioden med regn eller vind». Det er akkurat det NOT EXISTS uttrykker.</p>",
-      teknisk: "<p>Den naive varianten WHERE nedbør = 0 AND vind = 0 svarer på «finnes det en rolig dag?», mens oppgaven spør om alle dager. «For alle» skrives i SQL som «det finnes ikke et moteksempel». Vi foretrekker NOT EXISTS fremfor NOT IN, fordi NOT IN gir NULL (ukjent) hvis delspørringen inneholder NULL. Her er bid i værmelding del av primærnøkkelen og kan ikke være NULL, så sensors NOT IN-variant er også trygg. HAVING-varianten (sum = 0) virker under antakelsen, men den mister byer uten meldinger, mens NOT EXISTS tar dem med.</p>"
+      teknisk: "<p>Den naive varianten WHERE nedbør = 0 AND vind = 0 svarer på «finnes det en rolig dag?», mens oppgaven spør om alle dager. «For alle» skrives i SQL som «det finnes ikke et moteksempel». Vi foretrekker NOT EXISTS fremfor NOT IN, fordi NOT IN gir NULL (ukjent) hvis delspørringen inneholder NULL (tilleggsfelle, står ikke i kursmaterialet). Her er bid i værmelding del av primærnøkkelen og kan ikke være NULL, så sensors NOT IN-variant er også trygg. HAVING-varianten (sum = 0) virker under antakelsen, men den mister byer uten meldinger, mens NOT EXISTS tar dem med.</p>"
     },
     sensor: {
       kilde: skilde("SQL", 4),

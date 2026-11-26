@@ -5,10 +5,13 @@
    IN.vizEr(host, fig, opts) → <svg>
      entitet      rektangel (dobbelt = svak entitet)
      relasjon     rombe (dobbel = identifiserende relasjon)
-     attributt    oval: understreket = nøkkel, stiplet understrek = delvis nøkkel,
-                  dobbel oval = flerverdi, stiplet oval = avledet, deler = sammensatt (egne ovaler ut fra den)
+     attributt    oval: understreket = nøkkel, stiplet understrek = svak nøkkel (feltet heter delvisNokkel),
+                  dobbel oval = flerverdi, stiplet oval = utledbart attributt (feltet heter avledet),
+                  deler = sammensatt (egne ovaler ut fra den)
      ledd         1 / N / M ved romben, dobbel strek = total deltakelse, rolle som liten tekst
-     isa          sirkel med d (disjunkt) / o (overlappende), dobbel strek opp = total spesialisering, ⊂ på strekene ned
+     isa          UBRUKT og IKKE kursnotasjon: kurset tegner ikke ISA (grafisk symbol ukjent, F13 bruker bare
+                  mengder og logikk, se plan/vranglaere.md A1/A6). Koden (sirkel med d/o, ⊂ på strekene) er
+                  Elmasri-symbolikk og skal ikke tas i bruk på noen side.
    Plassering: pos = [kolonne, rad] i et rutenett (desimaler er lov). Attributtene legges i den
    største ledige vinkelen rundt noden. attr.ang (grader, 0 = høyre, 90 = ned) overstyrer.
    opts: { cell: [bredde, høyde] (standard [230, 160]), title: "tilgjengelig navn",
@@ -98,7 +101,7 @@
       });
     });
 
-    /* ISA */
+    /* ISA: ubrukt og ikke kursnotasjon (se toppkommentaren). Ikke ta i bruk. */
     (fig.isa || []).forEach(function (isa, i) {
       var sup = nodes[isa.super]; if (!sup) return;
       var subs = (isa.sub || []).map(function (id) { return nodes[id]; }).filter(Boolean);

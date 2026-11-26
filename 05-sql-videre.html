@@ -7,14 +7,14 @@
   <title>Blokk 5 · SQL videregående · IN2090</title>
   <meta name="description" content="SQL videregående i IN2090: aggregering, GROUP BY og HAVING, delspørringer, WITH, ytre join, NULL, mengdeoperatorer, «for alle» og «Hvor mange rader?», med stegvise demoer på en liten biblioteksdatabase og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/dra.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261126h">
 </head>
 <body data-page="sql-videre">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -23,6 +23,7 @@
     <div class="pagehead">
       <h1>Blokk 5 · SQL videregående</h1>
       <p class="lead">Dette er den største poengkilden på eksamen. Nesten hver SQL-oppgave fra 5 poeng og oppover handler om å telle per gruppe, ta med dem som har 0, finne den som har flest eller håndtere NULL riktig. Her går du gjennom aggregering, delspørringer, WITH, ytre join, NULL, mengdeoperatorer og «for alle», med stegvise demoer som viser mellomtabellene. Til slutt øver du på «Hvor mange rader?» med eksamensregelen. Grunnlaget (SELECT, join, DISTINCT, skranker) ligger i <a href="04-sql.html">blokk 4 · SQL</a>.</p>
+      <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=sql-monstre">SQL-mønstre</a> · <a href="pugg.html#fane=sql-regler">SQL-regler</a></p>
       <div class="badges" id="badges-sqlv"></div>
     </div>
 
@@ -88,9 +89,9 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>Aggregat per gruppe kommer hvert år: H19 2.3 (sum per sjanger), H20 S4 og S6, H23 2.3–2.5, H24 2.3 og 2.6, H25 2.5 (<span class="mono">HAVING count(*) &gt; 3</span> og <span class="mono">max − min</span> per gruppe).</li>
+          <li>Aggregat per gruppe kommer hvert år: H19 2.5 og 2.7 (2.3 er én samlet sum, ikke per gruppe), H20 S4 og S6, H23 2.4–2.5, H24 2.3 og 2.6, H25 2.5 (<span class="mono">HAVING count(*) &gt; 3</span> og <span class="mono">max − min</span> per gruppe).</li>
           <li>«Flest» og «størst» (fanen WITH) og VIEW med aggregat (H20 S5, H25 2.6, blokk 8).</li>
-          <li>Radantall-flervalg med GROUP BY, HAVING og OFFSET: H24 2.1, H25 2.1.</li>
+          <li>Radantall-flervalg med GROUP BY og OFFSET: H24 2.1. Med LIMIT/OFFSET: H25 2.1.</li>
         </ul></div>
 
       <h4>Under panseret: aggregat og gruppering</h4>
@@ -113,7 +114,7 @@
       <h4>Delspørring som verdi</h4>
       <div id="eks-ds1"></div>
 
-      <h4>IN gir ingen duplikater</h4>
+      <h4>IN gir ikke ekstra kopier</h4>
       <p>Lånere som har lånt en bok av Ibsen:</p>
       <div id="eks-ds2"></div>
       <p>Med en vanlig join over de fire tabellene ville Ada stått to ganger, fordi hun har lånt både Et dukkehjem og Peer Gynt. Da måtte du brukt DISTINCT.</p>
@@ -189,7 +190,7 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>«Flest», «størst» og «minst»: H20 S6 (ORDER BY + LIMIT 1 eller max), H23 2.4, H24 2.3.</li>
+          <li>«Flest», «størst» og «minst»: H20 S6 (ORDER BY + LIMIT 1 eller max), H23 2.4.</li>
           <li>Spørringer i flere trinn: H25 2.5 (WITH + HAVING + <span class="mono">max − min</span>) og repetisjonsoppgavene.</li>
           <li>WITH før LEFT JOIN for å få med 0-rader: H25 2.7 (fanen Ytre join).</li>
         </ul></div>
@@ -301,7 +302,7 @@
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
           <li>NULL-filter i VIEW og spørringer: H20 S5 (<span class="mono">IS NOT NULL</span>), H25 2.6 (<span class="mono">count(ferdig)</span> mot <span class="mono">count(*)</span>).</li>
-          <li>Radantall der NULL avgjør svaret: H25 2.1 (naturlig selvjoin, <span class="mono">navn != navn</span>) og H23 2.1.</li>
+          <li>Radantall der NULL avgjør svaret: H23 2.1 (<span class="mono">nedbør = vind</span>). Mønstrene fra H25 2.1 (naturlig selvjoin, <span class="mono">navn != navn</span>) blir NULL-feller når kolonnene kan være NULL, som i guidens egen øving.</li>
           <li>Lovlig eller ulovlig med NULL i UNIQUE og fremmednøkkel: H19 2.1 (blokk 4).</li>
         </ul></div>
 
@@ -414,7 +415,7 @@
         Evalueringsrekkefølgen over er vår oppsummering. Lysarkene viser skriverekkefølgen og navnereglene.</div>
 
       <h4 class="demo-h">Øv med eksamensregelen</h4>
-      <p>13 spørringer på biblioteksdatabasen. Fest skjemaet øverst på siden, så har du radene for hånden. La stå blankt når du ikke klarer å regne det ut.</p>
+      <p>13 spørringer på biblioteksdatabasen. Fest skjemaet øverst på siden, så har du radene for hånden. Gjetteregel: ved færre enn fem alternativer lønner det seg å svare. La stå blankt bare hvis du ikke klarer å stryke deg ned dit.</p>
       <div id="del1-radantall"></div>
 
       <div class="callout felle"><span class="lbl">Feller</span>
@@ -427,11 +428,11 @@
         <details class="grense"><summary>Hvorfor 4 og ikke 5 i DISTINCT sted?</summary>
           <p>Oslo står to ganger og blir én. NULL står én gang og <i>teller</i> som en rad.</p></details>
         <ul>
-          <li><b>Svar på alle.</b> Riktig gir +2 og galt −0,5, så selv en ren gjetning lønner seg. (Ikke på JA/NEI med ±1.)</li>
+          <li><b>Når lønner det seg å svare?</b> Riktig gir +2 og galt −0,5. En blind gjetning blant k alternativer har forventet verdi 2/k − 0,5·(k−1)/k. Den lønner seg ved færre enn fem alternativer, er null verdt ved fem (H23 2.1: 0–4) og taper ved flere (H24 2.1 hadde seks). Kan du stryke alternativer så det er færre enn fem igjen, lønner det seg å svare. (På JA/NEI med ±1 lønner blind gjetning seg aldri.)</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
-        H23 2.1, H24 2.1 og H25 2.1: 5–10 spørringer på arkets data. H25 hadde <span class="mono">LIKE '%i%'</span> (3), en naturlig selvjoin (5), <span class="mono">navn != navn</span> (0), <span class="mono">LIMIT 1 OFFSET 5</span> (0) og NOT EXISTS (2).
+        H23 2.1, H24 2.1 og H25 2.1: 5–6 spørringer (10–12 poeng) på arkets data. H25 hadde <span class="mono">LIKE '%i%'</span> (3), en naturlig selvjoin (5), <span class="mono">navn != navn</span> (0), <span class="mono">LIMIT 1 OFFSET 5</span> (0) og NOT EXISTS (2).
         Trenes best ved å regne på arkets eksempelrader steg for steg. Se også radantall-oppgavene i <a href="04-sql.html#fane=eksamen">blokk 4</a>.</div>
     </section>
 
@@ -472,31 +473,31 @@
 
   <footer class="footer">IN2090-guide · Blokk 5 · SQL videregående</footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
-  <script src="assets/js/sql-lang.js?v=20261126f"></script>
-  <script src="assets/js/pseudocode.js?v=20261126f"></script>
-  <script src="assets/js/stepplayer.js?v=20261126f"></script>
-  <script src="assets/js/varline.js?v=20261126f"></script>
-  <script src="assets/js/viz-relation.js?v=20261126f"></script>
-  <script src="assets/js/viz-er.js?v=20261126f"></script>
-  <script src="assets/js/data-sql.js?v=20261126f"></script>
-  <script src="assets/js/dra.js?v=20261126f"></script>
-  <script src="assets/js/data-dra.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126f"></script>
-  <script src="assets/js/bank.js?v=20261126f"></script>
-  <script src="assets/js/sql-motor.js?v=20261126f"></script>
-  <script src="assets/js/sql-oppgave.js?v=20261126f"></script>
-  <script src="assets/js/data-sql-ovelser.js?v=20261126f"></script>
-  <script src="assets/js/data-sql-panser.js?v=20261126f"></script>
-  <script src="assets/js/sql-panser.js?v=20261126f"></script>
-  <script src="assets/js/sql-pipeline.js?v=20261126f"></script>
-  <script src="assets/js/data-sql-bygger.js?v=20261126f"></script>
-  <script src="assets/js/sql-bygger.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
+  <script src="assets/js/sql-lang.js?v=20261126h"></script>
+  <script src="assets/js/pseudocode.js?v=20261126h"></script>
+  <script src="assets/js/stepplayer.js?v=20261126h"></script>
+  <script src="assets/js/varline.js?v=20261126h"></script>
+  <script src="assets/js/viz-relation.js?v=20261126h"></script>
+  <script src="assets/js/viz-er.js?v=20261126h"></script>
+  <script src="assets/js/data-sql.js?v=20261126h"></script>
+  <script src="assets/js/dra.js?v=20261126h"></script>
+  <script src="assets/js/data-dra.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261126h"></script>
+  <script src="assets/js/bank.js?v=20261126h"></script>
+  <script src="assets/js/sql-motor.js?v=20261126h"></script>
+  <script src="assets/js/sql-oppgave.js?v=20261126h"></script>
+  <script src="assets/js/data-sql-ovelser.js?v=20261126h"></script>
+  <script src="assets/js/data-sql-panser.js?v=20261126h"></script>
+  <script src="assets/js/sql-panser.js?v=20261126h"></script>
+  <script src="assets/js/sql-pipeline.js?v=20261126h"></script>
+  <script src="assets/js/data-sql-bygger.js?v=20261126h"></script>
+  <script src="assets/js/sql-bygger.js?v=20261126h"></script>
   <script>
   (function () {
     "use strict";

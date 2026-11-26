@@ -188,7 +188,7 @@
       tekst: "<p>Vis <code>navn</code> på forfatterne som ikke har noen bok i databasen.</p>",
       fasit: "SELECT f.navn\nFROM forfatter AS f\nWHERE NOT EXISTS (\n  SELECT *\n  FROM bok AS b\n  WHERE b.fid = f.fid\n);",
       godta: ["SELECT f.navn\nFROM forfatter AS f\n  LEFT JOIN bok AS b ON (f.fid = b.fid)\nWHERE b.bid IS NULL;"],
-      hint: ["«Ingen bok finnes for forfatteren» kan skrives med NOT EXISTS og en delspørring som ser på samme <code>fid</code>.", "Pass på NOT IN: <code>bok.fid</code> har en NULL (Folkeeventyr), og da gir NOT IN 0 rader."],
+      hint: ["«Ingen bok finnes for forfatteren» kan skrives med NOT EXISTS og en delspørring som ser på samme <code>fid</code>.", "Pass på NOT IN: <code>bok.fid</code> har en NULL (Folkeeventyr), og da gir NOT IN 0 rader. (Tilleggsfelle, står ikke i kursmaterialet. Kursets løsninger bruker NOT IN på kolonner som ikke kan være NULL.)"],
       tester: "en forfatter uten bøker har et land registrert",
       feil: [
         { sql: "SELECT navn FROM forfatter WHERE land IS NULL;", fanger: "felle", hvorfor: "sjekker land i stedet for bøker" },
@@ -258,7 +258,7 @@
       id: "b5-11", blokk: 5, tittel: "Bøker som aldri er lånt",
       tekst: "<p>Vis <code>tittel</code> på bøkene som aldri har vært lånt ut.</p>",
       fasit: "SELECT b.tittel\nFROM bok AS b\nWHERE NOT EXISTS (\n  SELECT *\n  FROM utlån AS u\n  WHERE u.bid = b.bid\n);",
-      godta: ["SELECT tittel FROM bok\nEXCEPT\nSELECT b.tittel\nFROM bok AS b\n  JOIN utlån AS u ON (b.bid = u.bid);", "SELECT tittel\nFROM bok\nWHERE bid NOT IN (SELECT bid FROM utlån);"],
+      godta: ["SELECT tittel\nFROM bok\nWHERE bid IN (\n  SELECT bid FROM bok\n  EXCEPT\n  SELECT bid FROM utlån\n);","SELECT tittel\nFROM bok\nWHERE bid NOT IN (SELECT bid FROM utlån);"],
       hint: ["«Aldri lånt» betyr at det ikke finnes noe utlån med bokas <code>bid</code>.", "Her er NOT IN trygt, fordi <code>utlån.bid</code> er en del av primærnøkkelen og aldri er NULL."],
       tester: "tre bøker er aldri lånt, og bare to av dem mangler forfatter",
       feil: [
@@ -268,7 +268,7 @@
     },
     {
       id: "b5-12", blokk: 5, tittel: "Lånepoeng",
-      tekst: "<p>En låner får 2 poeng for hvert utlån og 3 ekstra poeng for hvert utlån som ikke er levert. Vis <code>navn</code> og <code>poeng</code> for alle lånere. De uten utlån skal stå med 0, ikke NULL. Tips: lag poengradene med UNION ALL, og gjør NULL om til 0 med <code>coalesce(sum(…), 0)</code>. coalesce står ikke i lysarkene, og på eksamen godtok sensor NULL i en lignende oppgave (H2025 2.7), men her krever vi 0.</p>",
+      tekst: "<p>En låner får 2 poeng for hvert utlån og 3 ekstra poeng for hvert utlån som ikke er levert. Vis <code>navn</code> og <code>poeng</code> for alle lånere. De uten utlån skal stå med 0, ikke NULL. Tips: lag poengradene med UNION ALL, og gjør NULL om til 0 med <code>coalesce(sum(…), 0)</code>. coalesce står ikke i lysarkene, og på eksamen tillot oppgaveteksten NULL i en lignende oppgave (H2025 2.7), men her krever vi 0.</p>",
       fasit: "WITH poengrader AS (\n  SELECT lid, 2 AS poeng FROM utlån\n  UNION ALL\n  SELECT lid, 3 AS poeng FROM utlån WHERE levert IS NULL\n)\nSELECT l.navn, coalesce(sum(p.poeng), 0) AS poeng\nFROM låner AS l\n  LEFT JOIN poengrader AS p ON (l.lid = p.lid)\nGROUP BY l.lid, l.navn;",
       hint: ["UNION fjerner like rader. To utlån gir to like rader <code>(lid, 2)</code>, og da forsvinner den ene. Bruk UNION ALL.", "<code>sum</code> av ingen rader er NULL. Bruk <code>coalesce(sum(…), 0)</code>."],
       tester: "to lånere heter Ada",

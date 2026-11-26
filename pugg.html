@@ -7,8 +7,8 @@
   <title>Puggekort · IN2090</title>
   <meta name="description" content="Puggekort i IN2090: ER-symboler, lesing av kardinalitet og deltagelse, realisering, relasjonsalgebra-tegn, FD og normalformer og SQL-regler. Kortene du kan forsvinner, de andre kommer igjen til de sitter.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126h">
   <style>
     /* Puggekort: sidespesifikt */
     .pg { max-width: 760px; outline: none; }
@@ -50,6 +50,9 @@
       border-radius: 8px; background: var(--color-surface-container); border: 1px solid var(--color-outline-variant); overflow-x: auto; white-space: pre; }
     .pg-tegn { font-family: var(--font-mono, ui-monospace, monospace); font-size: 1.6rem; display: inline-block; padding: .2rem 0; }
     .pg-tegn sub { font-size: .55em; }
+    .pg-mini-h { display: flex; justify-content: center; padding: .4rem 0; }
+    .pg-mini { max-width: 100%; height: auto; overflow: visible; }
+    .pg-bak .pg-mini-h { justify-content: flex-start; }
     .pg-kilde { margin: .35rem 0 0; font-size: .78rem; color: var(--color-on-surface-variant); }
     .pg-ferdig { text-align: center; }
     /* Knapperaden står fast mellom spørsmål og svar; samme høyde i alle tilstander */
@@ -95,8 +98,11 @@
       <button data-tab="er-lesing">Les ER-figuren</button>
       <button data-tab="realisering">Realisering</button>
       <button data-tab="ra-tegn">Relasjonsalgebra</button>
+      <button data-tab="begreper">Begreper</button>
       <button data-tab="fd">FD og normalformer</button>
+      <button data-tab="fd-oppgaver">FD-oppgaver</button>
       <button data-tab="sql-regler">SQL-regler</button>
+      <button data-tab="sql-monstre">SQL-mønstre</button>
       <button data-tab="om">Slik virker det</button>
     </div>
 
@@ -104,8 +110,11 @@
     <section data-panel="er-lesing" hidden><div id="pugg-er-lesing"></div></section>
     <section data-panel="realisering" hidden><div id="pugg-realisering"></div></section>
     <section data-panel="ra-tegn" hidden><div id="pugg-ra-tegn"></div></section>
+    <section data-panel="begreper" hidden><div id="pugg-begreper"></div></section>
     <section data-panel="fd" hidden><div id="pugg-fd"></div></section>
+    <section data-panel="fd-oppgaver" hidden><div id="pugg-fd-oppgaver"></div></section>
     <section data-panel="sql-regler" hidden><div id="pugg-sql-regler"></div></section>
+    <section data-panel="sql-monstre" hidden><div id="pugg-sql-monstre"></div></section>
     <section data-panel="om" hidden>
       <h3>Slik virker puggekortene</h3>
       <ul>
@@ -125,11 +134,11 @@
 
   <footer class="footer">IN2090-guide · Puggekort</footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
-  <script src="assets/js/viz-er.js?v=20261126f"></script>
-  <script src="assets/js/pugg.js?v=20261126f"></script>
-  <script src="assets/js/data-pugg.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
+  <script src="assets/js/viz-er.js?v=20261126h"></script>
+  <script src="assets/js/pugg.js?v=20261126h"></script>
+  <script src="assets/js/data-pugg.js?v=20261126h"></script>
   <script>
   (function () {
     "use strict";

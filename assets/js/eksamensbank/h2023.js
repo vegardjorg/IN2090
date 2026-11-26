@@ -110,7 +110,7 @@
         attr: [] }
     ],
     isa: [],
-    merknad: "Figure 1: Hemmelig-modell. RAB er en identifiserende relasjon (dobbel rombe) mellom eieren AK og den svake entiteten BO. RACB er ternær, og BO har total deltakelse (dobbel strek) i både RAB og RACB."
+    merknad: "Figure 1: Hemmelig-modell. RAB er en identifiserende relasjon (dobbel rombe) mellom den identifiserende entiteten AK og den svake entiteten BO. RACB er ternær, og BO har total deltakelse (dobbel strek) i både RAB og RACB."
   };
 
   var ER_NETTAVIS = {
@@ -193,7 +193,7 @@
                 { entitet: "TRANSAKSJON", kard: "N", total: true } ], attr: [] }
     ],
     isa: [],
-    merknad: "TRANSAKSJON er svak med to eiere (fra-konto og til-konto) og den delvise nøkkelen Tidspunkt. KONTO er én entitet som deltar i to identifiserende relasjoner, FRA og TIL."
+    merknad: "TRANSAKSJON er svak med to identifiserende relasjoner (fra-konto og til-konto) og den svake nøkkelen Tidspunkt. KONTO er én entitet som deltar i to identifiserende relasjoner, FRA og TIL."
   };
 
   var SQL_GENERELT = "<p>Generelt gjelder følgende (men disse må sees litt i sammenheng med oppgaven):</p><ul>" +
@@ -248,7 +248,7 @@
           "Punkt 1 og 6: KUNDE (Personnr som nøkkel, Navn) og FAKTURA (KID som nøkkel, Beløp, Forfallsdato).",
           "Punkt 2: KONTO med Kontonr som sammensatt nøkkel i to nivåer (Prefiks med Registernr og Gruppenr, Suffiks med Kundenr og Kontrollsiffer), Balanse og Type som stiplet oval fordi den kan utledes.",
           "Punkt 3: EIER er 1:N med total deltakelse for KONTO (nøyaktig én eier). DISPONERER er M:N og partiell på begge sider.",
-          "Punkt 4: TRANSAKSJON er en svak entitet. Den identifiseres av fra-kontoen, til-kontoen og Tidspunkt (delvis nøkkel). Bruk to identifiserende relasjoner, FRA og TIL, mot den samme entiteten KONTO.",
+          "Punkt 4: TRANSAKSJON er en svak entitet. Den identifiseres av fra-kontoen, til-kontoen og Tidspunkt (svak nøkkel). Bruk to identifiserende relasjoner, FRA og TIL, mot den samme entiteten KONTO.",
           "Punkt 5: UTFØRTE er 1:N fra KUNDE til TRANSAKSJON med total deltakelse for TRANSAKSJON.",
           "Punkt 6 og 7: en relasjon mellom KUNDE og FAKTURA (1:N, total for FAKTURA) og en 1:1-relasjon BETALER mellom FAKTURA og TRANSAKSJON, partiell på begge sider."
         ],
@@ -273,7 +273,7 @@
           "<p><i>Figure 1: Hemmelig-modell</i></p>",
         avvik: null,
         losning: [
-          "Les først figuren: AK har nøkkelen Agn og flerverdiattributtet Asso. BO er svak med delvis nøkkel Boks og eies av AK gjennom den identifiserende relasjonen RAB.",
+          "Les først figuren: AK har nøkkelen Agn og flerverdiattributtet Asso. BO er svak med svak nøkkel Boks og identifiseres av AK gjennom den identifiserende relasjonen RAB.",
           "RACB er ternær: M ved AK, 1 ved CU og N ved BO, og BO har dobbel strek (total deltakelse).",
           "Svarene blir JA, NEI, JA, JA, NEI."
         ],
@@ -352,7 +352,7 @@
           "5: {1,1,1,2,3,3,6,4} EXCEPT ALL {1,2,3,4,5,6} gir {1,1,3}, altså 3 rader."
         ],
         tips: [
-          "Med +2/−0,5 lønner det seg å svare selv om du er usikker.",
+          "Med +2/−0,5 og fem alternativer er en blind gjetning null verdt (2/5 − 0,5·4/5 = 0). Kan du stryke minst ett alternativ, lønner det seg å svare.",
           "LIMIT er bare en øvre grense. Den legger aldri til rader.",
           "EXCEPT ALL trekker fra én forekomst per forekomst på høyre side. Vanlig EXCEPT fjerner duplikater først."
         ],
@@ -520,7 +520,7 @@
         losning: [
           "Lag en UPDATE på sensor som setter vedlikeholdt = current_date for sensorene i området. Sensoren kjenner bare oid, så finn oid med en delspørring på område.navn.",
           "Send områdenavnet som parameter, ikke ved å lime det inn i strengen: %s i psycopg (Python) eller ? i en PreparedStatement (Java).",
-          "Kjør kommandoen og gjør commit, slik at endringen blir lagret. I Java (JDBC) er autocommit på som standard. Da lagres endringen med en gang, og et eget commit() kaster unntak."
+          "Kjør kommandoen og gjør commit, slik at endringen blir lagret. I Java (JDBC) er autocommit på som standard. Er autocommit på, lagres endringen med en gang, og et eget commit() gir unntak. Kall derfor commit() bare når autocommit er av."
         ],
         tips: [
           "Strengkonkatenering (\"… navn = '\" + omrade + \"'\") gjør koden sårbar for SQL-injection. Det er hele poenget med oppgaven.",
@@ -669,7 +669,7 @@
         tekst: "<p>Fire entiteter: KUNDE, KONTO, FAKTURA og den svake entiteten TRANSAKSJON. Kommentarer som står på skissearket:</p><ul>" +
           "<li>Punkt 2: Kontonr er en sammensatt nøkkel i to nivåer. Type er utledbar (stiplet oval).</li>" +
           "<li>Punkt 3: EIER (1 ved KUNDE, N ved KONTO, dobbel strek ved KONTO). DISPONERER (M:N, partiell begge veier).</li>" +
-          "<li>Punkt 4: TRANSAKSJON er svak med delvis nøkkel Tidspunkt og to identifiserende relasjoner, FRA og TIL, begge mot KONTO (1 ved KONTO, N og dobbel strek ved TRANSAKSJON). Antakelse: fra-konto og til-konto er forskjellige, som teksten sier («til en annen konto»).</li>" +
+          "<li>Punkt 4: TRANSAKSJON er svak med svak nøkkel Tidspunkt og to identifiserende relasjoner, FRA og TIL, begge mot KONTO (1 ved KONTO, N og dobbel strek ved TRANSAKSJON). Antakelse: fra-konto og til-konto er forskjellige, som teksten sier («til en annen konto»).</li>" +
           "<li>Punkt 5: UTFØRTE (1 ved KUNDE, N og dobbel strek ved TRANSAKSJON).</li>" +
           "<li>Punkt 6: SENDT_TIL (1 ved KUNDE, N og dobbel strek ved FAKTURA).</li>" +
           "<li>Punkt 7: BETALER (1 ved FAKTURA, 1 ved TRANSAKSJON, partiell på begge sider).</li></ul>",
@@ -680,8 +680,8 @@
     ],
     hvorfor: {
       eli5: "<p>Tenk deg et arkivskap for banken. Hver kunde har sin egen mappe, og hver konto har sitt eget kort. En overføring har ikke noe eget nummer. Du finner den igjen bare ved å si «fra denne kontoen, til den kontoen, akkurat da». Derfor henger den fast i to kontokort, og den kan ikke stå alene i arkivet.</p>",
-      normal: "<p>Den viktigste biten er punkt 4. En transaksjon har ingen egen nøkkel. Den blir unik først når vi kjenner fra-kontoen, til-kontoen og tidspunktet. Da er den en svak entitet med to eiere. Vi tegner den som dobbelt rektangel, kobler den med to doble romber (FRA og TIL) til KONTO, og stiplet-understreker Tidspunkt. Resten er vanlige binære relasjoner, der tekstens «nøyaktig én», «høyst én» og «trenger ikke» oversettes til 1/N og enkel/dobbel strek.</p>",
-      teknisk: "<p>«Kombinasjonen av tidspunkt, til-konto og fra-konto er unik» sier at TRANSAKSJON identifiseres delvis av egne attributter (Tidspunkt) og delvis av to eiere. Eierne er samme entitetstype i to roller. Riktig modell er derfor én KONTO-entitet med to identifiserende relasjoner. Hver av dem har 1 på eiersiden og N med total deltakelse på den svake siden, slik en identifiserende relasjon alltid skal ha. To kopier av KONTO ville betydd to forskjellige mengder kontoer, og sensor trekker for det.</p>" +
+      normal: "<p>Den viktigste biten er punkt 4. En transaksjon har ingen egen nøkkel. Den blir unik først når vi kjenner fra-kontoen, til-kontoen og tidspunktet. Da er den en svak entitet med to identifiserende relasjoner. Vi tegner den som dobbelt rektangel, kobler den med to doble romber (FRA og TIL) til KONTO, og stiplet-understreker Tidspunkt. Resten er vanlige binære relasjoner, der tekstens «nøyaktig én», «høyst én» og «trenger ikke» oversettes til 1/N og enkel/dobbel strek.</p>",
+      teknisk: "<p>«Kombinasjonen av tidspunkt, til-konto og fra-konto er unik» sier at TRANSAKSJON identifiseres delvis av egne attributter (Tidspunkt) og delvis av to identifiserende entiteter. De er samme entitetstype i to roller. Riktig modell er derfor én KONTO-entitet med to identifiserende relasjoner. Hver av dem har 1 på siden til den identifiserende entiteten og N med total deltakelse på den svake siden, slik en identifiserende relasjon alltid skal ha. To kopier av KONTO ville betydd to forskjellige mengder kontoer, og sensor trekker for det.</p>" +
         "<p>Kardinalitetene leses fra den andre siden: «hver konto eies av nøyaktig én kunde» gir 1 ved KUNDE og dobbel strek ved KONTO. BETALER er 1:1 og partiell på begge sider, fordi teksten sier «høyst én» begge veier og «trenger ikke» begge veier. Kontonummeret modelleres som et sammensatt nøkkelattributt. Bare forelderen Kontonr er understreket, og Type tegnes stiplet fordi den kan utledes fra nummeret.</p>"
     },
     sensor: {
@@ -879,7 +879,7 @@
         poeng: ["Riktig UPDATE med current_date", "Delspørring/join for å finne oid fra navn", "Parametrisert spørring (%s + tuppel)", "commit"] },
       { del: "Java (JDBC), alternativ",
         tekst: "<p>Samme idé med PreparedStatement og ?.</p>",
-        sql: "void vedlikeholdt(Connection conn, String omrade) throws SQLException {\n    String sql = \"UPDATE sensor \"\n               + \"SET vedlikeholdt = current_date \"\n               + \"WHERE oid IN (SELECT oid FROM område WHERE navn = ?);\";\n    PreparedStatement ps = conn.prepareStatement(sql);\n    ps.setString(1, omrade);   // verdien bindes, ikke limes inn\n    ps.executeUpdate();\n    // JDBC har autocommit på som standard, og da kaster commit() et unntak.\n    if (!conn.getAutoCommit()) {\n        conn.commit();       // bare når programmet har slått av autocommit\n    }\n}",
+        sql: "void vedlikeholdt(Connection conn, String omrade) throws SQLException {\n    String sql = \"UPDATE sensor \"\n               + \"SET vedlikeholdt = current_date \"\n               + \"WHERE oid IN (SELECT oid FROM område WHERE navn = ?);\";\n    PreparedStatement ps = conn.prepareStatement(sql);\n    ps.setString(1, omrade);   // verdien bindes, ikke limes inn\n    ps.executeUpdate();\n    // Har tilkoblingen autocommit på (JDBC-standarden), kaster commit() et unntak.\n    if (!conn.getAutoCommit()) {\n        conn.commit();       // bare når programmet har slått av autocommit\n    }\n}",
         poeng: ["PreparedStatement med ?", "setString(1, omrade)", "executeUpdate/execute", "commit bare når autocommit er av"] }
     ],
     hvorfor: {
@@ -896,7 +896,7 @@
           sql: "void vedlikeholdt(Connection conn, String omrade) throws SQLException {\n      PreparedStatement stmt = conn.prepareStatement(\n            \"UPDATE sensor \" +\n            \"SET vedlikeholdt = current_date \" +\n            \"WHERE oid = (SELECT oid FROM område WHERE navn = ?);\"\n      );\n      stmt.setString(1, omrade);\n      stmt.execute();\n      conn.commit();\n}",
           kriterier: SQL_GENERELT }
       ],
-      merknad: "Sensorveiledningen har ingen egne punkter for 2.7. Den generelle listen for SQL-delen er tatt med. Sensors løsning bruker «oid = (SELECT …)». Det feiler hvis to områder har samme navn, og derfor bruker vårt svar IN. Java-løsningen kaller conn.commit() uten å slå av autocommit. JDBC har autocommit på som standard, og da kaster commit() et unntak. Vårt Java-svar committer derfor bare når autocommit er av."
+      merknad: "Sensorveiledningen har ingen egne punkter for 2.7. Den generelle listen for SQL-delen er tatt med. Sensors løsning bruker «oid = (SELECT …)». Det feiler hvis to områder har samme navn, og derfor bruker vårt svar IN. Java-løsningen kaller conn.commit() uten å sjekke autocommit. Funksjonen får conn fra kalleren, så vi vet ikke om autocommit er på. Hvis tilkoblingen har autocommit på (JDBC-standarden), kaster commit() et unntak. Vårt Java-svar committer derfor bare når autocommit er av."
     }
   };
 

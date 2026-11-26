@@ -7,10 +7,10 @@
   <title>Blokk 1 · ER-modellering · IN2090</title>
   <meta name="description" content="ER-modellering i IN2090: kursets Chen-notasjon, attributter, kardinalitet og deltakelse, svake entiteter, ternære relasjoner, fra kravtekst til diagram, JA/NEI-lesing og EER – med figurer, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126f">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261126f">
-  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261126f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126h">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261126h">
+  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261126h">
 </head>
 <body data-page="er">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -19,6 +19,7 @@
     <div class="pagehead">
       <h1>Blokk 1 · ER-modellering</h1>
       <p class="lead">ER-oppgaven er oppgave 1 hvert år og en av de tyngste på eksamen. Her lærer du kursets notasjon, hvordan tallene og strekene leses, svake entiteter og ternære relasjoner, og en fast metode fra kravtekst til et begrunnet diagram. Til slutt øver du på å lese et diagram med meningsløse navn, slik eksamen spør.</p>
+      <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=er-symboler">ER-symboler</a> · <a href="pugg.html#fane=er-lesing">Les ER-figuren</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_1"><b>H2025</b> · Fritidsbåt-firmaet: ER-modell · <span class="pts">18p</span></a>
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-1_1"><b>H2024</b> · ER-modell for et bibliotek · <span class="pts">11p</span></a>
@@ -61,12 +62,12 @@
           <tr><td>Svak entitet</td><td><b>Dobbelt rektangel</b> (et litt mindre rektangel inni)</td><td>Se fanen «Svake entiteter».</td></tr>
           <tr><td>Attributt</td><td>Oval med navnet, koblet til <b>én</b> entitet eller relasjon med en enkel, rett strek</td><td>Kurset skriver ofte attributtnavn med stor forbokstav: <span class="mono">Navn</span>.</td></tr>
           <tr><td>Nøkkelattributt</td><td>Navnet <b>understreket</b> med heltrukken strek</td><td>To uavhengige nøkler understrekes begge, hver for seg.</td></tr>
-          <tr><td>Svak (delvis) nøkkel</td><td>Navnet understreket med <b>stiplet eller prikket</b> strek</td><td>Bare i svake entiteter.</td></tr>
+          <tr><td>Svak nøkkel</td><td>Navnet understreket med <b>stiplet eller prikket</b> strek</td><td>Bare i svake entiteter.</td></tr>
           <tr><td>Flerverdiattributt</td><td><b>Dobbel oval</b></td><td>Kan aldri være nøkkel.</td></tr>
           <tr><td>Utledbart attributt</td><td><b>Stiplet oval</b></td><td>Diagrammet sier ikke <i>hvordan</i> verdien regnes ut.</td></tr>
           <tr><td>Sammensatt attributt</td><td>Oval med egne «barne-ovaler» ut fra seg, som et tre</td><td>Er det en nøkkel, understrekes bare forelderen.</td></tr>
           <tr><td>Relasjon(stype)</td><td><b>Rombe</b> med navnet i VERSALER: <span class="mono">KONTRAKT</span></td><td>Navnet er unikt.</td></tr>
-          <tr><td>Identifiserende relasjon</td><td><b>Dobbel rombe</b></td><td>Kobler en svak entitet til eieren.</td></tr>
+          <tr><td>Identifiserende relasjon</td><td><b>Dobbel rombe</b></td><td>Kobler en svak entitet til den identifiserende entiteten.</td></tr>
           <tr><td>Relasjonsattributt</td><td>Oval koblet til <b>romben</b></td><td>Kan aldri være nøkkel.</td></tr>
           <tr><td>Kardinalitet (øvre skranke)</td><td><span class="mono">1</span>, eller en bokstav for «mange» (<span class="mono">N</span>, <span class="mono">M</span>, og <span class="mono">K</span> i ternære), <b>på deltakelsesstreken, nær romben</b></td><td>Bare én eller mange. Aldri 2, 5 eller 0..*.</td></tr>
           <tr><td>Partiell deltakelse (minst 0)</td><td><b>Enkel</b> strek mellom entitet og rombe</td><td></td></tr>
@@ -113,7 +114,7 @@
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
-        ER-tegning har vært oppgave 1 hvert år (15–30 poeng). H2025 ba eksplisitt om at kardinalitet og total/partiell deltakelse skulle stå på hver relasjon.
+        ER-tegning har vært oppgave 1 hvert år (11–30 poeng). H2025 ba eksplisitt om at kardinalitet og total/partiell deltakelse skulle stå på hver relasjon.
         Tegningen leveres for hånd på skisseark, og ryddig, tydelig notasjon er en del av poengene.</div>
 
       <h4>Test deg selv</h4>
@@ -224,10 +225,10 @@
     <section data-panel="svake">
       <h3>Svake entiteter og identifiserende relasjoner</h3>
       <div class="callout begrep"><span class="lbl">Begrep</span>
-        En <b>svak entitet</b> har en nøkkel som bare er unik innenfor en sammenheng, nemlig relasjonen til en annen entitet (eieren).
+        En <b>svak entitet</b> har en nøkkel som bare er unik innenfor en sammenheng, nemlig relasjonen til en annen entitet (den identifiserende entiteten).
         Den tegnes som dobbelt rektangel, og den svake nøkkelen får stiplet understrek. Relasjonen som gir sammenhengen er den
-        <b>identifiserende relasjonen</b> og tegnes som dobbel rombe. En svak entitet er alltid relatert til <b>nøyaktig én</b> eier gjennom
-        hver identifiserende relasjon. Den kan ha flere eiere og flere nivåer.</div>
+        <b>identifiserende relasjonen</b> og tegnes som dobbel rombe. En svak entitet er alltid relatert til <b>nøyaktig én</b> identifiserende entitet gjennom
+        hver identifiserende relasjon. Den kan ha flere identifiserende entiteter og flere nivåer.</div>
       <div id="ex-svake"></div>
 
       <h4>Eksempel</h4>
@@ -243,13 +244,13 @@
         <ul>
           <li><b>Bare dobbel boks, eller bare dobbel rombe:</b> −1 for hver som mangler, −2 for begge (H2020, H2023).</li>
           <li><b>Heltrukken understrek på den svake nøkkelen.</b> Da påstår du at Start er unik på hele festivalen.</li>
-          <li><b>Enkel strek ved den svake entiteten.</b> En svak entitet kan ikke finnes uten eier, så streken er alltid dobbel.</li>
+          <li><b>Enkel strek ved den svake entiteten.</b> En svak entitet kan ikke finnes uten den identifiserende entiteten, så streken er alltid dobbel.</li>
         </ul>
         <details class="grense"><summary>Hvorfor 1 ved SCENE og ikke N?</summary>
           <p>En konsert tilhører nøyaktig én scene. Med N kunne samme konsert hørt til flere scener, og da ville det ikke vært klart hvilken scene som fullfører nøkkelen.</p></details>
         <ul>
           <li><b>Å gjøre noe svakt som har en egen unik nøkkel.</b> Står det «unikt ordrenummer», er entiteten ikke svak, selv om den hører til noe annet.</li>
-          <li><b>Å legge eierens nøkkel som attributt</b> på den svake entiteten. I ER kommer koblingen fra den identifiserende relasjonen. Eierens nøkkel kommer først inn som kolonne ved realiseringen (blokk 2).</li>
+          <li><b>Å legge nøkkelen til den identifiserende entiteten som attributt</b> på den svake entiteten. I ER kommer koblingen fra den identifiserende relasjonen. Nøkkelen kommer først inn som kolonne ved realiseringen (blokk 2).</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
@@ -326,7 +327,7 @@
         <li>Finn attributtene for hver entitet. Navngi de sammensatte, understrek nøklene, og tegn inn utledbare attributter og flerverdiattributter.</li>
         <li>Finn relasjonene og eventuelle relasjonsattributter.</li>
         <li>Sett kardinalitet (1 eller mange) og deltakelse (dobbel strek) på hver side.</li>
-        <li>Tegn de svake entitetene med attributter og svake nøkler, og koble dem til eieren med identifiserende relasjoner.</li>
+        <li>Tegn de svake entitetene med attributter og svake nøkler, og koble dem til den identifiserende entiteten med identifiserende relasjoner.</li>
       </ol>
       <p>For hvert valg: hvor i teksten står begrunnelsen?</p>
       <div id="ex-tekst"></div>
@@ -381,12 +382,12 @@
           <li><b>Å hoppe over punkter.</b> Poengene gis per punkt i teksten (H2023: 2 poeng per punkt, H2024: 1 poeng per punkt, 3 poeng for den svake entiteten). Kryss av punktene når de er tegnet.</li>
           <li><b>Å glemme deltakelse på den ene siden.</b> Ta stilling til begge strekene i hver relasjon.</li>
           <li><b>Overflødige entiteter.</b> Lag ikke to entitetstyper for ting som har de samme attributtene og bare spiller ulike roller. Én FRIVILLIG kan både være scenesjef og ta vakter.</li>
-          <li><b>Svak entitet tegnet først.</b> Ta de svake til slutt, så eieren og den identifiserende relasjonen allerede er på plass.</li>
+          <li><b>Svak entitet tegnet først.</b> Ta de svake til slutt, så den identifiserende entiteten og den identifiserende relasjonen allerede er på plass.</li>
           <li><b>Antakelser som ikke skrives ned.</b> Sensor kan ikke gi poeng for en tolkning som ikke står der.</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
-        Hvert år: «Lag en ER-modell som inneholder informasjonen over» med 6–9 nummererte punkter (11–18 poeng de siste årene). Du kan dele
+        Hvert år: «Lag en ER-modell som inneholder informasjonen over» med en kravtekst, ofte delt i nummererte punkter (H2023: 6, H2024: 9), men H2025 var sammenhengende tekst (11–18 poeng de siste årene). Du kan dele
         modellen opp per punkt og skrive kommentarer med antakelser. H2025 lister selv hva som skal være med: entitetstyper, attributter, nøkler,
         relasjonstyper, kardinaliteter, flerverdi- og sammensatte attributter, og total/partiell deltakelse.</div>
 
@@ -498,23 +499,23 @@
 
   <footer class="footer">IN2090-guide · Blokk 1 · ER-modellering</footer>
 
-  <script src="assets/js/core.js?v=20261126f"></script>
-  <script src="assets/js/symboler.js?v=20261126f"></script>
-  <script src="assets/js/sql-lang.js?v=20261126f"></script>
-  <script src="assets/js/pseudocode.js?v=20261126f"></script>
-  <script src="assets/js/stepplayer.js?v=20261126f"></script>
-  <script src="assets/js/varline.js?v=20261126f"></script>
-  <script src="assets/js/viz-relation.js?v=20261126f"></script>
-  <script src="assets/js/viz-er.js?v=20261126f"></script>
-  <script src="assets/js/data-er.js?v=20261126f"></script>
-<script src="assets/js/dra.js?v=20261126f"></script>
-<script src="assets/js/data-dra.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126f"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126f"></script>
-  <script src="assets/js/bank.js?v=20261126f"></script>
+  <script src="assets/js/core.js?v=20261126h"></script>
+  <script src="assets/js/symboler.js?v=20261126h"></script>
+  <script src="assets/js/sql-lang.js?v=20261126h"></script>
+  <script src="assets/js/pseudocode.js?v=20261126h"></script>
+  <script src="assets/js/stepplayer.js?v=20261126h"></script>
+  <script src="assets/js/varline.js?v=20261126h"></script>
+  <script src="assets/js/viz-relation.js?v=20261126h"></script>
+  <script src="assets/js/viz-er.js?v=20261126h"></script>
+  <script src="assets/js/data-er.js?v=20261126h"></script>
+<script src="assets/js/dra.js?v=20261126h"></script>
+<script src="assets/js/data-dra.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261126h"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261126h"></script>
+  <script src="assets/js/bank.js?v=20261126h"></script>
   <script>
   (function () {
     "use strict";
@@ -557,8 +558,8 @@
       },
       "ex-svake": {
         eli5: "<p>Sete 12 finnes i mange saler. «Sete 12» alene sier ikke hvilket sete du mener. Du må også si hvilken sal. Setet er svakt: det trenger salen for å bli unikt.</p>",
-        normal: "<p>Les etter formuleringer som «unikt innenfor», «bare unikt i» eller «nummerert per». Da er tingen svak. Tegn den med dobbelt rektangel, tegn den svake nøkkelen med stiplet understrek, og koble den til eieren med en dobbel rombe.</p><p>Den svake siden får <b>dobbel strek</b> (den kan ikke finnes uten eieren). Eiersiden får <b>1</b> (hver svak entitet har nøyaktig én eier). Den fulle nøkkelen til den svake entiteten er eierens nøkkel pluss den svake nøkkelen.</p>",
-        teknisk: "<p>Den identifiserende relasjonen må markeres fordi en svak entitet kan ha mange andre relasjoner. Uten den doble romben vet ikke leseren hvilken relasjon som fullfører nøkkelen. Kardinaliteten er låst: 1 ved eieren og total deltakelse for den svake.</p><p>Er eieren selv svak, blir nøkkelen bygget opp i flere ledd (kurset viser et rom som får nøkkel fra universitet, bygg, romtype og romnummer). Med flere eiere blir den fulle nøkkelen alle eiernes nøkler pluss den svake nøkkelen. Kurset viser også at en binær eller n-ær relasjon kan omformes til en svak entitet med én identifiserende relasjon per deltaker, men da kan man ikke lenger uttrykke de samme øvre skrankene.</p>"
+        normal: "<p>Les etter formuleringer som «unikt innenfor», «bare unikt i» eller «nummerert per». Da er tingen svak. Tegn den med dobbelt rektangel, tegn den svake nøkkelen med stiplet understrek, og koble den til den identifiserende entiteten med en dobbel rombe.</p><p>Den svake siden får <b>dobbel strek</b> (den kan ikke finnes uten den identifiserende entiteten). Den identifiserende siden får <b>1</b> (hver svak entitet har nøyaktig én identifiserende entitet). Den fulle nøkkelen til den svake entiteten er nøkkelen til den identifiserende entiteten pluss den svake nøkkelen.</p>",
+        teknisk: "<p>Den identifiserende relasjonen må markeres fordi en svak entitet kan ha mange andre relasjoner. Uten den doble romben vet ikke leseren hvilken relasjon som fullfører nøkkelen. Kardinaliteten er låst: 1 ved den identifiserende entiteten og total deltakelse for den svake.</p><p>Er den identifiserende entiteten selv svak, blir nøkkelen bygget opp i flere ledd (kurset viser et rom som får nøkkel fra universitet, bygg, romtype og romnummer). Med flere identifiserende entiteter blir den fulle nøkkelen alle deres nøkler pluss den svake nøkkelen. Kurset viser også at en binær eller n-ær relasjon kan omformes til en svak entitet med én identifiserende relasjon per deltaker, men da kan man ikke lenger uttrykke de samme øvre skrankene.</p>"
       },
       "ex-ternaere": {
         eli5: "<p>En vakt på festivalen er alltid tre ting på én gang: <i>hvem</i> (frivillig), <i>hvor</i> (scene) og <i>hva</i> (oppgave). Lapper du sammen tre par i stedet (hvem–hvor, hvem–hva, hvor–hva), vet du ikke lenger hvilken oppgave hun hadde på <i>hvilken</i> scene.</p>",
@@ -572,7 +573,7 @@
       },
       "ex-lese": {
         eli5: "<p>Navnene er tull med vilje, så du må lese bare formene: bokser, romber, streker og tall. Det er som å lese et kart uten stedsnavn. Du ser fortsatt hvor veiene går.</p>",
-        normal: "<p>Gå gjennom hver påstand med en fast sjekkliste:</p><ul><li>«Unikt identifisert av X»: er X understreket med heltrukken strek? Er entiteten svak, trengs også eierens nøkkel.</li><li>«Minst én» eller «alle … er relatert»: se etter dobbel strek ved den entiteten påstanden handler om.</li><li>«Høyst én» eller «mange»: se på tallet ved den <i>andre</i> entiteten, altså den det telles av.</li><li>«Hvis det finnes en A, finnes det også en B»: følg doble streker fra A og videre, gjennom identifiserende relasjoner (en svak entitet krever eieren).</li><li>«Har attributtet X»: henger ovalen på entiteten, eller på en relasjon?</li></ul>",
+        normal: "<p>Gå gjennom hver påstand med en fast sjekkliste:</p><ul><li>«Unikt identifisert av X»: er X understreket med heltrukken strek? Er entiteten svak, trengs også nøkkelen til den identifiserende entiteten.</li><li>«Minst én» eller «alle … er relatert»: se etter dobbel strek ved den entiteten påstanden handler om.</li><li>«Høyst én» eller «mange»: se på tallet ved den <i>andre</i> entiteten, altså den det telles av.</li><li>«Hvis det finnes en A, finnes det også en B»: følg doble streker fra A og videre, gjennom identifiserende relasjoner (en svak entitet krever den identifiserende entiteten).</li><li>«Har attributtet X»: henger ovalen på entiteten, eller på en relasjon?</li></ul>",
         teknisk: "<p>Påstandene tester nesten alltid én av fire ting: øvre skranke (tallet ved den talte entiteten), nedre skranke (dobbel strek), nøkkelbegrepet (vanlig, sammensatt eller svak nøkkel) og hvor et attributt hører hjemme (entitet eller relasjon).</p><p>Kjedeslutninger («hvis det finnes en A, finnes det en B») følger av at total deltakelse og identifiserende relasjoner krever at partneren finnes. Siden galt svar gir −1, lønner det seg ikke å gjette. La en påstand stå blank hvis du ikke kan peke på symbolet som avgjør den.</p>"
       },
       "ex-eer": {

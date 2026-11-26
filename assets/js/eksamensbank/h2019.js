@@ -243,11 +243,11 @@
           "<p><i>I denne oppgaven skal du svare med digital håndtegning. Bruk eget skisseark (utdelt). Se instruksjon for utfylling av skisseark i lenken under oppgavelinjen.</i></p>",
         avvik: ORM_AVVIK + " Skrivefeilene «intrvjuer», «kandiat», «forige» og «inertvjuer» står slik på arket.",
         losning: [
-          "Et intervju identifiseres av intervjunummeret sammen med kandidatens personnummer. Det gjør INTERVJU til en svak entitet med Nummer som delvis nøkkel, eid av KANDIDAT gjennom en identifiserende relasjon (DELTAR_PÅ).",
+          "Et intervju identifiseres av intervjunummeret sammen med kandidatens personnummer. Det gjør INTERVJU til en svak entitet med Nummer som svak nøkkel, eid av KANDIDAT gjennom en identifiserende relasjon (DELTAR_PÅ).",
           "INTERVJU har total deltakelse i DELTAR_PÅ, og det står 1 ved KANDIDAT (hvert intervju har én kandidat).",
           "EMNE får Navn som nøkkel og Test som flerverdiattributt. INTERVJUER får Ansatt_id som nøkkel og Telefonnr som flerverdiattributt.",
           "Punkt 3 beskriver en ternær relasjon der alle tre sidene er «mange»: HOLDT_AV_OM med N, M og K.",
-          "Sensor godtok også en alternativ modell uten ternær relasjon: en svak entitet DELINTERVJU (én rad per kombinasjon) med tre identifiserende relasjoner til INTERVJU, INTERVJUER og EMNE, med 1 på hver eierside.",
+          "Sensor godtok også en alternativ modell uten ternær relasjon: en svak entitet DELINTERVJU (én rad per kombinasjon) med tre identifiserende relasjoner til INTERVJU, INTERVJUER og EMNE, med 1 ved den identifiserende entiteten i hver av dem.",
           "Sertifisering er M:N mellom INTERVJUER og EMNE med attributtene Dato og Utsteder. Hver intervjuer er sertifisert på minst ett emne, så INTERVJUER har total deltakelse.",
           "Ansvar er 1:1: hvert emne har nøyaktig én ansvarlig (total deltakelse for EMNE og 1 ved INTERVJUER), og en intervjuer er ansvarlig for høyst ett emne (1 ved EMNE, partiell for INTERVJUER)."
         ],
@@ -273,7 +273,7 @@
           "Uten Inspera bruker vi kursets tekstformat (KN, PN og FN på egne linjer) i stedet for understreking og fet skrift.",
         losning: [
           "Vanlige entiteter: Book (to kandidatnøkler, ISBN og Web_address; vi velger ISBN som PN), Author (sammensatt Name blir First_name og Last_name) og Publisher.",
-          "Svak entitet: Chapter får eierens nøkkel ISBN pluss den delvise nøkkelen Chapter_number som PN, og ISBN blir FN til Book. Den identifiserende relasjonen CONTAINS skal ikke realiseres en gang til.",
+          "Svak entitet: Chapter får nøkkelen ISBN til den identifiserende entiteten pluss den svake nøkkelen Chapter_number som PN, og ISBN blir FN til Book. Den identifiserende relasjonen CONTAINS skal ikke realiseres en gang til.",
           "1:1 HAS_MAIN_CONTACT: ingen av sidene har total deltakelse, så vi slår ikke sammen. Vi legger FN-en i Book (de fleste bøker har trolig en kontaktperson, mens mange forfattere ikke er kontakt for noen bok), og relasjonsattributtet Email følger med.",
           "1:N IS_PUBLISHED_BY: FN til Publisher på N-siden (Book), sammen med Publication_year.",
           "M:N IS_AUTHORED_BY og HAS_CONTRACT_WITH blir egne relasjoner med begge FN-ene som PN. Amount følger med kontrakten.",
@@ -433,7 +433,7 @@
         ],
         tips: [
           "DROP i stedet for DELETE gir −1. Å finne de tomme albumene med en (ytre) join mot sang i stedet for en delspørring i WHERE gir −2, selv om svaret ellers er riktig. En indre join mot sang med en NOT NULL-sjekk gir −4, fordi den aldri finner album uten sanger.",
-          "NOT EXISTS er tryggest. NOT IN gir tomt resultat hvis delspørringen inneholder NULL (her kan sang.albumID i prinsippet være NULL).",
+          "NOT EXISTS er tryggest. En tilleggsfelle (står ikke i kursmaterialet): NOT IN gir tomt resultat hvis delspørringen inneholder NULL (her kan sang.albumID i prinsippet være NULL).",
           "Sensor ga full uttelling (5 poeng) for å bygge riktig videre på spørringen fra forrige oppgave, også om den spørringen var feil. Det gis altså ikke følgefeil."
         ],
         del1: null
@@ -612,7 +612,7 @@
     svar: [{
       del: "1.2",
       tekst: "<ul>" +
-        "<li><b>INTERVJU</b> er en svak entitet (dobbelt rektangel) med delvis nøkkel <u>Nummer</u> (stiplet understrek), Dato og Tidspunkt.</li>" +
+        "<li><b>INTERVJU</b> er en svak entitet (dobbelt rektangel) med svak nøkkel <u>Nummer</u> (stiplet understrek), Dato og Tidspunkt.</li>" +
         "<li><b>DELTAR_PÅ</b> er den identifiserende relasjonen (dobbel rombe): 1 ved KANDIDAT, N ved INTERVJU, total deltakelse for INTERVJU.</li>" +
         "<li><b>EMNE</b> med nøkkel <u>Navn</u> og flerverdiattributtet Test (dobbel oval). <b>INTERVJUER</b> med nøkkel <u>Ansatt_id</u> og flerverdiattributtet Telefonnr.</li>" +
         "<li><b>HOLDT_AV_OM</b> er ternær mellom INTERVJU (N), INTERVJUER (M) og EMNE (K): mange på alle tre sider.</li>" +
@@ -637,7 +637,7 @@
           "<li>3 for ER_ANSVARLIG_FOR med kardinaliteter</li>" +
           "<li>3 for ER_SERTIFISERT_PÅ med kardinaliteter</li></ul>"
       }],
-      merknad: "Løsningsforslaget er en figur og er ikke gjengitt. Det viser også en alternativ modellering som sensor godtar. Alternativet modellerer hver kombinasjon som en svak entitet DELINTERVJU med tre identifiserende relasjoner (FOR, AV og OM, alle dobbel rombe) til INTERVJU, INTERVJUER og EMNE, med 1 på eiersidene."
+      merknad: "Løsningsforslaget er en figur og er ikke gjengitt. Det viser også en alternativ modellering som sensor godtar. Alternativet modellerer hver kombinasjon som en svak entitet DELINTERVJU med tre identifiserende relasjoner (FOR, AV og OM, alle dobbel rombe) til INTERVJU, INTERVJUER og EMNE, med 1 på sidene til de identifiserende entitetene."
     }
   };
 
@@ -657,7 +657,7 @@
       etter: "<p><b>Valg:</b></p><ul>" +
         "<li>Book har to kandidatnøkler. ISBN er valgt som PN fordi det er den vanlige identifikatoren for bøker.</li>" +
         "<li>Name i AUTHOR er sammensatt, så bare bladene First_name og Last_name tas med.</li>" +
-        "<li>CHAPTER er svak: PN er eierens ISBN pluss Chapter_number. CONTAINS realiseres ikke på nytt.</li>" +
+        "<li>CHAPTER er svak: PN er ISBN fra den identifiserende entiteten pluss Chapter_number. CONTAINS realiseres ikke på nytt.</li>" +
         "<li>HAS_MAIN_CONTACT (1:1, partiell på begge sider): ingen sammensmelting. FN-en legges i Book, fordi de fleste bøker har en kontaktperson, mens mange forfattere ikke er kontakt for noen bok. Det gir færre NULL. Email på relasjonen blir Contact_email. Main_contact er unik (1:1), men kan være NULL og er derfor ikke en kandidatnøkkel.</li>" +
         "<li>IS_PUBLISHED_BY (1:N): FN på N-siden, altså Publisher og Publication_year i Book, i stedet for en egen tabell.</li>" +
         "<li>IS_AUTHORED_BY og HAS_CONTRACT_WITH (M:N) blir egne relasjoner. Amount hører til kontrakten og er ikke del av nøkkelen.</li>" +
@@ -667,7 +667,7 @@
     hvorfor: {
       eli5: "<p>Vi gjør tegningen om til tabeller etter en fast oppskrift. Hver boks blir en tabell. Et kapittel får bokas nummer på seg, siden «kapittel 3» bare gir mening sammen med boka. Forbindelser der hver bok har høyst én av noe, blir en ekstra kolonne i boktabellen, mens «mange til mange» trenger sin egen tabell.</p>",
       normal: "<p>Algoritmen går i en fast rekkefølge. Vanlige entiteter blir relasjoner med nøklene sine, og den svake entiteten Chapter arver bokas nøkkel. 1:1 og 1:N løses med en fremmednøkkel på riktig side for å unngå ekstra tabeller, mens M:N og flerverdiattributter alltid blir egne relasjoner. Valgene for 1:1 og 1:N må forklares, og målet er færrest mulig tabeller og NULL-verdier.</p>",
-      teknisk: "<p>HAS_MAIN_CONTACT er 1:1 uten total deltakelse på noen side, så Book og Author kan ikke slås sammen til én tabell. En forfatter som ikke er kontakt for noen bok, måtte da lagres med NULL i alle bokkolonnene, og en bok uten kontaktperson med NULL i alle forfatterkolonnene. Vi velger siden der fremmednøkkelen oftest har en verdi (Book), så NULL-verdiene blir færrest. Fremmednøkkelen blir bare kandidatnøkkel når den siden har total deltakelse. Ved 1:N gir FN på N-siden én verdi per rad, og relasjonsattributtet følger med. Den svake entiteten får PN = eierens PN + delvis nøkkel, og eierens PN blir samtidig FN, så CONTAINS er allerede uttrykt. I M:N-tabellene er relasjonsattributter som Amount aldri del av nøkkelen, fordi én kontrakt per par forfatter–forlag er det modellen sier.</p>"
+      teknisk: "<p>HAS_MAIN_CONTACT er 1:1 uten total deltakelse på noen side, så Book og Author kan ikke slås sammen til én tabell. En forfatter som ikke er kontakt for noen bok, måtte da lagres med NULL i alle bokkolonnene, og en bok uten kontaktperson med NULL i alle forfatterkolonnene. Vi velger siden der fremmednøkkelen oftest har en verdi (Book), så NULL-verdiene blir færrest. Fremmednøkkelen blir bare kandidatnøkkel når den siden har total deltakelse. Ved 1:N gir FN på N-siden én verdi per rad, og relasjonsattributtet følger med. Den svake entiteten får PN = PN-en til den identifiserende entiteten + svak nøkkel, og den PN-en blir samtidig FN, så CONTAINS er allerede uttrykt. I M:N-tabellene er relasjonsattributter som Amount aldri del av nøkkelen, fordi én kontrakt per par forfatter–forlag er det modellen sier.</p>"
     },
     sensor: {
       deler: [{
@@ -801,7 +801,7 @@
     hvorfor: {
       eli5: "<p>Vi går gjennom albumhylla og kaster hvert album der vi ikke finner en eneste sang som hører til det.</p>",
       normal: "<p>DELETE fjerner rader, mens DROP fjerner hele tabellen. NOT EXISTS sjekker for hvert album om det finnes en sang som peker på det, og sletter albumet bare når svaret er nei.</p>",
-      teknisk: "<p>Delspørringen er korrelert: den bruker a.albumID fra den ytre raden og kjøres for hvert album. NOT EXISTS blir sann bare når delspørringen er tom. Vi velger det fremfor NOT IN, fordi NOT IN gir NULL (ukjent) for alle album hvis sang.albumID noen gang er NULL, og da slettes ingenting. Slettingen bryter ingen fremmednøkler, siden sang er den eneste tabellen som peker på album, og albumene vi sletter, har nettopp ingen sanger.</p>"
+      teknisk: "<p>Delspørringen er korrelert: den bruker a.albumID fra den ytre raden og kjøres for hvert album. NOT EXISTS blir sann bare når delspørringen er tom. Vi velger det fremfor NOT IN, fordi NOT IN gir NULL (ukjent) for alle album hvis sang.albumID noen gang er NULL, og da slettes ingenting (tilleggsfelle, står ikke i kursmaterialet). Slettingen bryter ingen fremmednøkler, siden sang er den eneste tabellen som peker på album, og albumene vi sletter, har nettopp ingen sanger.</p>"
     },
     sensor: {
       deler: [{

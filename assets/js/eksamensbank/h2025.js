@@ -402,7 +402,7 @@
       losning: [
         "Gå gjennom teksten setning for setning og noter substantivene som har egen identitet: kunde, båttype, båt, bås, arbeidsordre og faktura blir entiteter.",
         "Kunde får to nøkler (kundenummer og det unike telefonnummeret, understreket hver for seg), to sammensatte adresser med gatenavn, gatenummer og postnummer, og et flerverdiattributt for de ekstra porttelefonene.",
-        "Båt identifiseres av båttype + eksemplar. Da er båt en svak entitet med eksemplar som delvis nøkkel, eid av båttype gjennom en identifiserende relasjon (dobbel rombe, total deltakelse og N på båtsiden, 1 på båttypesiden).",
+        "Båt identifiseres av båttype + eksemplar. Da er båt en svak entitet med eksemplar som svak nøkkel, eid av båttype gjennom en identifiserende relasjon (dobbel rombe, total deltakelse og N på båtsiden, 1 på båttypesiden).",
         "Båttype har partiell deltakelse fordi det alltid finnes mange typer uten båter. Kunde har partiell deltakelse i ANSVARLIG (kunder uten båt er lov), mens båt er total.",
         "Bås–båt er 1-1 og partiell på begge sider: en båt trenger ikke ligge i havna, og en bås kan stå tom.",
         "Båt 1–N arbeidsordre, total for arbeidsordre (gjelder alltid én båt). Arbeidsordre 1–1 faktura, total for faktura.",
@@ -412,7 +412,7 @@
       tips: [
         "Sensor gir poeng i fire bolker: entiteter og nøkler, relasjoner og kardinaliteter, bås/arbeidsordre/faktura og attributttypene. Sørg for at alle fire er synlige i tegningen.",
         "Skriv kardinalitet og total/partiell på begge sider av hver rombe. Dette er de vanligste trekkene.",
-        "Når teksten sier «identifiseres med X og Y» der X er en annen entitet, er det et sterkt hint om svak entitet. Marker både dobbelt rektangel, dobbel rombe og stiplet understrek på den delvise nøkkelen.",
+        "Når teksten sier «identifiseres med X og Y» der X er en annen entitet, er det et sterkt hint om svak entitet. Marker både dobbelt rektangel, dobbel rombe og stiplet understrek på den svake nøkkelen.",
         "Ikke heng betalerkunden på båten. Teksten sier eksplisitt at betaler kan være en annen enn eieren.",
         "Skriv antakelsene dine som korte kommentarer på arket (for eksempel hvorfor arbeidsordre er partiell i FOR)."
       ],
@@ -429,7 +429,7 @@
       losning: [
         "Hver vanlig entitet blir én relasjon med sine enkle attributter. Sammensatte attributter flates ut til bladnodene (Post_gatenavn, Post_gatenr, …).",
         "Flerverdiattributtet (porttelefonene) blir en egen relasjon med kundens nøkkel + telefonnummeret, der alle attributtene utgjør nøkkelen.",
-        "Den svake entiteten båt får primærnøkkel = eierens nøkkel (Kortnavn) + delvis nøkkel (Eksemplar). Den identifiserende relasjonen TYPE realiseres ikke en gang til.",
+        "Den svake entiteten båt får primærnøkkel = nøkkelen til den identifiserende entiteten (Kortnavn) + svak nøkkel (Eksemplar). Den identifiserende relasjonen TYPE realiseres ikke en gang til.",
         "1-N-relasjonene (ANSVARLIG, VEDLIKEHOLD, SENDT_TIL) blir fremmednøkler på N-siden.",
         "1-1-relasjonene: FOR legges som fremmednøkkel i faktura (siden faktura har total deltakelse, blir den aldri NULL). LIGGER_I legges i båt (partiell på begge sider, så vi velger én side og godtar NULL).",
         "Oppgi KN, PN og FN for hver relasjon og begrunn valgene."
@@ -648,7 +648,7 @@
       tips: [
         "Manglende CREATE VIEW og manglende DESC er klassiske trekk fra tidligere år.",
         "count(ferdig) mot count(*) er hele poenget med oppgaven. Begge med count(*) gir 100 % overalt.",
-        "Med indre join kommer prosjekter uten oppgaver ikke med. Det er bra her, ellers ville du delt på 0."
+        "Med indre join kommer prosjekter uten oppgaver ikke med. Det er bra her. Med LEFT JOIN og count(o.oid) ville nevneren blitt 0 for prosjekter uten oppgaver (count(*) ville gitt 1 og dermed 0 %)."
       ],
       del1: null
     },
@@ -751,7 +751,7 @@
     },
     {
       key: "H2025-3.2", year: "H2025", oppgave_nr: "Oppgave 3.2", ark: "Nøkler og normalformer",
-      title: "Kandidatnøkler og høyeste normalform", points: 5, block: "fd",
+      title: "Kandidatnøkler og høyeste normalform", points: 5, block: "fd", poengkilde: "sv",
       tema: ["tillukning", "kandidatnøkkel", "2NF", "partiell avhengighet"],
       ordrett: true,
       oppgave:
@@ -773,7 +773,7 @@
     },
     {
       key: "H2025-3.3", year: "H2025", oppgave_nr: "Oppgave 3.3", ark: "Tapsfri dekomponering",
-      title: "Første BCNF-steg og tapsfrihet", points: 6, block: "normalisering",
+      title: "Første BCNF-steg og tapsfrihet", points: 6, block: "normalisering", poengkilde: "sv",
       tema: ["BCNF-algoritmen", "tillukning", "Fagins teorem", "tapsfri"],
       ordrett: true,
       oppgave:
@@ -864,7 +864,7 @@
           "<li><b>KUNDE</b>: Kundenr og Telefonnr er nøkler (understreket hver for seg). Postadresse og Fakturaadresse er sammensatte " +
           "(Gatenavn, Gatenr, Postnr). Porttelefon er et flerverdiattributt (dobbel oval).</li>" +
           "<li><b>BÅTTYPE</b>: Kortnavn (nøkkel), Modell, Typebetegnelse.</li>" +
-          "<li><b>BÅT</b> er svak (dobbelt rektangel) med delvis nøkkel Eksemplar (stiplet understrek). Den identifiseres gjennom " +
+          "<li><b>BÅT</b> er svak (dobbelt rektangel) med svak nøkkel Eksemplar (stiplet understrek). Den identifiseres gjennom " +
           "<b>TYPE</b> (dobbel rombe): N og total ved BÅT, 1 og partiell ved BÅTTYPE (mange typer har ingen båt).</li>" +
           "<li><b>ANSVARLIG</b>: 1 ved KUNDE (partiell, kunder uten båt er lov), N ved BÅT (total, hver båt har én ansvarlig).</li>" +
           "<li><b>BÅS</b>: Nummer (nøkkel), Bredde, Dybde. <b>LIGGER_I</b> er 1-1 og partiell på begge sider.</li>" +
@@ -880,7 +880,7 @@
           "Relasjoner med kardinalitet og total/partiell deltakelse på begge sider (3–4p)",
           "BÅS med 1-1, ARBEIDSORDRE med VEDLIKEHOLD og FAKTURA med FOR/SENDT_TIL (2–3p)",
           "Sammensatte adresser og flerverdiattributtet Porttelefon (1–2p)",
-          "Svak entitet BÅT med delvis nøkkel og identifiserende relasjon TYPE"
+          "Svak entitet BÅT med svak nøkkel og identifiserende relasjon TYPE"
         ]
       }
     ],
@@ -892,13 +892,13 @@
         "det én regning, og den kan sendes til en annen kunde enn den som eier båten.</p>",
       normal:
         "<p>Vi lager en entitet for hver ting som har sin egen identitet. Båt identifiseres av båttype + eksemplar. Den har altså ingen egen " +
-        "nøkkel og blir en svak entitet med båttype som eier. Kardinalitetene leses rett ut av teksten: «én (og bare én) båttype» gir 1 ved " +
+        "nøkkel og blir en svak entitet med båttype som identifiserende entitet. Kardinalitetene leses rett ut av teksten: «én (og bare én) båttype» gir 1 ved " +
         "BÅTTYPE og total deltakelse for BÅT, og «kunde uten båt kan være registrert» gir partiell deltakelse for KUNDE. Faktura og arbeidsordre " +
         "er 1-1, men arbeidsordren finnes før fakturaen, så bare fakturasiden er total. Betaleren er en egen relasjon til KUNDE, siden den kan " +
         "være en annen enn eieren. Sendedatoen er en egenskap ved selve utsendingen og legges derfor på relasjonen.</p>",
       teknisk:
-        "<p>Svak entitet brukes når den delvise nøkkelen (Eksemplar) bare er unik innenfor en eier (BÅTTYPE). I den identifiserende relasjonen " +
-        "har den svake entiteten alltid total deltakelse, og det står 1 på eiersiden. At det står N på båtsiden, kommer av at én båttype kan ha mange båter. " +
+        "<p>Svak entitet brukes når den svake nøkkelen (Eksemplar) bare er unik innenfor én identifiserende entitet (BÅTTYPE). I den identifiserende relasjonen " +
+        "har den svake entiteten alltid total deltakelse, og det står 1 ved den identifiserende entiteten. At det står N på båtsiden, kommer av at én båttype kan ha mange båter. " +
         "Det er vanlig for svake entiteter, men ingen regel. At det «alltid finnes flere båttyper enn båter», er et hint om at " +
         "BÅTTYPE har partiell deltakelse. Telefonnummeret er unikt og blir derfor en ekstra nøkkel. Porttelefonene er mange per kunde og blir et " +
         "flerverdiattributt. Adressene er sammensatte, så realiseringen kan beholde bladnodene. For 1-1-relasjoner er det deltakelsen som avgjør " +
@@ -978,10 +978,10 @@
       normal:
         "<p>Algoritmen er fast: entiteter først, så svake entiteter, så 1-1 og 1-N, så M-N og flerverdiattributter. For 1-N legger vi alltid " +
         "fremmednøkkelen på N-siden, for der har hver rad bare én verdi. For 1-1 velger vi siden med total deltakelse, så kolonnen aldri blir NULL. " +
-        "Den svake entiteten tar med seg eierens nøkkel som del av sin egen. Derfor trenger den identifiserende relasjonen ingen tabell.</p>",
+        "Den svake entiteten tar med seg nøkkelen til den identifiserende entiteten som del av sin egen. Derfor trenger den identifiserende relasjonen ingen tabell.</p>",
       teknisk:
         "<p>Målet er færrest mulig relasjoner og NULL-verdier. FOR er total bare for FAKTURA. Ordrenr i Faktura er da NOT NULL og unik, og blir en " +
-        "ekstra kandidatnøkkel. Å slå sammen Faktura og Arbeidsordre krever total deltakelse på begge sider, og det har vi ikke. LIGGER_I er partiell " +
+        "ekstra kandidatnøkkel. Sammensmelting av Faktura og Arbeidsordre krever total deltakelse på begge sider, og det har vi ikke. LIGGER_I er partiell " +
         "på begge sider. Uansett side gir en FN NULL-verdier, mens en egen relasjon Ligger_i(Kortnavn, Eksemplar, Båsnr) med to KN-er gir null NULL-er " +
         "mot én tabell ekstra. Begge valgene er forsvarlige når de begrunnes. Fremmednøkkelen til den svake entiteten Båt er sammensatt: " +
         "(Kortnavn, Eksemplar). Vi kaller FN-en til betaleren Betaler, så den ikke forveksles med eierens Kundenr.</p>"

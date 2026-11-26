@@ -109,7 +109,7 @@
         ledd: [ { entitet: "CET", kard: "1", total: false }, { entitet: "BOH", kard: "1", total: true } ],
         attr: [] }
     ],
-    merknad: "XXX og YYY er understreket hver for seg (to nøkler). ZZZ er dobbel oval (flerverdi). UUU er stiplet oval (avledet), VVV har stiplet understrek (svak nøkkel). Dobbel strek = total deltakelse."
+    merknad: "XXX og YYY er understreket hver for seg (to nøkler). ZZZ er dobbel oval (flerverdi). UUU er stiplet oval (utledbart), VVV har stiplet understrek (svak nøkkel). Dobbel strek = total deltakelse."
   };
 
   var ER_UTLEIE = {
@@ -237,14 +237,14 @@
       "<p>Hvert riktig svar gir 1 poeng, hvert uriktige svar gir -1 poeng, og hvert ubesvart gir 0 poeng. Total poengsum for hele oppgaven vil ikke være lavere enn 0.</p>",
     avvik: null,
     losning: [
-      "Les av diagrammet først: Cet har to nøkler (XXX og YYY, understreket hver for seg) og flerverdiattributtet ZZZ. Boh er svak entitet med svak nøkkel VVV og avledet attributt UUU, og eies av Cet gjennom den identifiserende relasjonen S.",
+      "Les av diagrammet først: Cet har to nøkler (XXX og YYY, understreket hver for seg) og flerverdiattributtet ZZZ. Boh er svak entitet med svak nøkkel VVV og utledbart attributt UUU, og identifiseres av Cet gjennom den identifiserende relasjonen S.",
       "Dobbel strek betyr total deltakelse: Cet er total i P og i R, Alu er total i P, og Boh er total i S.",
       "Ta deretter påstandene én om gangen og se etter akkurat den streken eller markeringen påstanden handler om."
     ],
     tips: [
       "Med −1 for galt svar lønner det seg ikke å gjette. La være å svare hvis du er usikker.",
       "En relasjonsattributt (som WWW på P) hører til hvert par i relasjonen. Den blir bare «en egenskap ved Alu» hvis hver Alu kan være med i høyst ett par.",
-      "Følg kjeden av total deltakelse: en svak entitet krever en eier, og eieren kan igjen kreve noe annet."
+      "Følg kjeden av total deltakelse: en svak entitet krever en identifiserende entitet, og den kan igjen kreve noe annet."
     ],
     del1: {
       type: "janei",
@@ -262,9 +262,9 @@
         { s: "Alu har en attributt WWW (via relasjon P).", answer: false,
           explain: "<p>WWW sitter på relasjonen P. Tallet M ved Cet betyr at én Alu kan være knyttet til mange Cet gjennom P, og hvert av disse parene har sin egen WWW-verdi. En Alu har altså ikke én bestemt WWW-verdi. Hadde det stått 1 ved Cet, kunne WWW vært flyttet over til Alu. (Sensor: påstand 2, NEI.)</p>" },
         { s: "Dersom det finnes en Boh i databasen, vil det også finnes en Alu.", answer: true,
-          explain: "<p>Boh er svak og må ha en eier-Cet gjennom S. Cet har total deltakelse i P (og i R), så den Cet-en må være knyttet til en Alu. Altså finnes det en Alu. (Sensor: påstand 5, JA.)</p>" },
+          explain: "<p>Boh er svak og må ha en identifiserende Cet gjennom S. Cet har total deltakelse i P (og i R), så den Cet-en må være knyttet til en Alu. Altså finnes det en Alu. (Sensor: påstand 5, JA.)</p>" },
         { s: "Boh har en nøkkel eller svak nøkkel.", answer: true,
-          explain: "<p>VVV har stiplet understrek, som er kursets markering for svak (delvis) nøkkel. (Sensor: påstand 1, JA.)</p>" },
+          explain: "<p>VVV har stiplet understrek, som er kursets markering for svak nøkkel. (Sensor: påstand 1, JA.)</p>" },
         { s: "En Cet er unikt identifisert med dens XXX, YYY and ZZZ verdier (sammen).", answer: true,
           explain: "<p>XXX er understreket og er alene en nøkkel. Da er også XXX, YYY og ZZZ sammen nok til å skille alle Cet fra hverandre (det er en supernøkkel). Påstanden sier ikke at kombinasjonen er minimal. (Sensor: påstand 3, JA.)</p>" }
       ]
@@ -275,14 +275,14 @@
   OPPGAVER.push({
     key: "H2024-1.3", year: "H2024", oppgave_nr: "Oppgave 1.3", ark: "ER: Realisering", title: "Realiser utleiebyrå-modellen",
     points: 12, block: "realisering",
-    tema: ["realisering", "1:1 som egen relasjon", "1:N", "ternær relasjon", "flerverdiattributt", "sammensatt nøkkel", "avledet attributt"],
+    tema: ["realisering", "1:1 som egen relasjon", "1:N", "ternær relasjon", "flerverdiattributt", "sammensatt nøkkel", "utledbart attributt"],
     ordrett: true,
     oppgave: "<p>Realiser modellen i hovedillustrasjon til et relasjonelt databaseskjema.</p>" +
       "<p>Det resulterende databaseskjemaet skal være korrekt (samsvare med modellen), effektivt (unngå overflødige tabeller og kolonner med mange `NULL`-verdier), og tydelig (bør være lett å forstå). Bruk algoritmen for realisering for å lage et slikt skjema, og forklar eventuelle valg du tar underveis. For hver relasjon, oppgi relasjonens navn, og navnet til hvert attributt. Du trenger ikke oppgi datatyper for attributtene, og du skal ikke bruke SQL i denne oppgaven. Gjør det tydelig hvilke attributter som utgjør kandidatnøkler og fremmenøkler. Dersom det er flere kandidatnøkler, marker også valgt primærnøkkel. Bruk piler for å markere fremmednøkler (f.eks. \"T(A) -&gt; S(B)\" for å uttrykke at relasjon T sin attributt A er en fremmednøkkel som peker på relasjon S sin B attributt).</p>" +
       "<p>Om du ønsker å ha bilde større eller i en egen tab, høyreklikk på bildet og velg \"Se bildet/View Image\".</p>",
     avvik: null,
     losning: [
-      "Vanlige entiteter først: Leietaker, Agent, Eiendom og Eieren får hver sin relasjon. Den sammensatte nøkkelen Adresse blir de fire bladattributtene Postnummer, By, Linje1 og Linje2. Den avledede Adresse hos Eieren tas ikke med.",
+      "Vanlige entiteter først: Leietaker, Agent, Eiendom og Eieren får hver sin relasjon. Den sammensatte nøkkelen Adresse blir de fire bladattributtene Postnummer, By, Linje1 og Linje2. Den utledbare Adresse hos Eieren tas ikke med.",
       "Leie (1:1, partiell på begge sider): en egen relasjon unngår NULL-verdier. Begge FN-ene blir kandidatnøkler, og én velges som PN.",
       "Eie (1:N): hver eier eier nøyaktig én eiendom (1 og total deltakelse), så FN legges rett i Eieren uten NULL-verdier.",
       "Administrere (1:N): hver agent har høyst én eiendom, men ikke alle agenter har en. En egen relasjon med agenten som nøkkel unngår NULL i Agent.",
@@ -314,7 +314,7 @@
       "Ved GROUP BY: tell gruppene først, sorter, og bruk så OFFSET (hopp over) før LIMIT (maks antall)."
     ],
     tips: [
-      "Med +2/−0,5 lønner det seg å svare selv om du er litt usikker.",
+      "Med +2/−0,5 og seks alternativer taper en blind gjetning litt (2/6 − 0,5·5/6 < 0). Kan du stryke alternativer så det er færre enn fem igjen, lønner det seg å svare.",
       "Skriv ned mellomresultatet (for eksempel gruppene med antall) på kladdepapir. Det er lett å telle feil i hodet.",
       "Uten DISTINCT blir duplikater stående i SELECT-resultatet."
     ],
@@ -440,7 +440,7 @@
     losning: [
       "Hver tur (busstur) joines med bussen sin (buss) på bid, slik at turens sjåfør og bussens standardsjåfør står på samme rad.",
       "Behold radene der de to er forskjellige.",
-      "Tenk på NULL: har bussen ingen standardsjåfør (standardsid er NULL), gir sid != standardsid NULL (ukjent), og turen forsvinner. Det samme skjer med turer der busstur.sid er NULL (sid kan være NULL i skjemaet). Vi tolker en slik tur som «ikke standardsjåfør» og tar den med med en egen IS NULL-test.",
+      "Tenk på NULL: har bussen ingen standardsjåfør (standardsid er NULL), gir sid != standardsid NULL (ukjent), og turen forsvinner. Turer på busser uten standardsjåfør tar vi med med en egen IS NULL-test. Turer der busstur.sid er NULL (sid kan være NULL i skjemaet), faller også bort. Vil du ha dem med, legg til «OR bt.sid IS NULL» og skriv det som kommentar.",
       "Pakk spørringen inn i CREATE VIEW navn AS. På eksempeldataene gir viewet de 4 turene med buss 1, der sjåfør 1 kjører en buss som har sjåfør 8 som standardsjåfør."
     ],
     tips: [
@@ -538,7 +538,7 @@
     tips: [
       "Sjekk først om venstresiden inneholder en hel kandidatnøkkel. Det avgjør BCNF med én gang.",
       "2NF handler bare om ikke-nøkkelattributter som avhenger av en ekte del av en kandidatnøkkel.",
-      "Med +2/−0,5 lønner det seg å svare."
+      "Med +2/−0,5 og fire alternativer lønner det seg alltid å svare, også med en blind gjetning."
     ],
     del1: {
       type: "normalform",
@@ -655,7 +655,7 @@
           "  KN, PN: {Navn}\n" +
           "  FN: Eieren(Postnummer, By, Linje1, Linje2) -> Eiendom(Postnummer, By, Linje1, Linje2)\n" +
           "  -- Eie (1:N): hver eier eier nøyaktig én eiendom (1 + total deltakelse),\n" +
-          "  -- så FN legges i Eieren uten NULL-verdier. Den avledede Adresse er utelatt.\n\n" +
+          "  -- så FN legges i Eieren uten NULL-verdier. Den utledbare Adresse er utelatt.\n\n" +
           "EierTlf(Eier, Tlfnr)\n" +
           "  KN, PN: {Eier, Tlfnr}\n" +
           "  FN: EierTlf(Eier) -> Eieren(Navn)\n" +
@@ -690,7 +690,7 @@
     ],
     hvorfor: {
       eli5: "<p>Hver «boks» i tegningen blir en tabell. Strekene mellom boksene blir enten en henvisning inne i en av tabellene eller en egen liten koblingstabell. Vi velger koblingstabell når henvisningen ellers ville stått tom for mange rader.</p>",
-      normal: "<p>Først lager vi én relasjon per entitet. Så ser vi på hver relasjon i diagrammet. Er det én «mange»-side der alle deltar (Eie), legger vi en fremmednøkkel der. Er deltakelsen partiell (Leie, Administrere), ville fremmednøkkelen ofte vært NULL, og da er en egen relasjon bedre. En ternær relasjon blir alltid en egen relasjon. Når alle sidene er «mange», er nøkkelen alle tre fremmednøklene. Flerverdiattributter blir egne relasjoner, og avledede attributter tas ikke med.</p>",
+      normal: "<p>Først lager vi én relasjon per entitet. Så ser vi på hver relasjon i diagrammet. Er det én «mange»-side der alle deltar (Eie), legger vi en fremmednøkkel der. Er deltakelsen partiell (Leie, Administrere), ville fremmednøkkelen ofte vært NULL. Da kan en egen relasjon være bedre, men en FN som kan være NULL går også, hvis valget begrunnes. En ternær relasjon blir alltid en egen relasjon. Når alle sidene er «mange», er nøkkelen alle tre fremmednøklene. Flerverdiattributter blir egne relasjoner, og utledbare attributter tas ikke med.</p>",
       teknisk: "<p>Algoritmen går i fast rekkefølge: entiteter, svake entiteter, 1:1, 1:N, M:N og ternære, og til slutt flerverdiattributter. For Eie står 1 ved Eiendom og dobbel strek fra Eieren, så hver eier har nøyaktig én eiendom. FN i Eieren blir da aldri NULL. Adressen er ikke en kandidatnøkkel i Eieren, fordi én eiendom kan ha mange eiere (M). For Administrere står også 1 ved Eiendom, men Agent deltar partielt, så en egen relasjon med KN {Agent} unngår NULL-verdier. Den totale deltakelsen til Eiendom kan ikke håndheves med FN alene. Leie er 1:1 med partiell deltakelse på begge sider. Begge FN-ene blir derfor kandidatnøkler i den egne relasjonen, og én velges som PN. I Visning står M, N og K, så ingen delmengde av FN-ene bestemmer resten, og nøkkelen er alle tre. Dato er ikke med i nøkkelen fordi relasjonsattributter aldri er det.</p>"
     },
     sensor: {
@@ -754,7 +754,7 @@
     type: "eksamen",
     svar: [
       { del: "", tekst: "<p>Begge delene av unionen leser fra buss, så betingelsene kan slås sammen med OR. DISTINCT gir samme mengdesemantikk som UNION.</p>",
-        sql: "SELECT DISTINCT bid   -- UNION fjerner duplikater; bid er PK, men DISTINCT gjør det tydelig\n" +
+        sql: "SELECT DISTINCT bid   -- UNION fjerner duplikater; bid er PN, men DISTINCT gjør det tydelig\n" +
              "FROM buss\n" +
              "WHERE modell = 'Mercedes' OR Year(vedlikeholdt) < 2024;",
         poeng: [ "Én spørring mot buss uten UNION", "OR mellom de to betingelsene", "DISTINCT (eller begrunnelse for at duplikater ikke kan oppstå)" ] }
@@ -762,7 +762,7 @@
     hvorfor: {
       eli5: "<p>Å lage to lister og så slå dem sammen er det samme som å gå gjennom bussene én gang og ta med hver buss som passer med minst én av reglene.</p>",
       normal: "<p>I relasjonsalgebra er π<sub>bid</sub>(σ<sub>modell = 'Mercedes'</sub>(buss)) ∪ π<sub>bid</sub>(σ<sub>Year(vedlikeholdt) &lt; 2024</sub>(buss)) det samme som π<sub>bid</sub>(σ<sub>modell = 'Mercedes' ∨ Year(vedlikeholdt) &lt; 2024</sub>(buss)). I SQL betyr det WHERE betingelse1 OR betingelse2. UNION fjerner duplikater, og det gjør DISTINCT også. Siden bid er primærnøkkel, kan ingen bid uansett komme to ganger fra samme tabell.</p>",
-      teknisk: "<p>Spørringene er likeverdige på alle forekomster. En rad kommer med i unionen hvis minst én av betingelsene er sann. OR er sann når minst én av sidene er sann. Er den ene siden NULL (ukjent) og den andre usann, blir OR NULL, og raden filtreres bort, akkurat som den ville blitt borte fra begge delspørringene. Duplikater: unionen er en mengde. I én spørring kan samme bid bare komme flere ganger hvis bid ikke er unik. Den er PK, så DISTINCT er strengt tatt overflødig, men den gjør likeverdigheten opplagt.</p>"
+      teknisk: "<p>Spørringene er likeverdige på alle forekomster. En rad kommer med i unionen hvis minst én av betingelsene er sann. OR er sann når minst én av sidene er sann. Er den ene siden NULL (ukjent) og den andre usann, blir OR NULL, og raden filtreres bort, akkurat som den ville blitt borte fra begge delspørringene. Duplikater: unionen er en mengde. I én spørring kan samme bid bare komme flere ganger hvis bid ikke er unik. Den er PN, så DISTINCT er strengt tatt overflødig, men den gjør likeverdigheten opplagt.</p>"
     },
     sensor: {
       deler: [ { del: "", fasit: "",

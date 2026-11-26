@@ -231,7 +231,7 @@
         L("WHERE NOT EXISTS (",
           "For hver person spør vi: finnes det et lånekort med deres nummer? Svaret må være nei.",
           "Behold låneren hvis delspørringen gir <i>ingen</i> rader.",
-          "EXISTS er TRUE når delspørringen gir minst én rad, og NOT EXISTS er TRUE når den er tom. Dette er kursets standardmåte for «ingen», «aldri» og «uten».",
+          "EXISTS er TRUE når delspørringen gir minst én rad, og NOT EXISTS er TRUE når den er tom. Dette er én av fire måter kurset viser for «ingen», «aldri» og «uten» (EXCEPT, NOT IN, NOT EXISTS og LEFT JOIN … IS NULL), og den tryggeste med tanke på NULL.",
           { q: "Hvorfor NOT EXISTS og ikke NOT IN?",
             a: "Her ville " + m("lid NOT IN (SELECT lid FROM utlån)") + " gitt samme svar, fordi " + m("utlån.lid") + " er del av primærnøkkelen og aldri NULL. Har delspørringen en NULL, gir NOT IN tomt svar. Den fellen står ikke i lysarkene, men NOT EXISTS har den ikke." }),
         L("  SELECT *",
@@ -273,7 +273,7 @@
         L(")",
           "Hjelpelappen er ferdig.",
           "Slutten på WITH-delen. Ikke noe semikolon her: hele spørringen er én setning.",
-          "Et semikolon her ville avsluttet setningen, og WITH-navnet ville ikke funnes i resten."),
+          "Et semikolon her gir syntaksfeil: WITH må etterfølges av hovedspørringen i samme setning."),
         L("SELECT l.navn, a.antall",
           "Nå lager vi den ekte lappen: navn og antall.",
           "Hovedspørringen bruker " + m("antall_lån") + " som en vanlig tabell.",
@@ -430,7 +430,7 @@
 
   /* ================= Fra oppgavetekst til SQL ================= */
   D.ordliste = [
-    ["«for hver …», «per …»", "GROUP BY på nøkkelen til det det telles per", "Gruppér på primærnøkkelen, ikke bare navnet.", ["05-sql-videre.html#fane=aggregering", "Aggregering"]],
+    ["«for hver …», «per …»", "GROUP BY på nøkkelen til det det telles per", "Gruppér på primærnøkkelen. Navn alene slår sammen like navn (H20 ga ikke trekk, men det er tryggest).", ["05-sql-videre.html#fane=aggregering", "Aggregering"]],
     ["«også de som ikke har …», «med 0»", "LEFT JOIN og " + m("count(kol)") + " fra høyre tabell", m("count(*)") + " gir 1 i stedet for 0.", ["05-sql-videre.html#fane=ytre-join", "Ytre join"]],
     ["«ingen», «aldri», «uten»", "NOT EXISTS, NOT IN, EXCEPT eller LEFT JOIN … IS NULL", "NOT IN og NULL i delspørringen.", ["05-sql-videre.html#fane=delsporringer", "Delspørringer"]],
     ["«alle», «bare», «hver eneste»", "NOT EXISTS («finnes ingen som ikke …») eller en telling i HAVING", "Å filtrere rader gir «minst én», ikke «alle».", ["05-sql-videre.html#fane=for-alle", "«For alle»"]],
@@ -489,7 +489,7 @@
     m("fid = 1") + " er en ID lest av eksempeldataene. Spørringen skal virke selv om Ibsen får en annen ID. Sensor trakk −1 for en slik hardkodet ID (H20).",
     "Indre join fjerner Bo, Dina og låneren Ibsen, som skulle vært med med 0. Sensor har trukket −2 for indre join der rader med 0 skal med (H19 2.5).",
     "NATURAL JOIN gir riktig kobling her, men bare fordi tabellene tilfeldigvis ikke deler andre kolonnenavn. Joines forfatter inn, kobles det også på " + m("navn") + ".",
-    m("GROUP BY navn") + " slår sammen to lånere som heter det samme. Grupper på " + m("lid") + ".",
+    m("GROUP BY navn") + " slår sammen to lånere som heter det samme. Sensor har ikke trukket for dette (H20: «Ingen trekk for å bruke GROUP BY på navn»), men gruppering på " + m("lid") + " er riktig uansett data.",
     "Ingen ORDER BY. Manglende ORDER BY gir −2 (H23, H25).",
     "Ingen semikolon. Det gir ikke trekk, men skriv det likevel."
   ];

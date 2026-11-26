@@ -36,7 +36,7 @@
     "ex-injection": {
       eli5: "<p>Tenk deg at du gir en robot en lapp: «Hent boka som heter ___». En lur person skriver ikke en boktittel i feltet, men «ingenting, og riv ned hele bokhylla». Roboten leser hele lappen som én ordre og gjør begge deler. Den skjønner ikke at det i feltet skulle stå et navn og ikke en ny ordre.</p>",
       normal: "<p>Når programmet limer inndata rett inn i SQL-strengen, kan databasen ikke se hvor programmererens kode slutter og brukerens tekst begynner. En apostrof i inndataene avslutter strengen i SQL-en, og resten blir lest som SQL. Tre ting må være til stede: et program som kjører SQL, inndata fra brukeren som blir en del av spørringen, og at programmet ikke skiller mellom data og kommando.</p>",
-      teknisk: "<p>Strengsammensetting lager SQL-teksten <i>før</i> databasen ser den, så skillet mellom kode og data forsvinner. <span class=\"mono\">'</span> lukker strengen, <span class=\"mono\">--</span> gjør resten av linja til en kommentar (så den avsluttende apostrofen forsvinner), og <span class=\"mono\">;</span> starter en ny setning. Med <span class=\"mono\">UNION</span> kan angriperen hente data fra andre tabeller, så lenge antall kolonner passer.</p><p>Angrepet krever lite kunnskap om koden: å prøve en apostrof og se om det kommer en feilmelding, er ofte nok til å finne hullet.</p>"
+      teknisk: "<p>Strengsammensetting lager SQL-teksten <i>før</i> databasen ser den, så skillet mellom kode og data forsvinner. <span class=\"mono\">'</span> lukker strengen, <span class=\"mono\">--</span> gjør resten av linja til en kommentar (så den avsluttende apostrofen forsvinner), og <span class=\"mono\">;</span> starter en ny setning. Med <span class=\"mono\">UNION</span> kan angriperen hente data fra andre tabeller, så lenge antall kolonner og typene passer.</p><p>Angrepet krever lite kunnskap om koden: å prøve en apostrof og se om det kommer en feilmelding, er ofte nok til å finne hullet.</p>"
     },
     "ex-param": {
       eli5: "<p>Nå har lappen en egen rute: «Hent boka som heter [ ]». Det som står i ruta, er alltid bare et navn, uansett hva det er. Står det «riv ned bokhylla» i ruta, leter roboten etter en bok med det rare navnet, finner ingen og gjør ingenting farlig.</p>",
@@ -111,7 +111,7 @@
     { fane: "injection", s: "En plassholder kan brukes for et tabellnavn, for eksempel SELECT * FROM ?.", answer: false,
       explain: "Plassholdere kan bare stå der en verdi skal stå, ikke i stedet for tabellnavn, kolonnenavn eller nøkkelord." },
     { fane: "injection", s: "Med UNION kan en angriper hente data fra en annen tabell enn den spørringen gjelder.", answer: true,
-      explain: "Så lenge antall kolonner passer, legges radene fra den andre tabellen til i resultatet." }
+      explain: "Så lenge antall kolonner og typene passer, legges radene fra den andre tabellen til i resultatet." }
   ];
 
   /* ---------- Injection-demoen ---------- */

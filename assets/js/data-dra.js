@@ -63,7 +63,7 @@
   var REAL_FN = {
     id: "real-fn", mode: "bucket", tittel: "Plasser fremmednøkkelen",
     intro: "<p>Festivaldiagrammet fra blokk 1 er under realisering. Tabellene for entitetene finnes allerede. For hver relasjon (og flerverdiattributtet): hvilken tabell får fremmednøkkelen, eller trengs det en ny tabell? Målet er færrest mulig tabeller og færrest mulig NULL-verdier.</p>",
-    prompt: "<p>Tabeller som finnes: " + m("Plateselskap(Orgnr, Navn)") + ", " + m("Artist(Artistnr, Kunstnernavn, Land)") + ", " + m("Scene(Navn, Kapasitet)") + ", " + m("Konsert(Start, Slutt)") + " (svak, eier: SCENE) og " + m("Frivillig(Epost, Fornavn, Etternavn, Fdato)") + ".</p>",
+    prompt: "<p>Tabeller som finnes: " + m("Plateselskap(Orgnr, Navn)") + ", " + m("Artist(Artistnr, Kunstnernavn, Land)") + ", " + m("Scene(Navn, Kapasitet)") + ", " + m("Konsert(Start, Slutt)") + " (svak, identifiserende entitet: SCENE) og " + m("Frivillig(Epost, Fornavn, Etternavn, Fdato)") + ".</p>",
     render: function (node) {
       if (!IN.vizEr || !IN.dataReal || !IN.dataReal.fig || !IN.dataReal.fig.festival) return;
       var d = IN.el("details", { class: "dra-fig" }, [IN.el("summary", { text: "Vis ER-diagrammet" })]);
@@ -88,11 +88,11 @@
       { id: "sjanger", html: "Sjanger: flerverdiattributt på ARTIST",
         explain: "<p>Flerverdiattributter får alltid egen tabell: " + m("Sjanger(Artist, Sjanger)") + " med KN = alle attributtene og FN til Artist. En kolonne i Artist kan bare holde én verdi.</p>" },
       { id: "pa", html: "PÅ: identifiserende, SCENE 1 – N KONSERT",
-        explain: "<p>KONSERT er svak, så tabellen får eierens PN som FN: " + m("Konsert(Scene, Start, Slutt)") + " med PN " + m("{Scene, Start}") + ". Den identifiserende relasjonen er ferdig realisert gjennom denne FN-en og skal ikke realiseres en gang til (H2020 trakk for det).</p>" },
+        explain: "<p>KONSERT er svak, så tabellen får PN-en til den identifiserende entiteten som FN: " + m("Konsert(Scene, Start, Slutt)") + " med PN " + m("{Scene, Start}") + ". Den identifiserende relasjonen er ferdig realisert gjennom denne FN-en og skal ikke realiseres en gang til (H2019 og H2020 trakk for det).</p>" },
       { id: "vakt", html: "VAKT: FRIVILLIG – SCENE – OPPGAVE (ternær)",
         explain: "<p>Ternære relasjoner gir alltid egen tabell med FN til alle tre. Med 1 ved OPPGAVE bestemmer frivillig og scene oppgaven, så KN blir " + m("{Frivillig, Scene}") + ".</p>" },
       { id: "sjef", html: "SJEF: SCENE 1 – 1 FRIVILLIG, dobbel strek ved SCENE",
-        explain: "<p>1:1 med total deltakelse ved SCENE: legg FN-en " + m("Sjef") + " i Scene. Hver scene har nøyaktig én sjef, så det blir ingen NULL, og kolonnen er også en KN. I Frivillig ville de fleste radene fått NULL, og sammenslåing krever total deltakelse på begge sider.</p>" }
+        explain: "<p>1:1 med total deltakelse ved SCENE: legg FN-en " + m("Sjef") + " i Scene. Hver scene har nøyaktig én sjef, så det blir ingen NULL, og kolonnen er også en KN. I Frivillig ville de fleste radene fått NULL, og sammensmelting krever total deltakelse på begge sider.</p>" }
     ],
     answer: { kontrakt: "artist", pa: "konsert", sjef: "scene", spiller: "ny", sjanger: "ny", vakt: "ny" },
     godta: { kontrakt: ["ny"] },
@@ -126,15 +126,15 @@
         explain: "<p>Hver vanlig entitet blir en tabell. Hver nøkkel i diagrammet blir en KN, og du velger én som PN.</p>" },
       { id: "r-tern", html: "Egen tabell; FN-ene til de to andre sidene utgjør en KN",
         explain: "<p>Står det 1 ved én side, bestemmer de to andre sammen den siste. Derfor er FN-ene til de to andre sidene nok som KN.</p>" },
-      { id: "r-svak", html: "Egen tabell med PN = eierens PN + svak nøkkel, og FN til eieren",
-        explain: "<p>Den svake nøkkelen er bare unik innenfor eieren, så eierens PN må med. Den identifiserende relasjonen er ferdig med det.</p>" },
+      { id: "r-svak", html: "Egen tabell med PN = identifiserende entitets PN + svak nøkkel, og FN til den identifiserende entiteten",
+        explain: "<p>Den svake nøkkelen er bare unik innenfor den identifiserende entiteten, så dens PN må med. Den identifiserende relasjonen er ferdig med det.</p>" },
       { id: "r-sam", html: "Bare bladnodene blir kolonner",
         explain: "<p>Forelderen (for eksempel Navn) blir ikke en egen kolonne. Barna (Fornavn, Etternavn) blir det.</p>" },
       { id: "r-m-n", html: "Egen tabell der PN består av FN-ene til begge sidene",
         explain: "<p>Hver side kan ha mange partnere, så forholdet må ha egne rader. Et par kan bare forekomme én gang, så PN = begge FN-ene. Relasjonsattributter blir vanlige kolonner, aldri del av nøkkelen.</p>" }
     ],
     answer: { "r-ent": "ent", "r-svak": "svak", "r-en-n": "en-n", "r-m-n": "m-n", "r-fler": "fler", "r-tern": "tern", "r-utl": "utl", "r-sam": "sam" },
-    oppsummering: "<p>Rekkefølgen i algoritmen er: entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter og til slutt ternære og n-ære relasjoner. Svake entiteter kommer etter eieren fordi de trenger eierens PN.</p>",
+    oppsummering: "<p>Rekkefølgen i algoritmen er: entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter og til slutt ternære og n-ære relasjoner. Svake entiteter kommer etter den identifiserende entiteten, fordi de trenger dens PN.</p>",
     kilde: [K("Realiseringsnotatet (realiseringh26), algoritmen"), K("F06-02 (realisering)")]
   };
 
@@ -239,7 +239,7 @@
       { id: "a-levert", html: "Lånere der alle lånene er levert", explain: "<p>«Alle». Skriv det som «det finnes ikke et lån som ikke er levert»: " + m("NOT EXISTS (… AND u.levert IS NULL)") + ". Et filter på " + m("levert IS NOT NULL") + " gir lånere med <i>minst ett</i> levert lån.</p>" },
       { id: "a-ulevert", html: "Lånere med minst ett lån som ikke er levert", explain: "<p>«Minst ett» er finnes: en join med " + m("WHERE u.levert IS NULL") + " og DISTINCT, eller EXISTS.</p>" },
       { id: "a-tort", html: "Byer med minst én dag uten nedbør", explain: "<p>Finnes. Det holder at én rad har " + m("nedbør = 0") + ".</p>" },
-      { id: "a-ingen", html: "Forfattere der ingen av bøkene har over 500 sider", explain: "<p>«Ingen» betyr «for alle bøkene: ikke over 500». Bruk " + m("NOT EXISTS") + " med betingelsen " + m("sider > 500") + " inni, eller " + m("NOT IN") + ". Med NOT IN må delspørringen ikke kunne gi NULL: én NULL i lista gjør at ingen rader kommer med.</p>" },
+      { id: "a-ingen", html: "Forfattere der ingen av bøkene har over 500 sider", explain: "<p>«Ingen» betyr «for alle bøkene: ikke over 500». Bruk " + m("NOT EXISTS") + " med betingelsen " + m("sider > 500") + " inni, eller " + m("NOT IN") + ". Med NOT IN må delspørringen ikke kunne gi NULL: én NULL i lista gjør at ingen rader kommer med (tilleggsfelle, står ikke i kursmaterialet).</p>" },
       { id: "a-ibsen1", html: "Lånere som har lånt en bok av Ibsen", explain: "<p>Én bok holder. Finnes: join mot utlån, bok og forfatter.</p>" },
       { id: "a-regn", html: "Byer der det aldri har regnet", explain: "<p>«Aldri» = «for alle dager: ingen nedbør». Å filtrere på " + m("nedbør = 0") + " gir byer med minst én tørr dag, som er nettopp feilen sensor trakk for.</p>" },
       { id: "a-ibsen", html: "Lånere som har lånt alle bøkene til Ibsen", explain: "<p>Dobbel negasjon i to nivåer: det finnes ingen Ibsen-bok som låneren ikke har lånt. Eller tell: " + m("count(DISTINCT b.bid)") + " lik antall Ibsen-bøker.</p>" },

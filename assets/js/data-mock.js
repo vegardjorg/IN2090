@@ -376,7 +376,7 @@
       },
       anslag: ["Automatisk rettet: +2 riktig, −0,5 galt, 0 blankt, aldri under 0 (samme regel som H2023–H2025)."]
     },
-    tips: ["Med +2/−0,5 lønner det seg å gjette når du kan utelukke noe: du trenger bare å være mer enn 20 % sikker."]
+    tips: ["Med +2/−0,5 lønner det seg å svare når du er mer enn 20 % sikker, altså når du har snevret det inn til færre enn fem mulige svar."]
   });
 
   /* ---------------------------------------------------------- 2.2 */
