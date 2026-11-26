@@ -288,10 +288,28 @@
 
   /* ---------- Faner (tabs) ---------- */
   // Markup: container med .tabs (knapper med [data-tab=id]) og paneler [data-panel=id].
+  /* Vannrett rullbar rad (fanelinja på mobil): ton ut kanten på den siden der det finnes mer,
+     samme hint som toppmenyen. */
+  IN.scrollFade = function (row) {
+    if (!row || row._fade) return;
+    row._fade = true;
+    function sync() {
+      var over = row.scrollWidth > row.clientWidth + 2;
+      row.classList.toggle("fade-l", over && row.scrollLeft > 2);
+      row.classList.toggle("fade-r", over && row.scrollLeft + row.clientWidth < row.scrollWidth - 2);
+    }
+    row.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    if (window.ResizeObserver) new ResizeObserver(sync).observe(row);
+    sync();
+    setTimeout(sync, 300);
+  };
+
   IN.tabs = function (root) {
     root = root || document;
     var bar = qs(".tabs", root);
     if (!bar) return;
+    IN.scrollFade(bar);
     var btns = qsa('[data-tab]', bar);
     var panels = qsa('[data-panel]', root);
 
@@ -305,7 +323,7 @@
         p.hidden = p.getAttribute("data-panel") !== id;
       });
       if (push) {
-        try { history.replaceState(null, "", "#fane=" + id); } catch (e) {
+        try { history.replaceState(history.state, "", "#fane=" + id); } catch (e) {   // behold ev. merke (fra løypa)
           location.hash = "fane=" + id;
         }
       }
@@ -337,6 +355,32 @@
 
     var fromHash = (location.hash.match(/fane=([\w-]+)/) || [])[1];
     var ids = btns.map(function (b) { return b.getAttribute("data-tab"); });
+
+    // Nederst i hvert panel: «↑ Til fanene» og «Neste: <fane> →» (fra IN2120, UI/UX 2026-11-26).
+    // Lenka legges til her og flyttes sist i panelet igjen etter lasting (sidens egne skript fyller vertene).
+    function toBar(id) {
+      var top = bar.getBoundingClientRect().top + window.pageYOffset - (IN.stickyH ? IN.stickyH() : 60) - 8;
+      window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
+      var b = btns.filter(function (x) { return x.getAttribute("data-tab") === id; })[0];
+      if (b) { try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); } }
+    }
+    var bunner = [];
+    panels.forEach(function (p) {
+      var id = p.getAttribute("data-panel"), i = ids.indexOf(id);
+      if (i < 0 || p.querySelector(":scope > .tab-bunn")) return;
+      var nx = ids[i + 1], nb = nx && btns[i + 1];
+      var nav = el("nav", { class: "tab-bunn", "aria-label": "Bytt fane" }, [
+        el("button", { class: "btn tab-opp", type: "button", text: "↑ Til fanene", onclick: function () { toBar(id); } }),
+        nx ? el("button", { class: "btn tab-neste", type: "button", "data-neste": nx,
+          text: "Neste: " + (nb.textContent || "").replace(/\s+/g, " ").trim() + " →",
+          onclick: function () { activate(nx, true); toBar(nx); } }) : null
+      ]);
+      p.appendChild(nav);
+      bunner.push(nav);
+    });
+    function bunnSist() { bunner.forEach(function (n) { var p = n.parentNode; if (p && p.lastElementChild !== n) p.appendChild(n); }); }
+    if (document.readyState === "complete") setTimeout(bunnSist, 0); else window.addEventListener("load", bunnSist);
+
     var start = (fromHash && ids.indexOf(fromHash) >= 0) ? fromHash : ids[0];
     activate(start, false);
 
@@ -756,7 +800,9 @@
         return null;
       }
       if (it.kilde !== undefined) return it.kilde || null;   // kilde: false = aldri eksamensmerke
-      var m = /\b([HV]20\d\d)\b/.exec((it.s || "") + " " + (it.explain || ""));
+      // Uten kilde-felt: bare et årstall i parentes til slutt i selve påstanden, f.eks. «… (H2022)», gir eksamensmerke.
+      // Årstall i forklaringen teller ikke, for der står ofte våre egne henvisninger («… (H2023)»).
+      var m = /\(([HV]20\d\d)\b[^)]*\)\s*$/.exec(it.s || "");
       return m ? m[1] : null;
     }
     var norm = items.map(function (it, i) {
@@ -807,6 +853,8 @@
                            og en bunnlinje med kildelinje + «Hvordan gikk det?».
      Fanene bygges først når de vises. Oppgave er valgt når kortet åpnes.
      opts.variant: "flat" → ingen ytre kant (kort inne i et steg i crash course).
+     opts.progressKey: fast fremdriftsnøkkel (ellers kort:<side>:<id>), så samme kort deler post på flere sider.
+     opts.side: temasiden kortet hører til (når det vises et annet sted, f.eks. i crash.html).
      card._show(id[, fokus]) bytter fane (brukes av dyplenker: &demo=1, &perfekt=1/&svar=1, &vis=<fane>). */
   // Kort der `losning` er dekket av fullpoengssvaret (målt med plan/losning-dekning.mjs, alle punkter
   // ≥ 85 % dekket, og lest gjennom). Her viser «Løsning» bare fullpoengssvaret. Alle andre kort med
@@ -815,7 +863,21 @@
     "heap:H2025-5": 1, "heap:H2022-10": 1, "traer:H2021-8": 1, "traer:H2020-6": 1, "traer:H2024-2": 1,
     "hashing:H2025-2": 1, "hashing:H2020-4": 1, "hashing:H2022-7": 1, "grafer:H2024-4": 1,
     "grafer:H2021-11": 1, "grafer:H2021-7": 1, "grafer:H2024-8": 1, "grafer:H2021-12": 1,
-    "strategi:H2021-6": 1, "strategi:H2020-8": 1, "strategi:H2020-7": 1
+    "strategi:H2021-6": 1, "strategi:H2020-8": 1, "strategi:H2020-7": 1,
+    // Gjennomgått 2026-11: det som manglet i fullpoengssvaret, er lagt inn der (perfekt/*.js)
+    "begreper:H2025-1": 1, "sortering:H2023-4": 1, "sortering:H2024-3": 1, "sortering:H2021-2": 1,
+    "sortering:H2020-7": 1, "sok:H2020-5": 1, "sok:H2023-3": 1, "sok:H2025-6": 1, "sok:H2021-10": 1,
+    "strategi:H2022-2": 1, "lister:H2020-9": 1, "hashing:H2024-5": 1, "hashing:H2021-9": 1,
+    "hashing:H2020-7": 1, "heap:H2023-2": 1, "heap:H2021-4": 1, "heap:H2024-7": 1, "heap:H2022-5": 1,
+    "traer:H2020-2": 1, "traer:H2022-11": 1, "traer:H2023-5": 1, "traer:H2024-6": 1, "traer:H2022-4": 1,
+    "traer:H2025-4": 1, "traer:H2025-5": 1, "traer:H2021-5": 1, "traer:H2022-9": 1,
+    "grafer:H2020-3": 1, "grafer:H2022-3": 1, "grafer:H2022-6": 1, "grafer:H2022-8": 1,
+    "grafer:H2021-13": 1, "grafer:H2023-6": 1, "grafer:H2025-7": 1, "grafer:H2020-8": 1,
+    "grafer:H2022-12": 1, "grafer:H2025-3": 1, "grafer:H2023-7": 1,
+    "crash:MOCK-heap-removemin": 1, "crash:MOCK-probing-slett": 1, "crash:MOCK-avl": 1,
+    "crash:MOCK-bst-remove": 1, "crash:MOCK-buildheap-heapsort": 1, "crash:MOCK-rehash": 1,
+    "crash:MOCK-dijkstra": 1, "crash:MOCK-topsort": 1, "crash:MOCK-mst": 1, "crash:MOCK-quicksort": 1,
+    "crash:MOCK-radix": 1, "crash:MOCK-separasjonsnoder": 1
   };
   var TABDEF = {
     oppgave: { long: "Oppgave", short: "Oppgave" },
@@ -837,6 +899,7 @@
 
     var pf = d.perfekt || (d.key && IN.PERFEKT[d.key]) || null;
     if (pf) stripSitat(pf);
+    pf = pfUtsnitt(pf, d.deler);
     var type = pf ? (pf.type || "eksamen") : null;
     if (pf && ["eksamen", "skjonn", "mock"].indexOf(type) < 0) { if (window.console) console.warn("perfekt: ukjent type", type, d.key); type = "eksamen"; }
     var demos = d.demo ? (Array.isArray(d.demo) ? d.demo : [d.demo]) : [];
@@ -941,7 +1004,7 @@
         var los = htmlFromListish(d.losning, true);
         if (pf) {
           buildPerfekt(p, d, pf, type);
-          if (hasLos && !LOSNING_DEKKET[IN.pageId() + ":" + d.key]) {
+          if (hasLos && !LOSNING_DEKKET[(opts.side || IN.pageId()) + ":" + d.key]) {
             p.appendChild(el("h4", { class: "et-h", text: "Kort fortalt" }));
             p.appendChild(setContent(el("div", { class: "et-kort" }), los));
           }
@@ -960,14 +1023,14 @@
     IN.symbolTips(op);
 
     // Bunnlinje: kilde til venstre, «Hvordan gikk det?» til høyre (lik i alle faner)
-    var self = selfAssess(card, d);
+    var self = selfAssess(card, d, opts);
     body.appendChild(el("div", { class: "et-foot" }, [src.firstChild ? src : null, self]));
     card.appendChild(body);
     host.appendChild(card);
 
     // Statusbrikken i toppen følger den lagrede fremdriften (kort:<side>:<id>)
     function paintStatus() {
-      var r = IN.progress && IN.progress.get(cardKey(card, d)), s = r && r.status;
+      var r = IN.progress && IN.progress.get(cardKey(card, d, opts)), s = r && r.status;
       clear(chip);
       chip.className = "et-status" + (s === "ok" || s === "ovmer" ? " " + s : "");
       if (s === "ok" || s === "ovmer") {
@@ -977,7 +1040,7 @@
     }
     document.addEventListener("in:progress", function (e) {
       var k = e.detail && e.detail.key;
-      if (card.isConnected && (!k || k === cardKey(card, d))) paintStatus();
+      if (card.isConnected && (!k || k === cardKey(card, d, opts))) paintStatus();
     });
     paintStatus();
     if (d.open) card.open = true;
@@ -1076,14 +1139,33 @@
     panes[0].mount();
   }
 
+  /* Delt fullpoengssvar (perfekt/delt.js): pf.utsnitt = [{ deler: [...], hvorfor, merknad, intro }].
+     Viser kortet bare deler som alle ligger i et utsnitt, brukes utsnittets tekster i stedet. */
+  function pfUtsnitt(pf, deler) {
+    if (!pf || !pf.utsnitt || !deler || !deler.length) return pf;
+    var u = pf.utsnitt.filter(function (x) { return deler.every(function (dl) { return x.deler.indexOf(dl) >= 0; }); })[0];
+    if (!u) return pf;
+    var o = {}, k;
+    for (k in pf) o[k] = pf[k];
+    ["hvorfor", "intro"].forEach(function (f) { if (f in u) o[f] = u[f]; });
+    if ("merknad" in u && pf.sensor) { o.sensor = {}; for (k in pf.sensor) o.sensor[k] = pf.sensor[k]; o.sensor.merknad = u.merknad; }
+    return o;
+  }
+  IN.pfUtsnitt = pfUtsnitt;
+  // kode kan være en liste: den første som finnes på siden brukes (delte svar på sider med ulike algoritmefiler)
   function algoOf(k) {
     if (!k) return null;
+    if (Array.isArray(k)) {
+      for (var i = 0; i < k.length; i++) { var a = algoOf(k[i]); if (a) return a; }
+      return null;
+    }
     if (typeof k === "string") return (IN.algos && IN.algos[k]) || null;
     return k.lines ? k : null;
   }
   function codeBlock(host, k, opts) {
     var algo = algoOf(k);
     if (algo && IN.pseudo && IN.pseudo.render) { IN.pseudo.render(host, algo, opts || { tooltips: false }); return; }
+    if (Array.isArray(k)) k = k.filter(function (x) { return typeof x === "string"; })[0] || "";
     if (typeof k === "string") { host.appendChild(el("pre", { class: "et-pf-pre", text: k })); return; }
     if (algo) host.appendChild(el("pre", { class: "et-pf-pre", text: ["Procedure " + algo.name + "(" + (algo.params || "") + ")"].concat(algo.lines.map(function (l) { return new Array((l.indent || 0) + 1).join("  ") + l.code; })).join("\n") }));
   }
@@ -1165,7 +1247,7 @@
     var y = examYear(d), nr = oppgNr(d);
     var src = sv.kilde || ("Kilde: sensorveiledning IN2090" + (y ? " " + y : "") + (nr ? ", oppgave " + nr : ""));
     host.appendChild(el("p", { class: "et-pf-src", text: src }));
-    host.appendChild(el("p", { class: "et-lead", text: "Ordrett fra sensorveiledningen. Vårt eget svar står under «Løsning»." }));
+    host.appendChild(el("p", { class: "et-lead", text: "Ordrett fra sensorveiledningen. Fargemarkeringer (som blå tekst for riktig svar) og figurer kommer ikke med, så dem gjengir vi med vår egen merking. Vårt eget svar står under «Løsning»." }));
     var bq = el("blockquote", { class: "sensor" });
     function sensorPart(p) {
       var w = el("div", { class: "et-sv-del" });
@@ -1345,14 +1427,15 @@
 
   /* Egenvurdering nederst i hvert eksamenskort → kort:<side>:<id> {status:"ok"|"ovmer"}.
      Id-en hentes når den trengs: kortets egen id, ellers nærmeste forelder med id. */
-  function cardKey(card, d) {
+  function cardKey(card, d, opts) {
+    if (opts && opts.progressKey) return opts.progressKey;
     var id = card.id || ((card.parentElement && card.parentElement.closest("[id]")) || {}).id;
     if (!id) id = "t-" + String((d.year || "") + "-" + (d.title || "")).toLowerCase().replace(/[^a-z0-9æøå]+/g, "-");
     return "kort:" + IN.pageId() + ":" + id;
   }
-  function selfAssess(card, d) {
+  function selfAssess(card, d, opts) {
     var wrap = el("div", { class: "et-self", role: "group", "aria-label": "Hvordan gikk oppgaven?" });
-    function key() { return cardKey(card, d); }
+    function key() { return cardKey(card, d, opts); }
     var bOk = el("button", { class: "btn sm et-self-ok", type: "button", text: "✓ Fikk det til" });
     var bOv = el("button", { class: "btn sm et-self-ov", type: "button", text: "↻ Må øve mer" });
     function paint() {
@@ -1420,6 +1503,89 @@
     clear(host);
     arr.forEach(function (d) { IN.examTask(host, d); });
   };
+
+  /* ---------- Felles kortdata: assets/js/kort/<tema>.js ----------
+     Hver temaside og crash.html bygger eksamenskortene fra de samme definisjonene.
+       IN.kortData.def(nøkkel, { side, host: "#exam-…", progressKey? }, function () { return spec; })
+         spec er det samme objektet som IN.examTask tar. Funksjonen kalles hver gang kortet bygges,
+         så samme kort kan bygges flere ganger. spec._mount() (valgfri) kjøres etter at kortet er satt inn.
+       IN.kortData.felles(side[, obj])   konstanter og hjelpere som både kortene og siden bruker
+       IN.kortData.render(side[, host])  bygger sidens kort i definisjonsrekkefølgen, én vert om gangen
+       IN.kortData.find(side, elementId) kortet med denne id-en (eller verten) på temasiden
+       IN.kortData.build(host, entry, opts)  ett kort i en annen vert (crash.html); opts.utenId: ingen id på kortet
+     IN.KORT_DATA[nøkkel] er lista over definisjoner med den eksamensnøkkelen. */
+  (function () {
+    var LIST = [], FELLES = {};
+    IN.KORT_DATA = IN.KORT_DATA || {};
+    function hostId(e) { return String(e.host || "").replace(/^#/, ""); }
+    var KD = IN.kortData = {
+      def: function (key, meta, fn) {
+        var e = { key: key, side: meta.side, host: meta.host, id: meta.id || null, progressKey: meta.progressKey || null, fn: fn };
+        (IN.KORT_DATA[key] = IN.KORT_DATA[key] || []).push(e);
+        LIST.push(e);
+        return e;
+      },
+      felles: function (side, obj) {
+        var f = FELLES[side] = FELLES[side] || {};
+        if (obj) for (var k in obj) f[k] = obj[k];
+        return f;
+      },
+      side: function (side) { return LIST.filter(function (e) { return e.side === side; }); },
+      find: function (side, elemId) {
+        return KD.side(side).filter(function (e) { return e.id === elemId; })[0] ||
+          KD.side(side).filter(function (e) { return !e.id && hostId(e) === elemId; })[0] || null;
+      },
+      // Samme nøkkel som kortet får på temasiden: kort:<side>:<kortets id eller vertens id>
+      progressKey: function (e, d) { return e.progressKey || "kort:" + e.side + ":" + ((d && d.id) || e.id || hostId(e)); },
+      build: function (host, e, opts) {
+        var d = e.fn(), o = { side: e.side, progressKey: KD.progressKey(e, d) };
+        for (var k in (opts || {})) o[k] = opts[k];
+        if (o.utenId) delete d.id;      // kortet står også på temasiden: ingen dobbel id i en annen vert
+        var card = IN.examTask(host, d, o);
+        if (d._mount) d._mount();
+        return card;
+      },
+      render: function (side, only) {
+        var hosts = [], by = {};
+        KD.side(side).forEach(function (e) {
+          if (only && e.host !== only) return;
+          if (!by[e.host]) { by[e.host] = []; hosts.push(e.host); }
+          by[e.host].push(e);
+        });
+        hosts.forEach(function (h) {
+          var node = qs(h);
+          if (!node) return;
+          clear(node);
+          by[h].forEach(function (e) {
+            var d = e.fn();
+            IN.examTask(node, d, e.progressKey ? { progressKey: e.progressKey } : undefined);
+            if (d._mount) d._mount();
+          });
+        });
+      }
+    };
+  })();
+
+  /* Last et skript én gang (fungerer også over file://). Lister lastes i rekkefølge. */
+  (function () {
+    var LOADED = {};
+    function present(src) { return qsa("script[src]").some(function (s) { return s.getAttribute("src").split("?")[0] === src; }); }
+    IN.loadScript = function (src) {
+      if (LOADED[src]) return LOADED[src];
+      if (present(src)) return (LOADED[src] = Promise.resolve());
+      LOADED[src] = new Promise(function (res, rej) {
+        var s = document.createElement("script");
+        s.src = src + "?v=" + IN.VERSION;
+        s.onload = function () { res(); };
+        s.onerror = function () { delete LOADED[src]; s.remove(); rej(new Error("Kunne ikke laste " + src)); };
+        document.head.appendChild(s);
+      });
+      return LOADED[src];
+    };
+    IN.loadScripts = function (list) {
+      return list.reduce(function (p, src) { return p.then(function () { return IN.loadScript(src); }); }, Promise.resolve());
+    };
+  })();
 
   /* ---------- Generelle tooltips: alle elementer med data-tip ----------
      Deler den flytende boksen #pc-tip med pseudokodelinjene, så bare én vises om gangen.
@@ -1592,10 +1758,17 @@
       if (r.status != null && typeof r.status !== "string") delete r.status;
       return r;
     }
+    /* Kort som har fått felles nøkkel (samme oppgave på to sider). Den gamle posten blir liggende,
+       så en eldre versjon av guiden fortsatt finner den; den nye får en kopi hvis den mangler eller er eldre. */
+    var ALIAS = { "kort:heap:exam-levelorder": "kort:traer:exam-h2025-4" };
     function cleanAll(o) {
       var out = {};
       if (!o || typeof o !== "object" || Array.isArray(o)) return out;
       Object.keys(o).forEach(function (k) { var r = cleanRec(o[k]); if (r) out[k] = r; });
+      Object.keys(ALIAS).forEach(function (old) {
+        var nu = ALIAS[old], a = out[old], b = out[nu];
+        if (a && (!b || (a.t || 0) > (b.t || 0))) { var c = {}; for (var p in a) c[p] = a[p]; out[nu] = c; }
+      });
       return out;
     }
     function load() { try { return cleanAll(JSON.parse(IN.store.get(KEY, "{}"))); } catch (e) { return {}; } }
@@ -1603,6 +1776,7 @@
     function emit(key, rec) { try { document.dispatchEvent(new CustomEvent("in:progress", { detail: { key: key, rec: rec } })); } catch (e) {} }
     IN.progress = {
       KEY: KEY,
+      ALIAS: ALIAS,
       get: function (k) { return load()[k] || null; },
       all: load,
       set: function (k, patch) {
@@ -1678,23 +1852,42 @@
     if (href.slice(i) === location.hash && IN.revealOppg) { e.preventDefault(); IN.revealOppg(); }
   });
 
-  /* Kom du fra crash course-løypa (#…&fra=crash&steg=9d)? Vis «← Tilbake til løypa»
-     så lenge du er i denne fanen/økta (sessionStorage), til du lukker den. */
+  /* Kom du fra crash course-løypa (#…&fra=crash&steg=9d[&kort=h21bin])? Vis «← Tilbake til løypa»
+     så lenge du er i denne fanen/økta (sessionStorage), til du lukker den.
+     Linja står fast under menyen (i flyten, data-sticky), så den aldri dekker innhold.
+     Står du fortsatt på oppslaget du kom til fra løypa (merket i history.state), går den tilbake med
+     history.back(), så løypa står der du forlot den. Ellers lenker den til crash.html#steg=…&kort=…. */
   function initCrashReturn() {
-    var KEY = "in2090:crash-retur", m = location.hash.match(/fra=crash(?:&steg=([\w-]+))?/), steg;
+    var KEY = "in2090:crash-retur", m = location.hash.match(/fra=crash(?:&steg=([\w-]+))?(?:&kort=([\w-]+))?/), raw, steg = null, kort = "";
     try {
       if (IN.pageId() === "crash") { sessionStorage.removeItem(KEY); return; }
-      if (m) sessionStorage.setItem(KEY, m[1] || "");
-      steg = sessionStorage.getItem(KEY);
-    } catch (e) { steg = m ? (m[1] || "") : null; }
-    if (steg == null) return;
-    var chip = el("div", { class: "crash-ret", role: "navigation", "aria-label": "Crash course" });
-    chip.appendChild(el("a", { class: "crash-ret-a", href: "crash.html" + (steg ? "#steg=" + steg : ""),
-      text: "← Tilbake til løypa" + (steg ? " · steg " + steg : "") }));
-    chip.appendChild(el("button", { class: "crash-ret-x", type: "button", "aria-label": "Skjul tilbake-knappen", text: "×",
-      onclick: function () { try { sessionStorage.removeItem(KEY); } catch (e) {} chip.remove(); } }));
-    document.body.appendChild(chip);
+      if (m) sessionStorage.setItem(KEY, (m[1] || "") + (m[2] ? "|" + m[2] : ""));
+      raw = sessionStorage.getItem(KEY);
+    } catch (e) { raw = m ? (m[1] || "") + (m[2] ? "|" + m[2] : "") : null; }
+    if (raw == null) return;
+    steg = raw.split("|")[0]; kort = raw.split("|")[1] || "";
+    if (m) try { var st = history.state && typeof history.state === "object" ? history.state : {}; st.fraCrash = 1; history.replaceState(st, ""); } catch (e) {}
+    var href = "crash.html" + (steg ? "#steg=" + steg + (kort ? "&kort=" + kort : "") : "");
+    var bar = el("div", { class: "crash-ret", role: "navigation", "aria-label": "Crash course", "data-sticky": "" });
+    var inner = el("div", { class: "crash-ret-in" });
+    var a = el("a", { class: "crash-ret-a", href: href, text: "← Tilbake til løypa" + (steg ? " · steg " + steg : "") });
+    a.addEventListener("click", function (e) {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var hs = history.state;
+      if (hs && hs.fraCrash && history.length > 1) { e.preventDefault(); history.back(); }
+    });
+    inner.appendChild(a);
+    inner.appendChild(el("button", { class: "crash-ret-x", type: "button", "aria-label": "Skjul tilbake-linja", text: "×",
+      onclick: function () { try { sessionStorage.removeItem(KEY); } catch (e) {} bar.remove(); document.body.classList.remove("has-crash-ret"); } }));
+    bar.appendChild(inner);
+    var after = qs("#levelbar") || qs("#topnav");
+    if (after && after.parentNode) after.parentNode.insertBefore(bar, after.nextSibling);
+    else document.body.insertBefore(bar, document.body.firstChild);
     document.body.classList.add("has-crash-ret");
+    function place() { if (bar.isConnected) bar.style.top = Math.max(0, IN.stickyH(bar) - 8) + "px"; }
+    place();
+    window.addEventListener("resize", place);
+    setTimeout(place, 300);   // nivålinja kan få endelig høyde litt etter oppstart
   }
 
   /* ---------- Ny versjon av guiden? ----------
@@ -1703,7 +1896,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261126l";
+  IN.VERSION = "20261126m";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
@@ -1745,7 +1938,8 @@
 
   /* ---------- O-trapp (F5) ----------
      Seks små grå trinn foran en O-klasse: O(1) < O(log n) < O(n) < O(n log n) < O(n²) < O(2ⁿ).
-     Bare rene klasser får trapp; sammensatte uttrykk (O(|V| + |E|), O(d(N + n))) får ingen. Ingen farge. */
+     Bare rene klasser får trapp; sammensatte uttrykk (O(|V| + |E|), O(d(N + n))) får ingen.
+     Trinnene er fargekodet fra grønn (O(1)) via gul til rød (O(2ⁿ)); selve O-teksten står alltid ved siden av. */
   IN.oKlasse = function (txt) {
     var t = String(txt || "").toLowerCase().replace(/forventet|amortisert/g, "").replace(/[\s  ]+/g, "");
     var m = /^o\((.*)\)$/.exec(t); if (m) t = m[1];
@@ -1757,12 +1951,43 @@
     return '<span class="otr" data-o="' + k + '" aria-hidden="true" title=""><i></i><i></i><i></i><i></i><i></i><i></i></span>';
   };
   // Legg trapp foran hver celle/etikett i root som bare inneholder én O-klasse.
+  // Står klassen uten «O(…)» (f.eks. «n²» i sammenligningstabeller), skrives den ut som O(n²):
+  // O-notasjonen skal alltid synes, trappen er bare en hjelp ved siden av.
   IN.oTrappIn = function (root, sel) {
     qsa(sel, root || document).forEach(function (c) {
       if (c.querySelector(".otr")) return;
       var k = IN.oKlasse(c.textContent);
-      if (k) c.insertAdjacentHTML("afterbegin", IN.oTrapp(k));
+      if (!k) return;
+      if (!/^\s*O\s*\(/.test(c.textContent) && c.children.length === 0) c.textContent = "O(" + c.textContent.trim() + ")";
+      c.insertAdjacentHTML("afterbegin", IN.oTrapp(k));
     });
+  };
+
+  /* Visningsvalg for O-klasser: «O med farger» (standard: O med trinn fra grønn til rød foran)
+     eller «O» (bare notasjonen). Valget gjelder hele guiden og huskes (in-ovis).
+     En liten bryter står over hver tabell som har trinn; alle bryterne følger hverandre. */
+  var OVIS = ["o", "farge"], OVIS_TXT = { o: "O", farge: "O med farger" };
+  function ovisGet() { var v = IN.store.get("in-ovis", "farge"); return OVIS.indexOf(v) >= 0 ? v : "farge"; }
+  function ovisSet(v, save) {
+    document.documentElement.setAttribute("data-ovis", v);
+    if (save) IN.store.set("in-ovis", v);
+    qsa(".ovis-switch .btn").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === v ? "true" : "false"); });
+  }
+  IN.oVisning = function (root) {
+    qsa(".cmp-table", root || document).forEach(function (t) {
+      if (!t.querySelector(".otr")) return;
+      var anchor = t.parentElement && t.parentElement.children.length === 1 && !t.parentElement.matches("section, [data-panel], .card") ? t.parentElement : t;
+      var prev = anchor.previousElementSibling;
+      if (prev && prev.classList.contains("ovis-switch")) return;
+      var row = el("div", { class: "btn-row ovis-switch", role: "group", "aria-label": "Vis kompleksitet som" },
+        [el("span", { class: "ovis-lbl", text: "Vis kompleksitet:" })]);
+      OVIS.forEach(function (v) {
+        row.appendChild(el("button", { class: "btn sm", type: "button", "data-v": v, "aria-pressed": "false", text: OVIS_TXT[v],
+          onclick: function () { ovisSet(v, true); } }));
+      });
+      anchor.parentNode.insertBefore(row, anchor);
+    });
+    ovisSet(ovisGet());
   };
 
   /* ---------- «Husk»-lister (F1b) ----------
@@ -1801,6 +2026,7 @@
   function boot() {
     IN.huskLists(document);
     IN.oTrappIn(document, ".cmp-table td");
+    IN.oVisning(document);
     buildNav();
     buildLevelBar();
     IN.tabs(document);
