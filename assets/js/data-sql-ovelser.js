@@ -23,7 +23,8 @@
       [13, "Mrs Dalloway", 3, 1925, 200], [14, "Brødrene Løvehjerte", 4, 1973, 230], [15, "Folkeeventyr", null, 1841, null],
       [16, "Sult", 6, 1890, 220], [17, "Markens grøde", 6, 1917, null], [18, "Vildanden", 1, 1884, 1000],
       [19, "Pippi Langstrømpe", 4, 1945, 160], [20, "Amtmandens døtre", 9, 1854, 300], [21, "Hobbiten", 10, 1937, 340],
-      [22, "Vinternatt", 7, 1900, 180], [23, "Til fyret", 3, 1927, 200], [24, "Ukjent dagbok", null, null, 90]
+      [22, "Vinternatt", 7, 1900, 180], [23, "Til fyret", 3, 1927, 200], [24, "Ukjent dagbok", null, null, 90],
+      [25, "Sult", 6, 1934, 330]
     ],
     "låner": [
       [1, "Ada", "Oslo"], [2, "Bo", "Bergen"], [3, "Cato", "Oslo"], [4, "Dina", null], [5, "Ibsen", "Skien"],
@@ -260,10 +261,11 @@
       fasit: "SELECT b.tittel\nFROM bok AS b\nWHERE NOT EXISTS (\n  SELECT *\n  FROM utlån AS u\n  WHERE u.bid = b.bid\n);",
       godta: ["SELECT tittel\nFROM bok\nWHERE bid IN (\n  SELECT bid FROM bok\n  EXCEPT\n  SELECT bid FROM utlån\n);","SELECT tittel\nFROM bok\nWHERE bid NOT IN (SELECT bid FROM utlån);"],
       hint: ["«Aldri lånt» betyr at det ikke finnes noe utlån med bokas <code>bid</code>.", "Her er NOT IN trygt, fordi <code>utlån.bid</code> er en del av primærnøkkelen og aldri er NULL."],
-      tester: "tre bøker er aldri lånt, og bare to av dem mangler forfatter",
+      tester: "fire bøker er aldri lånt, bare to av dem mangler forfatter, og to bøker heter Sult (bare den ene er lånt)",
       feil: [
         { sql: "SELECT tittel FROM bok WHERE fid IS NULL;", fanger: "felle", hvorfor: "sjekker forfatter i stedet for utlån" },
-        { sql: "SELECT DISTINCT b.tittel FROM bok AS b JOIN utlån AS u ON (b.bid <> u.bid);", fanger: "eksempel", hvorfor: "<> i joinen gir nesten alle bøkene" }
+        { sql: "SELECT DISTINCT b.tittel FROM bok AS b JOIN utlån AS u ON (b.bid <> u.bid);", fanger: "eksempel", hvorfor: "<> i joinen gir nesten alle bøkene" },
+        { sql: "SELECT tittel FROM bok EXCEPT SELECT b.tittel FROM bok AS b JOIN utlån AS u ON (b.bid = u.bid);", fanger: "felle", hvorfor: "EXCEPT på tittel fjerner også Sult fra 1934, fordi den andre Sult er lånt" }
       ]
     },
     {

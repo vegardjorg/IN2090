@@ -7,8 +7,8 @@
   <title>Blokk 3 · Relasjonsalgebra · IN2090</title>
   <meta name="description" content="Relasjonsalgebra i IN2090: π, σ, ρ, kryssprodukt, join med betingelse og naturlig join, union, snitt og differanse, navngitte resultater og RA-trær. Med stegvis evaluering av uttrykkstrær, fellen med naturlig join, oversettelse mellom SQL og RA, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126m">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126m">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126p">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126p">
   <style>
     /* Blokk 3 · relasjonsalgebra (sidens egen stil) */
     .ra-ops { width: 100%; }
@@ -320,7 +320,7 @@
     <!-- ===================== EKSAMEN ===================== -->
     <section data-panel="eksamen">
       <h3>Eksamensoppgaver</h3>
-      <p class="muted small">Relasjonsalgebra har vært spurt om i H2025 (oppgave 1.3, 5 p) og på prøveeksamen 2020 (5 p, ikke i banken her). H2024 2.4 er en SQL-oppgave, men ideen er en RA-ekvivalens: union over samme tabell er det samme som én seleksjon med ∨.</p>
+      <p class="muted small">Relasjonsalgebra har vært spurt om i H2025 (oppgave 1.3, 5 p) og på prøveeksamen 2020 (oppgave 11, 5 p). H2024 2.4 er en SQL-oppgave, men ideen er en RA-ekvivalens: union over samme tabell er det samme som én seleksjon med ∨.</p>
       <div id="bank-ra"></div>
       <h3>Samme idé i SQL: H2024 2.4</h3>
       <div id="bank-ra-2024"></div>
@@ -336,21 +336,23 @@
 
   <footer class="footer">IN2090-guide · Blokk 3 · Relasjonsalgebra · <a href="04-sql.html">Neste: blokk 4, SQL</a></footer>
 
-  <script src="assets/js/core.js?v=20261126m"></script>
-  <script src="assets/js/symboler.js?v=20261126m"></script>
-  <script src="assets/js/sql-lang.js?v=20261126m"></script>
-  <script src="assets/js/pseudocode.js?v=20261126m"></script>
-  <script src="assets/js/stepplayer.js?v=20261126m"></script>
-  <script src="assets/js/viz-relation.js?v=20261126m"></script>
-  <script src="assets/js/viz-er.js?v=20261126m"></script>
-  <script src="assets/js/data-ra.js?v=20261126m"></script>
-  <script src="assets/js/side-ra.js?v=20261126m"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126m"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126m"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126m"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126m"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126m"></script>
-  <script src="assets/js/bank.js?v=20261126m"></script>
+  <script src="assets/js/core.js?v=20261126p"></script>
+  <script src="assets/js/symboler.js?v=20261126p"></script>
+  <script src="assets/js/sql-lang.js?v=20261126p"></script>
+  <script src="assets/js/pseudocode.js?v=20261126p"></script>
+  <script src="assets/js/stepplayer.js?v=20261126p"></script>
+  <script src="assets/js/viz-relation.js?v=20261126p"></script>
+  <script src="assets/js/viz-er.js?v=20261126p"></script>
+  <script src="assets/js/data-ra.js?v=20261126p"></script>
+  <script src="assets/js/side-ra.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261126p"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261126p"></script>
+  <script src="assets/js/bank.js?v=20261126p"></script>
   <script>
   (function () {
     "use strict";

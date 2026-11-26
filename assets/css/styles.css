@@ -141,7 +141,7 @@
   --d-card: calc(var(--d-sm) + var(--d-xs));
   --state-hover: color-mix(in srgb, var(--color-on-surface) 8%, transparent);
   --state-press: color-mix(in srgb, var(--color-on-surface) 14%, transparent);
-  --focus: 2px solid var(--color-primary);
+  --focus: 3px solid var(--color-primary);
   --elevation: 0 4px 16px rgb(0 0 0 / 0.16);
   --maxw: 1080px;
 
@@ -2580,4 +2580,48 @@ main h4:not(:first-child):not(.et-h):not(:is(h2, h3, h4) + h4):not(:is(.callout,
 main h4.ov-h,
 main h4:not(.et-h):not(:is(.callout, .examtask, details, .husk) h4):is(:has(+ div[id]), :has(+ :is(p, .callout) + div[id])) {
   font-size: 17px; line-height: 1.3;
+}
+
+/* ---------- UI/UX 2026-11-26 (del 2) ---------- */
+/* iOS zoomer inn i skjemafelt med skrift under 16 px: hold dem på 16 px på mobil og berøringsskjerm */
+@media (max-width: 760px), (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]),
+  textarea, select { font-size: 16px !important; }
+}
+/* Tydelig fokusring også på skjemafelt og knapper som har egen kant */
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: var(--focus); outline-offset: 1px; }
+.btn:focus-visible, .qz-choice:focus-visible { outline: var(--focus); outline-offset: 2px; }
+/* Fremdrift i fanen («3/8») */
+.tab-prog {
+  display: inline-block; margin-left: .4em; padding: 0 .4em; border-radius: 999px;
+  font-size: .75em; font-weight: 600; line-height: 1.5; vertical-align: .1em;
+  background: var(--color-surface-container-high); color: var(--color-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.tab-prog.full { background: color-mix(in srgb, var(--color-primary) 18%, transparent); color: var(--color-primary); }
+/* Tastaturhint i quiz bare med mus/styreflate */
+.qz-keys { display: none; margin: 0; flex-basis: 100%; }
+@media (hover: hover) and (pointer: fine) { .qz-keys { display: block; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* Brede kodeblokker og tabeller: uttoning på siden som kan rulles (IN.scrollFade). Tabeller med fast
+   første kolonne tones bare ut til høyre. */
+:is(pre, .table-wrap).fade-r {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 28px), rgb(0 0 0 / .25) 100%);
+          mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 28px), rgb(0 0 0 / .25) 100%);
+}
+:is(pre, .table-wrap:not(:has(.cmp-table))).fade-l {
+  -webkit-mask-image: linear-gradient(90deg, rgb(0 0 0 / .25) 0, #000 28px, #000 100%);
+          mask-image: linear-gradient(90deg, rgb(0 0 0 / .25) 0, #000 28px, #000 100%);
+}
+:is(pre, .table-wrap:not(:has(.cmp-table))).fade-l.fade-r {
+  -webkit-mask-image: linear-gradient(90deg, rgb(0 0 0 / .25) 0, #000 28px, #000 calc(100% - 28px), rgb(0 0 0 / .25) 100%);
+          mask-image: linear-gradient(90deg, rgb(0 0 0 / .25) 0, #000 28px, #000 calc(100% - 28px), rgb(0 0 0 / .25) 100%);
+}
+/* «Sjekk svar» følger med nederst på mobil mens du er i et langt sett */
+@media (max-width: 760px) {
+  .qz-foot {
+    position: sticky; bottom: 0; z-index: 3;
+    padding: var(--d-sm) 0; background: var(--color-surface-container-lowest);
+    box-shadow: 0 -6px 10px -8px rgb(0 0 0 / .25);
+  }
 }

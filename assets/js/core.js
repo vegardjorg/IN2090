@@ -379,6 +379,30 @@
       bunner.push(nav);
     });
     function bunnSist() { bunner.forEach(function (n) { var p = n.parentNode; if (p && p.lastElementChild !== n) p.appendChild(n); }); }
+
+    // Fremdrift i fanen: «3/8» (riktig når svarene vises, ellers besvart). Bare faner med quiz/sant-usant.
+    function progPaint() {
+      btns.forEach(function (b) {
+        var id = b.getAttribute("data-tab");
+        var p = panels.filter(function (x) { return x.getAttribute("data-panel") === id; })[0];
+        if (!p) return;
+        var r = 0, a = 0, t = 0, vis = true;
+        qsa(".prog-src", p).forEach(function (s) {
+          if (!s._prog || !s.isConnected) return;
+          var c = s._prog(); r += c.right; a += c.answered; t += c.total;
+          if (c.answered && !c.vis) vis = false;
+        });
+        var badge = qs(".tab-prog", b);
+        if (!t || !a) { if (badge) badge.remove(); return; }
+        if (!badge) { badge = el("span", { class: "tab-prog" }); b.appendChild(badge); }
+        var n = vis ? r : a, ord = vis ? " riktig" : " besvart";
+        badge.textContent = n + "/" + t;
+        badge.className = "tab-prog" + (vis && r === t ? " full" : "");
+        badge.title = n + " av " + t + ord;
+        badge.setAttribute("aria-label", ", " + n + " av " + t + ord);
+      });
+    }
+    document.addEventListener("in:prog", progPaint);
     if (document.readyState === "complete") setTimeout(bunnSist, 0); else window.addEventListener("load", bunnSist);
 
     var start = (fromHash && ids.indexOf(fromHash) >= 0) ? fromHash : ids[0];
@@ -462,6 +486,27 @@
      Når tilbakemelding vises (bryteren på, eller etter «Sjekk svar»), blir valget grønt/rødt
      med ✓/✗, riktig svar markeres, og et galt valg åpner forklaringen sin.
      «Sjekk svar» åpner forklaringen under alle gale punkter og lukker de andre. */
+  /* IN.intoView(node): ruller rolig slik at node blir synlig (under den faste toppen), bare hvis den
+     ikke allerede er helt synlig. Uten animasjon ved «reduser bevegelse». */
+  IN.intoView = function (node) {
+    if (!node || !node.getBoundingClientRect) return;
+    var r = node.getBoundingClientRect(), top = IN.stickyH ? IN.stickyH() : 60, vh = window.innerHeight || 0;
+    if (!r.height && !r.width) return;
+    if (r.top >= top && (r.bottom <= vh || r.top < vh * 0.6)) return;   // starten er godt synlig: la være
+    var reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    var y = r.top + window.pageYOffset - top - 12;
+    if (r.height < vh - top - 24 && r.top > top) y = r.bottom + window.pageYOffset - vh + 24; // lite nok: bunnen inn nederst
+    window.scrollTo({ top: Math.max(0, y), behavior: reduce ? "auto" : "smooth" });
+  };
+  /* Fremdrift per fane: elementer med klassen prog-src og en _prog()-funksjon
+     ({ right, answered, total, vis }) telles i fanen de ligger i. Kall IN.progChanged(node) ved endring. */
+  var progT = null;
+  IN.progChanged = function () {
+    if (progT) return;
+    progT = setTimeout(function () { progT = null; try { document.dispatchEvent(new CustomEvent("in:prog")); } catch (e) {} }, 0);
+  };
+
   var STRAKS_KEY = "in2090:svar-straks", qzN = 0;
   function straksEvent(on) { try { document.dispatchEvent(new CustomEvent("in:svar-straks", { detail: !!on })); } catch (e) {} }
   IN.svarStraks = {
@@ -664,6 +709,7 @@
       score.innerHTML = scoreHtml(counts());
       bCheck.disabled = !!(o.lock && checked);
       if (o.pager) paintPager();
+      IN.progChanged(wrap);
     }
     function report() {
       var c = counts();
@@ -690,6 +736,9 @@
       clear(res);
       if (o.result) { var x = o.result(c); if (typeof x === "string") res.innerHTML = x; else append(res, x); }
       else say(c.right + " av " + c.total + " riktig. " + c.wrong + " galt" + (c.blank ? ", " + c.blank + " ubesvart" : "") + ".");
+      // Vis resultatet: egen resultattekst, ellers første gale punkt, ellers poenglinja
+      var firstBad = rows.filter(function (r) { return !r.li.hidden && state(r.it) === "wrong"; })[0];
+      IN.intoView(res.firstChild ? res : firstBad ? firstBad.li : head);
     }
     function doReset() {
       if (o.onReset) { o.onReset(); return; }
@@ -728,6 +777,44 @@
     // Én fotnote per sett når minst ett punkt har en kilde formulert med egne ord
     var fn = items.some(function (it) { return it.src && it.src.some(function (r) { return r.egneOrd; }); })
       ? el("p", { class: "qz-kilde-fn", text: "* formulert med egne ord" }) : null;
+    // Hurtigtaster når fokus står i settet: 1–9 velger svar på punktet du står på, N/P neste/forrige punkt,
+    // Ctrl+Enter sjekker. Vanlig Enter/mellomrom trykker knappen du står på, som før.
+    var keyHint = el("p", { class: "qz-keys small muted", "aria-hidden": "true",
+      text: "Tastatur: " + (mc ? "1–" + Math.min(9, Math.max.apply(null, items.map(function (it) { return it.choices.length; }))) + " velger svar" : "1 = sant, 2 = usant") +
+        ", N/P = neste/forrige punkt, Ctrl+Enter = sjekk svar." });
+    foot.appendChild(keyHint);
+    function rowOf(t) {
+      for (var i = 0; i < rows.length; i++) if (rows[i].li.contains(t)) return i;
+      return o.pager ? cur : -1;
+    }
+    function focusRow(i) {
+      var r = rows[i]; if (!r) return;
+      var b = r.btns.filter(function (x) { return x.classList.contains("sel"); })[0] || r.btns[0];
+      if (b) { b.focus({ preventScroll: true }); IN.intoView(r.li); }
+    }
+    wrap.addEventListener("keydown", function (e) {
+      if (e.altKey || e.metaKey || e.defaultPrevented) return;
+      var t = e.target, tag = t && t.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (t && t.isContentEditable)) return;
+      if (e.key === "Enter" && e.ctrlKey) { e.preventDefault(); if (!bCheck.disabled) doCheck(); return; }
+      if (e.ctrlKey) return;
+      var i = rowOf(t);
+      if (/^[1-9]$/.test(e.key) && i >= 0) {
+        var b = rows[i].btns[+e.key - 1];
+        if (!b || b.disabled) return;
+        e.preventDefault(); b.click(); b.focus({ preventScroll: true });
+      } else if ((e.key === "n" || e.key === "N" || e.key === "p" || e.key === "P") && i >= 0) {
+        var d = e.key.toLowerCase() === "n" ? 1 : -1, j = i + d;
+        if (o.pager) { e.preventDefault(); go(j); focusRow(cur); }
+        else if (j >= 0 && j < rows.length) { e.preventDefault(); focusRow(j); }
+      }
+    });
+    wrap.classList.add("prog-src");
+    wrap._prog = function () {
+      var c = counts(), vis = instant() || checked;
+      return { right: vis ? c.right : 0, answered: c.answered, total: c.total, vis: vis };
+    };
+
     [head, dotRow, list, pnav, foot, res, fn, live].forEach(function (x) { if (x) wrap.appendChild(x); });
     host.appendChild(wrap);
     if (checked) rows.forEach(function (r) { open[r.it.id] = state(r.it) === "wrong"; });
@@ -1896,7 +1983,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261126m";
+  IN.VERSION = "20261126p";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
@@ -2042,6 +2129,12 @@
     // Symbolforklaringer i statisk tekst (.callout o.l.) og det sidens egne skript har tegnet ved oppstart
     setTimeout(function () { IN.symbolTips(document); }, 0);
     window.addEventListener("load", function () { IN.symbolTips(document); });
+    // Uttoning på kanten av brede kodeblokker og tabeller som kan rulles vannrett (synlige ved oppstart
+    // og når en fane eller et kort åpnes)
+    function fades(root) { qsa("pre, .table-wrap", root || document).forEach(function (n) { if (n.offsetParent) IN.scrollFade(n); }); }
+    window.addEventListener("load", function () { fades(); });
+    document.addEventListener("in:shown", function (e) { setTimeout(function () { fades(e.target); }, 0); });
+    document.addEventListener("toggle", function (e) { if (e.target.open) fades(e.target); }, true);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();

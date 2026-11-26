@@ -17,7 +17,9 @@
 
   function num(x) { return String(Math.round(x * 100) / 100).replace(".", ","); }
   function sgn(x) { return (x > 0 ? "+" : x < 0 ? "−" : "") + num(Math.abs(x)); }
-  function yearKey(y) { var m = /^([HV])(\d{4})$/.exec(y || ""); return m ? +m[2] * 2 + (m[1] === "H" ? 1 : 0) : 0; }
+  // Høst etter vår; en prøveeksamen (P2019) står like før ordinær høsteksamen samme år
+  function yearKey(y) { var m = /^([HVP])(\d{4})$/.exec(y || ""); return m ? +m[2] * 2 + (m[1] === "H" ? 1 : m[1] === "P" ? 0.5 : 0) : 0; }
+  function yearLabel(y) { var m = /^P(\d{4})$/.exec(y || ""); return m ? "Prøve " + m[1] : y; }
   function taskNr(o) { var k = String(o.key || ""), i = k.indexOf("-"); return i >= 0 ? k.slice(i + 1) : null; }
 
   /* ---------- Del 1: automatisk rettede oppgaver ---------- */
@@ -127,7 +129,8 @@
       var d = el("div", { class: "bank-del1" });
       wrap.appendChild(d);
       var nr2 = taskNr(o);
-      IN.del1(d, o.del1, { id: "del1-" + o.key, kilde: "Kilde: sensorveiledning IN2090 " + x.y + (nr2 ? ", oppgave " + nr2 : "") });
+      IN.del1(d, o.del1, { id: "del1-" + o.key, kilde: x.ex.prove ? "Kilde: prøveeksamen IN2090 " + x.y.slice(1) + (nr2 ? ", oppgave " + nr2 : "") + " (fasit regnet ut av oss)"
+        : "Kilde: sensorveiledning IN2090 " + x.y + (nr2 ? ", oppgave " + nr2 : "") });
     }
     return wrap;
   }
@@ -146,7 +149,7 @@
     all.forEach(function (x) { if (years.indexOf(x.y) < 0) years.push(x.y); });
     var pts = all.reduce(function (s, x) { return s + (+x.o.points || 0); }, 0);
     host.appendChild(el("p", { class: "bank-sum small", html: "<b>" + all.length + " oppgaver</b> fra " + years.length +
-      (years.length === 1 ? " eksamen" : " eksamener") + " (" + years.join(", ") + "), til sammen " + num(pts) + " poeng." }));
+      (years.length === 1 ? " eksamen" : " eksamener") + " (" + years.map(yearLabel).join(", ") + "), til sammen " + num(pts) + " poeng." }));
 
     var bar = el("div", { class: "bank-years", role: "group", "aria-label": "Vis år" });
     var list = el("div", { class: "bank-list" });
@@ -156,7 +159,7 @@
       IN.qsa("button", bar).forEach(function (b) { b.setAttribute("aria-pressed", b._y === sel ? "true" : "false"); });
       IN.qsa(".bank-year", list).forEach(function (s) { s.hidden = sel !== "*" && s._y !== sel; });
     }
-    [["*", "Alle år"]].concat(years.map(function (y) { return [y, y]; })).forEach(function (p) {
+    [["*", "Alle år"]].concat(years.map(function (y) { return [y, yearLabel(y)]; })).forEach(function (p) {
       var b = el("button", { class: "btn sm", type: "button", text: p[1], onclick: function () { paint(p[0]); } });
       b._y = p[0]; bar.appendChild(b);
     });
@@ -165,7 +168,7 @@
       var items = all.filter(function (x) { return x.y === y; }), ex = items[0].ex;
       var sec = el("section", { class: "bank-year" }); sec._y = y;
       var meta = [ex.dato, ex.varighet].filter(Boolean).join(" · ");
-      sec.appendChild(el("h3", { class: "bank-yh", html: y + (meta ? ' <span class="muted small">' + meta + "</span>" : "") }));
+      sec.appendChild(el("h3", { class: "bank-yh", html: (ex.prove ? (ex.navn || yearLabel(y)) : y) + (meta ? ' <span class="muted small">' + meta + "</span>" : "") }));
       var wantSchema = opts.skjema != null ? opts.skjema : items.some(function (x) { return /^sql|relasjonsalgebra/.test(x.o.block || ""); });
       if (wantSchema && ex.skjema && IN.schema) IN.schema(sec, ex.skjema, { open: false, year: y });
       var cards = el("div", { class: "bank-cards" });

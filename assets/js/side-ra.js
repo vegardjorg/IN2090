@@ -758,6 +758,7 @@
         fb.appendChild(el("p", { class: c.ok ? "ra-ok" : "ra-bad", html: (c.ok ? "<b>Riktig resultat.</b> " : "<b>Ikke helt.</b> ") + esc(c.msg || "") + (c.ok && o.etter ? " " + o.etter : "") }));
         if (!c.ok && o.hint) fb.appendChild(el("p", { class: "small", html: "<b>Hint:</b> " + o.hint }));
         IN.vizTable(vis, relToTable(mine, "Ditt resultat"), { compact: true });
+        if (IN.intoView) IN.intoView(fb);
       } });
       var lf = el("button", { class: "btn sm", type: "button", text: "Vis et forslag", onclick: function () {
         clear(vis);

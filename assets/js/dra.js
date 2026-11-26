@@ -722,6 +722,7 @@
       if (opts.result) { var x = opts.result(c); if (typeof x === "string") res.innerHTML = x; else if (x) res.appendChild(x); }
       else if (spec.oppsummering) { var o = el("div", { class: "callout eksempel dra-oppsum", html: spec.oppsummering }); res.appendChild(o); if (IN.symbolTips) IN.symbolTips(o); }
       say(c.right + " av " + c.total + " riktig. " + c.wrong + " galt" + (c.blank ? ", " + c.blank + " ikke plassert" : "") + ".");
+      if (IN.intoView && res.firstChild) IN.intoView(res);
     }
     function doReset() {
       st = emptyState(ns, opts.shuffle); checked = false; reported = false; open = {}; flyttet = false; sel = null; kb = null; target = null;

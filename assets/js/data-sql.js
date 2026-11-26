@@ -710,7 +710,7 @@
   };
 
   /* ================= Merker til sidehodet fra eksamensbanken ================= */
-  function yearKey(y) { var mm = /^([HV])(\d{4})$/.exec(y || ""); return mm ? +mm[2] * 2 + (mm[1] === "H" ? 1 : 0) : 0; }
+  function yearKey(y) { var mm = /^([HVP])(\d{4})$/.exec(y || ""); return mm ? +mm[2] * 2 + (mm[1] === "H" ? 1 : mm[1] === "P" ? 0.5 : 0) : 0; }
   D.badges = function (host, block) {
     if (typeof host === "string") host = IN.qs(host);
     if (!host) return 0;
@@ -723,7 +723,7 @@
     out.forEach(function (x) {
       var id = "o-" + String(x.o.key).replace(/[^A-Za-z0-9_-]/g, "_");
       host.appendChild(IN.el("a", { class: "badge", href: "#fane=eksamen&oppg=" + id,
-        html: "<b>" + esc(x.y) + "</b> · " + esc(x.o.title || x.o.oppgave_nr || x.o.key) + (x.o.points ? ' · <span class="pts">' + esc(x.o.points) + "p</span>" : "") }));
+        html: "<b>" + esc(/^Pd/.test(x.y) ? "Prøve " + x.y.slice(1) : x.y) + "</b> · " + esc(x.o.title || x.o.oppgave_nr || x.o.key) + (x.o.points ? ' · <span class="pts">' + esc(x.o.points) + "p</span>" : "") }));
     });
     return out.length;
   };

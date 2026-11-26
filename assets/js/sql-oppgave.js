@@ -184,7 +184,7 @@
 
     var knapper = el("div", { class: "sqlo-knapper" });
     var bKjor = el("button", { class: "btn", type: "button", text: "▶ Kjør", onclick: function () { kjør(); } });
-    var bSjekk = el("button", { class: "btn primary", type: "button", text: "Sjekk", onclick: function () { sjekk(); } });
+    var bSjekk = el("button", { class: "btn primary", type: "button", text: "Sjekk", onclick: function () { sjekk(); if (IN.intoView) IN.intoView(ut); } });
     var bHint = spec.hint && spec.hint.length ? el("button", { class: "btn", type: "button", text: "Hint", onclick: function () { visHint(); } }) : null;
     var bFasit = el("button", { class: "btn", type: "button", text: "Vis fasit", "aria-expanded": "false", onclick: function () { visFasit(); } });
     var bNull = el("button", { class: "btn", type: "button", text: "↺ Nullstill", onclick: function () { nullstill(); } });

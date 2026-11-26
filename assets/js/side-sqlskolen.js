@@ -174,7 +174,7 @@
         var card = el("div", { class: "card sqs-rad" });
         card.appendChild(el("h4", { text: "Spørring " + (i + 1) }));
         IN.sqlBlock(card, it.sql);
-        var inp = el("input", { type: "number", min: "0", step: "1", inputmode: "numeric", class: "sqs-tall", "aria-label": "Antall rader i svaret på spørring " + (i + 1) });
+        var inp = el("input", { type: "text", inputmode: "numeric", autocomplete: "off", class: "sqs-tall", "aria-label": "Antall rader i svaret på spørring " + (i + 1) });
         var ut = el("div", { class: "sqs-rad-ut", "aria-live": "polite" });
         var btn = el("button", { class: "btn sm primary", type: "button", text: "Sjekk" });
         var vis = el("button", { class: "btn sm", type: "button", text: "Vis svaret" });
@@ -191,7 +191,8 @@
           if (IN.progress && gjettet != null) IN.progress.solved("sqlskolen-rad", "rad-" + i, gjettet === n ? 1 : 0, 1);
         }
         btn.addEventListener("click", function () {
-          var v = inp.value.trim();
+          // Godta «3», «3 rader», «3.» og desimalkomma; bare tallet teller
+          var v = inp.value.trim().replace(",", ".").replace(/^(-?\d+(?:\.\d+)?)\s*(rad|rader|stk)?\.?$/i, "$1");
           if (v === "" || isNaN(+v)) { IN.clear(ut); ut.appendChild(el("p", { class: "small muted", text: "Skriv inn et tall først." })); return; }
           svar(Math.round(+v));
         });
