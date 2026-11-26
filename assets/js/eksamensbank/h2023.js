@@ -594,7 +594,7 @@
         ],
         tips: [
           "Velg en FD der <i>bare</i> høyresiden er ukjent. Venstresiden må være kjent i raden.",
-          "Med +1/−0,5 lønner det seg å svare selv om du er litt usikker."
+          "Med +1/−0,5 lønner det seg å svare når du er mer enn en tredjedel sikker. En blind gjetning blant ni verdier taper."
         ],
         del1: {
           type: "verdi",

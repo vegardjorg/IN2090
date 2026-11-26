@@ -63,7 +63,7 @@
     var tb = el("tbody");
     var names = (t.kolonner || []).map(colName);
     var tv = tvCols(t);
-    if (tv.length) IN.qsa("th", hr).forEach(function (th, j) { if (tv[j]) th.classList.add("rel-tv"); });
+    if (Object.keys(tv).length) IN.qsa("th", hr).forEach(function (th, j) { if (tv[j]) th.classList.add("rel-tv"); });   // tv er et objekt, ikke en array
     (t.rader || []).forEach(function (r, i) {
       var tr = el("tr", { class: rm[i] ? "r-" + rm[i] : null });
       r.forEach(function (v, j) {

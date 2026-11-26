@@ -117,8 +117,7 @@
       id: "b4-07", blokk: 4, tittel: "De tre tykkeste bøkene",
       tekst: "<p>Vis <code>tittel</code> og <code>sider</code> for de tre bøkene med flest sider, den tykkeste først. Bøker der vi ikke vet sidetallet, skal ikke være med.</p>",
       fasit: "SELECT tittel, sider\nFROM bok\nWHERE sider IS NOT NULL\nORDER BY sider DESC\nLIMIT 3;",
-      hint: ["Sorter synkende med <code>ORDER BY sider DESC</code>, og ta de tre første med <code>LIMIT 3</code>.", "I PostgreSQL kommer NULL først når du sorterer synkende. Fjern dem med WHERE, eller skriv <code>NULLS LAST</code>."],
-      godta: ["SELECT tittel, sider\nFROM bok\nORDER BY sider DESC NULLS LAST\nLIMIT 3;"],
+      hint: ["Sorter synkende med <code>ORDER BY sider DESC</code>, og ta de tre første med <code>LIMIT 3</code>.", "I PostgreSQL kommer NULL først når du sorterer synkende. Fjern dem med <code>WHERE sider IS NOT NULL</code>. <code>NULLS LAST</code> alene gir samme svar her, men tar med bøker uten sidetall hvis færre enn tre har sidetall."],
       tester: "flere bøker har 1000 sider, og flere bøker har over 230 sider",
       feil: [
         { sql: "SELECT tittel, sider FROM bok WHERE sider >= 230 ORDER BY sider DESC;", fanger: "felle", hvorfor: "grensen er tilpasset eksempeldataene i stedet for LIMIT" },

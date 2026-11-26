@@ -111,7 +111,7 @@
     { fane: "nokler", s: "Et attributt som ikke er med i primærnøkkelen, er et ikke-nøkkelattributt.", answer: false,
       explain: "Nøkkelattributt betyr «med i minst én kandidatnøkkel». bygning og romnr er nøkkelattributter i Rom selv om PN er {romkode}.", kilde: K("Waaler 08-notat lysark 9 (nøkkelattributt)") },
     { fane: "nokler", s: "Verdiene i en fremmednøkkel må finnes i den kolonnen de peker på.", answer: true,
-      explain: "Det er hele poenget med en fremmednøkkel. I SQL lages den med REFERENCES.", kilde: K("F04-01 lysark 10 (REFERENCES)") },
+      explain: "Det er hele poenget med en fremmednøkkel. I SQL lages den med REFERENCES. Unntaket er NULL: en fremmednøkkel kan være NULL (om kolonnen ikke er NOT NULL), og da sjekkes den ikke. Det testes ofte i «lovlig eller ulovlig?»-oppgaver (H2019 2.1).", kilde: K("F04-01 lysark 10 (REFERENCES)") },
     { fane: "nokler", s: "I SQL betyr PRIMARY KEY det samme som UNIQUE NOT NULL, og en tabell kan bare ha én.", answer: true,
       explain: "Andre kandidatnøkler skrives med UNIQUE NOT NULL.", kilde: K("F04-01 lysark 8") }
   ];

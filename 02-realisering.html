@@ -7,10 +7,10 @@
   <title>Blokk 2 · Realisering · IN2090</title>
   <meta name="description" content="Realisering i IN2090: fra ER-diagram til relasjonsskjema med kursets algoritme. Entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter, ternære relasjoner og subklasser, med KN, PN og FN i kursets notasjon, stegspiller over et helt eksempel, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126p">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126p">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261126p">
-  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261126p">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261126q">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261126q">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261126q">
+  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261126q">
 </head>
 <body data-page="realisering">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -623,25 +623,25 @@
 
   <footer class="footer">IN2090-guide · Blokk 2 · Realisering</footer>
 
-  <script src="assets/js/core.js?v=20261126p"></script>
-  <script src="assets/js/symboler.js?v=20261126p"></script>
-  <script src="assets/js/sql-lang.js?v=20261126p"></script>
-  <script src="assets/js/pseudocode.js?v=20261126p"></script>
-  <script src="assets/js/stepplayer.js?v=20261126p"></script>
-  <script src="assets/js/varline.js?v=20261126p"></script>
-  <script src="assets/js/viz-relation.js?v=20261126p"></script>
-  <script src="assets/js/viz-er.js?v=20261126p"></script>
-  <script src="assets/js/data-realisering.js?v=20261126p"></script>
-<script src="assets/js/dra.js?v=20261126p"></script>
-<script src="assets/js/data-dra.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261126p"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261126p"></script>
-  <script src="assets/js/bank.js?v=20261126p"></script>
+  <script src="assets/js/core.js?v=20261126q"></script>
+  <script src="assets/js/symboler.js?v=20261126q"></script>
+  <script src="assets/js/sql-lang.js?v=20261126q"></script>
+  <script src="assets/js/pseudocode.js?v=20261126q"></script>
+  <script src="assets/js/stepplayer.js?v=20261126q"></script>
+  <script src="assets/js/varline.js?v=20261126q"></script>
+  <script src="assets/js/viz-relation.js?v=20261126q"></script>
+  <script src="assets/js/viz-er.js?v=20261126q"></script>
+  <script src="assets/js/data-realisering.js?v=20261126q"></script>
+<script src="assets/js/dra.js?v=20261126q"></script>
+<script src="assets/js/data-dra.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261126q"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261126q"></script>
+  <script src="assets/js/bank.js?v=20261126q"></script>
   <script>
   (function () {
     "use strict";
@@ -793,7 +793,7 @@
       "ex-subklasser": {
         eli5: "<p>Alle gjester står på gjestelisten. VIP-listen og presselisten har bare gjestenummeret og det som er spesielt for dem. Listene passer på at ingen står på VIP-listen uten å være gjest. De passer ikke på at ingen står på begge, eller at alle står på minst én.</p>",
         normal: "<p>Lag tabellen for superklassen med alle felles attributter. For hver subklasse lager du en tabell med superklassens PN og subklassens egne attributter. PN-en er en FN til superklassen, så hver rad i en subklasse må finnes i superklassen. Disjunkthet (ingen i to subklasser) og totalitet (alle i minst én) følger ikke av nøklene.</p>",
-        teknisk: "<p>FN håndhever inklusjonen <span class=\"mono\">∀x (Vip(x) → Gjest(x))</span>. Disjunkthet <span class=\"mono\">∀x ¬(Vip(x) ∧ Presse(x))</span> er et krav på tvers av to tabeller, og totalitet <span class=\"mono\">∀x (Gjest(x) → (Vip(x) ∨ Presse(x)))</span> krever at noe <i>finnes</i> i en annen tabell. Ingen av dem kan uttrykkes med PRIMARY KEY, UNIQUE eller REFERENCES alene.</p><p>F13 bruker dette til å vise at hvert språk (ER, relasjonsskjema, logikk) har begrenset uttrykkskraft. Hvordan slike krav håndheves i et DBMS, går kurset ikke inn på her.</p>"
+        teknisk: "<p>FN håndhever inklusjonen <span class=\"mono\">∀x (Vip(x) → Gjest(x))</span>. Disjunkthet <span class=\"mono\">∀x ¬(Vip(x) ∧ Presse(x))</span> er et krav på tvers av to tabeller, og totalitet <span class=\"mono\">∀x (Gjest(x) → (Vip(x) ∨ Presse(x)))</span> krever at noe <i>finnes</i> i en annen tabell. Ingen av dem kan uttrykkes med PRIMARY KEY, UNIQUE eller REFERENCES alene.</p><p>F13 bruker dette til å vise at hvert språk (ER, relasjonsskjema, logikk) har begrenset uttrykkskraft. F13 lysark 20–21 viser hva som gjenstår: PK og FK alene stopper ikke brudd på totalitet og disjunkthet. Alternativene er å endre skjemaet (f.eks. én tabell med en <span class=\"mono\">type</span>-kolonne med NOT NULL og CHECK, som gir disjunkthet og totalitet, men da kan ingen være både student og ansatt), å bruke triggere, eller å sjekke i applikasjonen.</p>"
       }
     };
     Object.keys(EX).forEach(function (id) {
@@ -865,7 +865,7 @@
           ctx.stage.appendChild(box);
           if (!s.tabeller.length) box.appendChild(el("p", { class: "rs-empty muted", text: "Skjemaet er tomt. Trykk «Neste» for første tabell." }));
           else {
-            box.appendChild(el("p", { class: "rs-legend muted", text: "Skjemaet så langt: " + s.tabeller.length + (s.tabeller.length === 1 ? " tabell" : " tabeller") + ". Understrek = PN." }));
+            box.appendChild(el("p", { class: "rs-legend muted", text: "Skjemaet så langt: " + s.tabeller.length + (s.tabeller.length === 1 ? " tabell" : " tabeller") + ". Understrek = KN, fet = PN." }));
             skjema(box, s.tabeller, { ny: s.ny, endret: !!s.set, nye: s.nye || null });
           }
         }

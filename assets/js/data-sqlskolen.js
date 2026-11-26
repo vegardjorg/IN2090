@@ -556,7 +556,7 @@
       explain: "Samme attributtnavn og typer. I SQL må spørringene ha like mange kolonner med kompatible typer." },
     { s: "SQL-nøkkelord må skrives med store bokstaver, ellers feiler spørringen.", answer: false,
       explain: "Nøkkelord og navn skiller ikke mellom store og små bokstaver. Store bokstaver på nøkkelord er bare stil, men en god stil." },
-    { s: m("WHERE sted = 'oslo'") + " finner låneren som bor i Oslo.", answer: false,
+    { s: m("WHERE sted = 'oslo'") + " finner lånerne som bor i Oslo.", answer: false,
       explain: "Verdier skiller mellom store og små bokstaver. 'oslo' er ikke lik 'Oslo'." },
     { s: "Et navn laget med AS i SELECT kan brukes i ORDER BY.", answer: true,
       explain: "ORDER BY evalueres etter SELECT. I WHERE og HAVING finnes navnet ikke." },

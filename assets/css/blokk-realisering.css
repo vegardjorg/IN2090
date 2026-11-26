@@ -15,7 +15,7 @@
 .rs-tab { font-family: var(--font-mono); font-size: 13px; line-height: 1.5; padding: .5rem .7rem;
   border: 1px solid var(--color-outline-variant); border-radius: 10px; background: var(--color-surface-container-lowest);
   overflow-wrap: anywhere; }
-.rs-tab .rs-head { font-weight: 700; }
+.rs-tab .rs-head { font-weight: 400; }   /* bare PN er fet; KN-er er understreket */
 .rs-tab .rs-head .rs-pn { text-decoration: underline; text-underline-offset: 3px; }
 .rs-tab .rs-ln { padding-left: 1.1rem; color: var(--color-on-surface-variant); }
 .rs-tab .rs-ln b { color: var(--color-on-surface); font-weight: 700; }

@@ -102,13 +102,13 @@
         hvorfor: "Gir ingen poeng i seg selv, men reglene bestemmer hvordan du henter poeng i alt annet. Eksamen er 4 timer (forsiden til H2025 sa 6 timer, så sjekk forsiden ditt år) og 100 poeng i tre deler: modellering, SQL og FD/normalisering. H2023–H2025 var <b>alle trykte og skrevne hjelpemidler</b> tillatt.",
         kjerne: t(
           "Eksamen har tre rom. I det første tegner du hvordan ting henger sammen (ER) og gjør tegningen om til tabeller. I det andre skriver du spørsmål til databasen (SQL). I det tredje rydder du tabeller så de ikke gjentar seg (FD og normalisering). Noen spørsmål gir minuspoeng hvis du svarer feil, så du må vite når det lønner seg å gjette. Du får ha med deg alt du har skrevet ut, så lag en god jukselapp.",
-          "<p>Fordelingen har vært ganske fast: <b>modellering</b> (ER og realisering) 28–40 p, <b>SQL</b> 40–50 p og <b>FD og normalisering</b> 10–27 p. Oppgave 1 er alltid ER-tegning. SQL-delen starter med et «hvor mange rader?»-flervalg og går fra enkle til store spørringer. Del 3 har alltid en BCNF-dekomposisjon.</p><p>Flere oppgaver rettes automatisk med minuspoeng, men aldri under 0 per oppgave. Med 4 timer og 100 poeng har du 2,4 minutter per poeng. Alle trykte og skrevne hjelpemidler er lov, så skriv ut notater du kjenner godt.</p>",
-          "<p>Poengreglene (H2023–H2025): JA/NEI-påstander ±1, radantall +2/−0,5, FD-verdier +1/−0,5, normalform per FD +2/−0,5 (H2024), FD-instanser ±1 (H2025). Minst 0 per oppgave.</p><p>Forventet gevinst ved ren gjetning: med ±1 og to valg er den 0,5 · 1 − 0,5 · 1 = 0, så svar bare når du er mer enn 50 % sikker. Med +2/−0,5 og fire alternativer er den 0,25 · 2 − 0,75 · 0,5 = +0,125, så der lønner det seg å svare på alt. Grensen for +2/−0,5 er 20 % sannsynlighet for riktig svar.</p>"),
+          "<p>Fordelingen har vært ganske fast: <b>modellering</b> (ER og realisering, i H2025 også 5 p relasjonsalgebra) 28–40 p, <b>SQL</b> 40–50 p og <b>FD og normalisering</b> 10–27 p. Oppgave 1 er alltid ER-tegning. SQL-delen starter med et «hvor mange rader?»-flervalg og går fra enkle til store spørringer. Del 3 har hatt en BCNF-dekomposisjon hvert år siden H2020 (H2019 hadde bare FD-er og normalform).</p><p>Flere oppgaver rettes automatisk med minuspoeng, men aldri under 0 per oppgave. Med 4 timer og 100 poeng har du 2,4 minutter per poeng. Alle trykte og skrevne hjelpemidler er lov, så skriv ut notater du kjenner godt.</p>",
+          "<p>Poengreglene (H2023–H2025): JA/NEI-påstander ±1, radantall +2/−0,5, FD-verdier +1/−0,5, normalform per FD +2/−0,5 (H2024), FD-instanser ±1 (H2025). Minst 0 per oppgave.</p><p>Forventet gevinst ved ren gjetning: med ±1 og to valg er den 0,5 · 1 − 0,5 · 1 = 0, så svar bare når du er mer enn 50 % sikker. Med +2/−0,5 og k alternativer er den 2/k − 0,5 · (k−1)/k: positiv ved færre enn fem alternativer, null ved fem og negativ ved seks eller flere. Radantall har hatt fem (H2023) og seks (H2024, H2025) alternativer, så en blind gjetning lønner seg ikke. Grensen for +2/−0,5 er 20 % sannsynlighet for riktig svar, så stryk alternativer til du står igjen med fire eller færre, og svar da.</p>"),
         les: [PDF, ["sql-videre", "radantall", "del1-radantall", "SQL videregående → Hvor mange rader?"], ["normalisering", "svarform", "svar-gen", "Normalisering → Svarform"]],
         oppskrift: [
           "<b>Les hele settet</b> i 5 minutter og fordel tiden: omtrent 2,4 minutter per poeng.",
           "<b>Oppgave 1 (ER)</b> gir mange poeng, men ikke bli sittende: sett av omtrent 40 minutter.",
-          "<b>JA/NEI med ±1:</b> svar bare når du er mer enn 50 % sikker. <b>Radantall med +2/−0,5:</b> svar på alt.",
+          "<b>JA/NEI med ±1:</b> svar bare når du er mer enn 50 % sikker. <b>Radantall med +2/−0,5:</b> svar når du har strøket deg ned til fire eller færre mulige svar (over 20 % sikker).",
           "<b>Forklar valgene</b> i realisering og dekomposisjon. Manglende forklaring koster (−2 i realisering H2020, −3 i dekomposisjon).",
           "<b>Skriv antakelser</b> som kommentarer, i SQL med <code>--</code>. Tvetydige oppgaver gir full uttelling for rimelige tolkninger.",
           "<b>Skriv ut</b> eksamensnotatene før eksamen. Alle trykte og skrevne hjelpemidler er lov."
@@ -120,22 +120,22 @@
             explain: "240 minutter delt på 100 poeng er 2,4 minutter per poeng. En oppgave på 10 p får altså omtrent 24 minutter." },
           { q: "En JA/NEI-påstand gir +1 for riktig og −1 for galt. Du er 50/50. Lønner det seg å svare?", options: ["Ja, alltid", "Nei: forventet gevinst er 0. Svar når du er mer enn 50 % sikker", "Bare på siste påstand", "Ja, fordi blankt gir −1"], answer: 1,
             explain: "0,5 · 1 − 0,5 · 1 = 0. Blankt gir 0, så gjetting hjelper ikke i snitt. Er du 70 % sikker, er forventningen +0,4." },
-          { q: "Radantall gir +2 for riktig og −0,5 for galt. Du gjetter helt tilfeldig blant fire alternativer. Forventet poeng?", options: ["−0,5", "0", "+0,125", "+0,5"], answer: 2,
-            explain: "0,25 · 2 − 0,75 · 0,5 = 0,5 − 0,375 = +0,125. Det lønner seg å svare, og enda mer når du kan utelukke et alternativ." },
+          { q: "Radantall gir +2 for riktig og −0,5 for galt. Du gjetter helt tilfeldig blant seks alternativer (som i H2024 og H2025). Forventet poeng?", options: ["−0,5", "≈ −0,08", "0", "+0,125"], answer: 1,
+            explain: "2/6 − 0,5 · 5/6 = 0,333 − 0,417 ≈ −0,08. En blind gjetning taper litt. Stryk to alternativer, så er det 2/4 − 0,5 · 3/4 = +0,125, og da lønner det seg å svare." },
           { q: "Hvilke hjelpemidler var tillatt på IN2090-eksamen H2023–H2025?", options: ["Ingen", "Én håndskrevet A4-side", "Alle trykte og skrevne", "Bare læreboka"], answer: 2,
             explain: "Alle trykte og skrevne hjelpemidler. Ta med noe du kjenner godt, for eksempel eksamensnotatene, så du finner fram raskt." }
         ] }],
         feller: [
           "Å svare på JA/NEI-påstander du ikke vet noe om. Med ±1 lønner det seg ikke i snitt.",
-          "Å la radantall-spørsmål stå blanke. Med +2/−0,5 lønner det seg å svare.",
+          "Å la radantall-spørsmål stå blanke når du har snevret det inn til fire eller færre svar. Med +2/−0,5 lønner det seg da å svare.",
           "Å bruke en time på ER-tegningen og få dårlig tid til SQL, som er den største delen."
         ] }
     ] },
 
     /* ===================== 1 · ER ===================== */
-    { nr: 1, navn: "ER-modellering", hvor: "Oppgave 1, 15–30 p", steg: [
+    { nr: 1, navn: "ER-modellering", hvor: "Oppgave 1, 11–30 p", steg: [
       { id: "1a", tittel: "Tegne ER-diagram fra en kravtekst", vekt: 10, min: "E", tid: 35, tidG: 40,
-        hvorfor: "ER-tegningen er alltid oppgave 1 og har gitt 15–30 p. Sensor gir poeng per punkt i kravteksten (H2024: 1 p per punkt). Trekk: −0,5 for riktig kardinalitet eller total deltakelse på feil side, −1 for feil kardinalitet eller manglende total deltakelse, −1 for manglende nøkkel- eller flerverdimarkering.",
+        hvorfor: "ER-tegningen er alltid oppgave 1 og har gitt 11–30 p. Sensor gir poeng per punkt i kravteksten (H2024: 1 p per punkt). Trekk: −0,5 for riktig kardinalitet eller total deltakelse på feil side, −1 for feil kardinalitet eller manglende total deltakelse, −1 for manglende nøkkel- eller flerverdimarkering.",
         kjerne: t(
           "Du lager et kart over det butikken bryr seg om. Tingene (kunde, bok) blir bokser. Egenskapene (navn, pris) blir ovaler. Hvordan tingene henger sammen (låner, skriver) blir ruter mellom boksene. På strekene skriver du 1 eller N for hvor mange, og en dobbel strek betyr «må være med».",
           "<p><b>Entitet</b> = rektangel, navn i versaler. <b>Attributt</b> = oval, og <b>nøkkelattributtet</b> har navnet understreket. Flerverdiattributt = dobbel oval, utledbart = stiplet oval, sammensatt = oval med under-ovaler. <b>Relasjon</b> = rombe.</p><p><b>Kardinalitet</b> (1, N eller M) står på streken nær romben. Tallet ved entitet E sier hvor mange E den andre siden kan relateres til: BOK N – UTGITT – 1 FORLAG betyr at en bok har høyst ett forlag. <b>Total deltakelse</b> (minst én) = dobbel strek. Enkel strek = partiell (kan være 0).</p>",
@@ -302,14 +302,14 @@
         kjerne: t(
           "Du er databasen. Du får noen små tabeller og en spørring, og skal gjøre jobben for hånd: ta radene, kast de som ikke passer, og tell hva som er igjen. Det vanskelige er de rare reglene, for eksempel at «ukjent» (NULL) aldri er lik noe, heller ikke seg selv.",
           "<p>Kjør spørringen i den rekkefølgen databasen gjør: FROM og JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT/OFFSET. Tell rader etter hvert steg.</p><p>Regler å kunne: sammenligning med NULL gir NULL, så raden faller bort i WHERE. Aggregat uten GROUP BY gir alltid én rad (også når WHERE fjerner alt: <code>count(*)</code> blir 0). LEFT JOIN beholder alle rader fra venstre, FULL JOIN fra begge. UNION fjerner duplikater, UNION ALL gjør det ikke. EXCEPT ALL trekker fra antall forekomster.</p>",
-          "<p>NATURAL JOIN joiner på alle like kolonnenavn. En NATURAL self-join (<code>t AS t1 NATURAL JOIN t AS t2</code>, samme tabell to ganger krever alias) gir tilbake tabellen bare når ingen verdier er NULL, fordi en rad med NULL ikke matcher seg selv. <code>LIMIT n OFFSET m</code> hopper over m rader og tar så høyst n. <code>count(kol)</code> teller ikke NULL, <code>count(*)</code> teller rader.</p><p>Poengregelen +2/−0,5 gjør at det lønner seg å svare selv når du må gjette (forventning +0,125 med fire alternativer).</p>"),
+          "<p>NATURAL JOIN joiner på alle like kolonnenavn. En NATURAL self-join (<code>t AS t1 NATURAL JOIN t AS t2</code>, samme tabell to ganger krever alias) gir tilbake tabellen bare når ingen verdier er NULL, fordi en rad med NULL ikke matcher seg selv. <code>LIMIT n OFFSET m</code> hopper over m rader og tar så høyst n. <code>count(kol)</code> teller ikke NULL, <code>count(*)</code> teller rader.</p><p>Med +2/−0,5 lønner det seg å svare når du er mer enn 20 % sikker. Med seks alternativer taper en blind gjetning litt (≈ −0,08), men har du strøket to, er forventningen +0,125.</p>"),
         les: [["sql-videre", "radantall", "del1-radantall", "SQL videregående → Hvor mange rader?"], ["sql-videre", "null", null, "SQL videregående → NULL"], ["sql-videre", "mengde", "so-demo", "SQL videregående → Mengdeoperasjoner"]],
         oppskrift: [
           "Skriv ned radene i hver tabell (eller pek på dem i vedlegget).",
           "Gjør FROM/JOIN først og tell radene i mellomresultatet.",
           "Gå videre klausul for klausul. Stryk rader der WHERE blir usann eller NULL.",
           "Se etter fellene: DISTINCT, aggregat uten GROUP BY, LIMIT/OFFSET, NULL, ALL.",
-          "Svar på alle. Med +2/−0,5 lønner det seg."
+          "Svar når du har strøket deg ned til fire eller færre mulige svar. Med +2/−0,5 lønner det seg da."
         ],
         eksempel: [["sql-videre", "radantall", "del1-radantall", "Øvingssettet med radantall"]],
         oppgaver: ["H2025-2_1"],
@@ -667,7 +667,7 @@
         ] },
 
       { id: "4d", tittel: "BCNF-dekomposisjon (tapsfri)", vekt: 9, min: "E", tid: 35, tidG: 45,
-        hvorfor: "Hvert år er det én dekomposisjon til BCNF (6–13 p, oftest 10). Sensor gir 5–7 p for første splitt og 2,5–4 p for hvert videre steg. Trekk: −1 per manglende eller feil FD på en delrelasjon, −1 for feil tillukning, −1 for feil KN og −3 når forklaringen mangler.",
+        hvorfor: "Hvert år siden H2020 har det vært én dekomposisjon til BCNF (6–13 p, oftest 10). H2019 hadde ingen. Sensor gir 5–7 p for første splitt og 2,5–4 p for hvert videre steg. Trekk: −1 per manglende eller feil FD på en delrelasjon, −1 for feil tillukning, −1 for feil KN og −3 når forklaringen mangler.",
         kjerne: t(
           "Er en tabell rotete, deler du den i to. Du tar regelen som lager rot, legger alt den regelen bestemmer i én ny tabell, og resten i en annen. Så gjør du det samme med de nye tabellene til alt er ryddig.",
           "<p>Kursets algoritme: (1) Velg en FD <code>Y → A</code> som bryter BCNF (Y er ikke SN). (2) Regn ut <code>Y⁺</code>. (3) Del R(X) i <code>S₁(Y⁺)</code> og <code>S₂(Y ∪ (X − Y⁺))</code>. (4) Finn FD-ene og KN-ene i hver del, og fortsett med delene som ikke er på BCNF.</p>",

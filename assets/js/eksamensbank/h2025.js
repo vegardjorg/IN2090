@@ -484,7 +484,7 @@
         "5: ansatte som ikke leder noe prosjekt er Kari og Bo, altså 2."
       ],
       tips: [
-        "Med +2 for riktig og −0,5 for galt lønner det seg å svare selv om du er usikker.",
+        "Med +2 for riktig og −0,5 for galt lønner det seg å svare når du er mer enn 20 % sikker, altså når du har strøket minst to av de seks alternativene. En blind gjetning blant alle seks taper litt.",
         "LIKE skiller mellom store og små bokstaver: '%i%' treffer ikke en stor I.",
         "NATURAL JOIN kobler på alle kolonner med samme navn. Med en tabell mot seg selv er det alle kolonnene."
       ],

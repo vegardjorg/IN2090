@@ -446,7 +446,7 @@
         "LEFT JOIN beholder kundene uten ordre. Tell <code>o.oid</code>, ikke <code>*</code>: <code>count(*)</code> ville gitt 1 for dem."),
       sm("m-uten", "Kunder som <b>aldri</b> har lagt inn en ordre.",
         "SELECT k.navn\nFROM kunde AS k\nWHERE NOT EXISTS (\n  SELECT * FROM ordre AS o WHERE o.kid = k.kid\n);",
-        "Alternativer: <code>NOT IN (SELECT kid FROM ordre)</code>, <code>EXCEPT</code> eller <code>LEFT JOIN … WHERE o.oid IS NULL</code>."),
+        "Alternativer: <code>NOT IN (SELECT kid FROM ordre)</code> (bare når <code>kid</code> aldri er NULL: én NULL gir 0 rader), <code>EXCEPT</code> eller <code>LEFT JOIN … WHERE o.oid IS NULL</code>."),
       sm("m-hoyest", "Ordren(e) med <b>høyest beløp</b>. Er det likt, skal alle med.",
         "SELECT oid, belop\nFROM ordre\nWHERE belop = (SELECT max(belop) FROM ordre);",
         "Lysarkene viser også <code>ORDER BY belop DESC LIMIT 1</code>. Merk: den gir bare én rad og mister rader med lik verdi."),
