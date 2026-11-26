@@ -227,11 +227,19 @@
     var extra = null;
     if (spec.render) { extra = el("div", { class: "dra-extra" }); try { spec.render(extra); } catch (e) { if (window.console) console.error("[dra] render", e); } }
     var hintId = uid + "-hint";
-    var hint = el("p", { class: "dra-hint", id: hintId, text: mode === "sort"
-      ? "Trykk på en linje og så på plassen den skal til, eller dra i ☰. Tastatur: Mellomrom løfter, ↑/↓ flytter, Mellomrom slipper, Esc angrer. Alt+↑/↓ flytter direkte."
+    // To varianter av hjelpeteksten: kort for berøring, med dra og tastatur for mus (CSS velger etter pekeren).
+    // aria-describedby peker på tastaturvarianten, som skjermlesere leser selv om den er skjult.
+    var hintTouch = mode === "sort"
+      ? "Trykk på en linje, så på plassen den skal til, eller bruk ↑ ↓."
+      : "Trykk på en brikke, så på " + (mode === "match" ? "plassen" : "bøtta") + " den hører til.";
+    var hintMouse = mode === "sort"
+      ? "Klikk på en linje og så på plassen den skal til, eller dra den. Tastatur: Mellomrom løfter, ↑/↓ flytter, Mellomrom slipper, Esc angrer. Alt+↑/↓ flytter direkte."
       : mode === "match"
-        ? "Trykk på en brikke og så på plassen den hører til, eller dra i ☰. Tastatur: Mellomrom velger, piltastene velger plass, Mellomrom slipper, Esc angrer."
-        : "Trykk på en brikke og så på bøtta den hører til, eller dra i ☰. Tastatur: Mellomrom velger, piltastene velger bøtte, Mellomrom slipper, Esc angrer." });
+        ? "Klikk på en brikke og så på plassen den hører til, eller dra den. Tastatur: Mellomrom velger, piltastene velger plass, Mellomrom slipper, Esc angrer."
+        : "Klikk på en brikke og så på bøtta den hører til, eller dra den. Tastatur: Mellomrom velger, piltastene velger bøtte, Mellomrom slipper, Esc angrer.";
+    var hint = el("p", { class: "dra-hint" }, [
+      el("span", { class: "dra-hint-touch", text: hintTouch }),
+      el("span", { class: "dra-hint-mouse", id: hintId, text: hintMouse })]);
     var board = el("div", { class: "dra-board" });
 
     /* ---- Brikker ---- */
@@ -243,7 +251,8 @@
       var pos = mode === "sort" ? el("span", { class: "dra-pos", "aria-hidden": "true" }) : null;
       var b = el("button", { class: "dra-chip", type: "button", "aria-pressed": "false", "aria-describedby": hintId, "data-item": it.id }, [
         el("span", { class: "dra-grip", "aria-hidden": "true", text: "☰" }), pos,
-        el("span", { class: "dra-lbl", html: it.html }), mark, fas, sr].filter(Boolean));
+        el("span", { class: "dra-lbl", html: it.html }),
+        el("span", { class: "dra-valgt", "aria-hidden": "true", text: "Valgt" }), mark, fas, sr].filter(Boolean));
       b._mark = mark; b._fas = fas; b._sr = sr; b._pos = pos;
       b.addEventListener("click", function () { onChipClick(it.id); });
       b.addEventListener("keydown", function (e) { onChipKey(e, it.id); });
@@ -258,7 +267,7 @@
     function mkZone(id, label, hintHtml, cls) {
       var cnt = el("span", { class: "dra-cnt" });
       var btn = el("button", { class: "dra-zbtn", type: "button", "data-dz": id },
-        [el("span", { class: "dra-zlbl", html: label }), cnt]);
+        [el("span", { class: "dra-zlbl", html: label }), el("span", { class: "dra-here", "aria-hidden": "true", text: "Legg her" }), cnt]);
       btn.addEventListener("click", function (e) { e.stopPropagation(); onZoneClick(id); });
       var body = el("div", { class: "dra-zbody" });
       var empty = el("span", { class: "dra-empty", "aria-hidden": "true", text: id === POOL ? "Alle brikkene er plassert." : mode === "match" ? "Trykk for å plassere" : "Tom" });
@@ -273,6 +282,20 @@
     }
     if (mode === "sort") {
       sortList = el("ol", { class: "dra-sortlist", "aria-label": "Rekkefølge" });
+      // Med en valgt linje viser en strek (mus) hvor den havner hvis du klikker på linja du peker på.
+      var clearPreview = function () {
+        Array.prototype.forEach.call(sortList.children, function (li) { li.classList.remove("drop-before", "drop-after"); });
+      };
+      sortList.addEventListener("pointerover", function (e) {
+        if (e.pointerType !== "mouse" || !sel || kb || drag || locked()) return;
+        var li = e.target.closest && e.target.closest(".dra-row");
+        clearPreview();
+        if (!li || li.contains(chips[sel])) return;
+        var over = li.querySelector(".dra-chip").getAttribute("data-item");
+        li.classList.add(st.order.indexOf(over) < st.order.indexOf(sel) ? "drop-before" : "drop-after");
+      });
+      sortList.addEventListener("pointerleave", function () { if (!drag) clearPreview(); });
+      sortList.addEventListener("click", function () { if (!drag) clearPreview(); });
       board.appendChild(sortList);
     } else {
       board.appendChild(mkZone(POOL, poolLabel, null, "dra-pool"));
@@ -356,14 +379,15 @@
           .map(function (it) { return it.id; });
         // Flytt bare når innholdet faktisk er endret (å flytte en fokusert brikke tar fokuset bort).
         // Spec-rekkefølgen beholdes inne i bøtta.
-        var cur = Array.prototype.map.call(zone._body.children, function (c) { return c.getAttribute("data-item"); });
+        var cur = Array.prototype.filter.call(zone._body.children, function (c) { return c.hasAttribute("data-item"); })
+          .map(function (c) { return c.getAttribute("data-item"); });
         if (cur.join("\u0001") !== ids.join("\u0001")) ids.forEach(function (id) { zone._body.appendChild(chips[id]); });
         zone._cnt.textContent = String(ids.length);
         zone._empty.hidden = ids.length > 0;
         zone._btn.setAttribute("aria-label", zone._label + ", " + ids.length + (ids.length === 1 ? " brikke" : " brikker") + (sel ? ". Trykk for å legge " + itemText(sel) + " her." : ""));
         zone._btn.disabled = locked();
         var cls = "dra-zone " + (z === POOL ? "dra-pool" : mode === "match" ? "dra-slot" : "dra-bucket");
-        if (sel && !locked()) cls += " can-drop";
+        if (sel && !locked()) cls += " can-drop" + (z === (st.place[sel] == null ? POOL : st.place[sel]) ? " is-home" : "");
         if (target === z) cls += " is-target";
         if (drag && drag.on && drag.over === z) cls += " is-over";
         zone.className = cls;
@@ -399,9 +423,55 @@
       if (mode === "sort") return c.total + " linjer" + (instant() && flyttet ?' · <b class="ok">' + c.right + " på riktig plass</b>" : "");
       return c.answered + " av " + c.total + " plassert" + (instant() && c.answered ? ' · <b class="ok">' + c.right + " riktig</b>" : "");
     }
+    /* «Flytt til»-raden under valgt brikke: ↑/↓ ved sortering, én knapp per bøtte ellers.
+       Spart skrolling på mobil (bøttene ligger ofte under skjermkanten). Bare for trykk-valg,
+       ikke når brikken er løftet med tastaturet (der styrer piltastene). */
+    var moveBar = el("div", { class: "dra-moveto", role: "group", "aria-label": "Flytt valgt brikke" });
+    moveBar.addEventListener("click", function (e) { e.stopPropagation(); });
+    var MAX_BAR = 8;
+    function mvBtn(k, text, label, disabled, fn) {
+      return el("button", { class: "btn dra-mv", type: "button", "data-k": k, "aria-label": label || null, disabled: disabled || null,
+        onclick: function () {
+          var id = sel;
+          noFocus = true;
+          try { fn(id); } finally { noFocus = false; }
+          var again = moveBar.querySelector('[data-k="' + k + '"]:not(:disabled)');
+          if (again && moveBar.isConnected) again.focus({ preventScroll: true });
+          else if (mode !== "sort") focusNextPool();
+          else if (chips[id]) chips[id].focus({ preventScroll: true });
+        } }, text);
+    }
+    function focusNextPool() {
+      var next = ns.items.filter(function (it) { return st.place[it.id] == null; })[0];
+      if (next && chips[next.id] && !chips[next.id].disabled) chips[next.id].focus({ preventScroll: true });
+    }
+    function paintMoveBar() {
+      var show = sel && !kb && !locked() && !(drag && drag.on) && (mode === "sort" || ns.zones.length <= MAX_BAR);
+      if (!show) { if (moveBar.parentNode) moveBar.parentNode.removeChild(moveBar); return; }
+      var id = sel, chip = chips[id], txt = itemText(id);
+      while (moveBar.firstChild) moveBar.removeChild(moveBar.firstChild);
+      if (mode === "sort") {
+        var i = st.order.indexOf(id), n = st.order.length;
+        moveBar.appendChild(mvBtn("opp", "↑ Opp", "Flytt " + txt + " opp", i === 0, function (x) { moveSort(x, st.order.indexOf(x) - 1, true); }));
+        moveBar.appendChild(mvBtn("ned", "↓ Ned", "Flytt " + txt + " ned", i === n - 1, function (x) { moveSort(x, st.order.indexOf(x) + 1, true); }));
+        moveBar.appendChild(mvBtn("ferdig", "Ferdig", null, false, function () { deselect(txt + " lagt på plass " + (st.order.indexOf(id) + 1) + "."); }));
+        if (moveBar.parentNode !== chip.parentNode) chip.parentNode.appendChild(moveBar);
+        return;
+      }
+      var cur = st.place[id] == null ? POOL : st.place[id];
+      zoneOrder.forEach(function (z) {
+        if (z === cur) return;
+        moveBar.appendChild(mvBtn(z, (z === POOL ? "↩ " : "→ ") + zoneName(z), (z === POOL ? "Legg tilbake: " : "Legg i ") + zoneName(z), false,
+          function (x) { place(x, z); }));
+      });
+      if (chip.nextSibling !== moveBar) chip.parentNode.insertBefore(moveBar, chip.nextSibling);
+    }
+    var noFocus = false;
+
     function paint() {
       if (sw) sw.setAttribute("aria-checked", instant() ? "true" : "false");
       paintBoard();
+      paintMoveBar();
       ns.items.forEach(function (it) { paintChip(it.id); });
       paintExp();
       score.innerHTML = scoreHtml(counts());
@@ -411,6 +481,7 @@
 
     /* ---------------- Handlinger ---------------- */
     function focusChip(id) {
+      if (noFocus) return;   // «Flytt til»-knappene styrer fokus selv (og skal ikke rulle siden til bøtta)
       var inside = wrap.contains(document.activeElement) || document.activeElement === document.body;
       if (inside && chips[id] && !chips[id].disabled) { try { chips[id].focus({ preventScroll: false }); } catch (e) { chips[id].focus(); } }
     }
@@ -438,8 +509,8 @@
       } else { kb = null; target = null; }
       paint();
       say(itemText(id) + " valgt. " + (mode === "sort"
-        ? (viaKb ? "Flytt med pil opp og ned, slipp med Mellomrom." : "Trykk på linja den skal bytte plass med.")
-        : (viaKb ? "Velg " + (mode === "match" ? "plass" : "bøtte") + " med piltastene, slipp med Mellomrom." : "Trykk på " + (mode === "match" ? "plassen." : "en bøtte."))));
+        ? (viaKb ? "Flytt med pil opp og ned, slipp med Mellomrom." : "Trykk på linja den skal ta plassen til, eller bruk Opp og Ned under den.")
+        : (viaKb ? "Velg " + (mode === "match" ? "plass" : "bøtte") + " med piltastene, slipp med Mellomrom." : "Trykk på " + (mode === "match" ? "plassen" : "en bøtte") + ", eller bruk knappene under brikken.")));
     }
     function deselect(msg) {
       sel = null; kb = null; target = null;
