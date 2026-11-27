@@ -7,9 +7,9 @@
   <title>Blokk 3 · Relasjonsalgebra · IN2090</title>
   <meta name="description" content="Relasjonsalgebra i IN2090: π, σ, ρ, kryssprodukt, join med betingelse og naturlig join, union, snitt og differanse, navngitte resultater og RA-trær. Med stegvis evaluering av uttrykkstrær, fellen med naturlig join, oversettelse mellom SQL og RA, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127g">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127g">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127g">
   <style>
     /* Blokk 3 · relasjonsalgebra (sidens egen stil) */
     .ra-ops { width: 100%; }
@@ -70,13 +70,6 @@
     <div class="pagehead">
       <h1>Blokk 3 · Relasjonsalgebra</h1>
       <p class="lead">Relasjonsalgebra (RA) er det presise språket under SQL: operatorer som tar relasjoner og gir nye relasjoner. RA har vært lite spurt om på eksamen, men H2025 hadde 5 poeng, og RA gjør SQL lettere å forstå. Her lærer du alle operatorene i kurset, lager og evaluerer uttrykkstrær steg for steg, og oversetter mellom SQL og RA.</p>
-      <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 1 % av poengene per eksamen (5 p i H2025). H2024 hadde i tillegg en SQL-oppgave om ekvivalens, som telles under SQL. Stolpene viser poeng per år.</span></p>
-      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
-      <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=ra-tegn">Relasjonsalgebra</a> · <a href="pugg.html#fane=sql-regler">SQL-regler</a></p>
-      <div class="badges">
-        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_3"><b>H2025</b> · Relasjonsalgebra på båtskjemaet · <span class="pts">5p</span></a>
-        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-2_4"><b>H2024</b> · UNION skrevet om (samme idé) · <span class="pts">5p</span></a>
-      </div>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Relasjonsalgebra">
@@ -90,6 +83,17 @@
       <button data-tab="eksamen">Eksamensoppgaver</button>
       <button data-tab="test">Sant/usant</button>
     </div>
+
+    <div class="pagehead-info">
+      <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 1 % av poengene per eksamen (5 p i H2025). H2024 hadde i tillegg en SQL-oppgave om ekvivalens, som telles under SQL. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
+      <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=ra-tegn">Relasjonsalgebra</a> · <a href="pugg.html#fane=sql-regler">SQL-regler</a></p>
+      <div class="badges">
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_3"><b>H2025</b> · Relasjonsalgebra på båtskjemaet · <span class="pts">5p</span></a>
+        <a class="badge" href="#fane=eksamen&amp;oppg=o-H2024-2_4"><b>H2024</b> · UNION skrevet om (samme idé) · <span class="pts">5p</span></a>
+      </div>
+    </div>
+
 
     <!-- ===================== 1 · GRUNNLAG ===================== -->
     <section data-panel="grunnlag">
@@ -344,26 +348,26 @@
 
   <footer class="footer">IN2090-guide · Blokk 3 · Relasjonsalgebra · <a href="04-sql.html">Neste: blokk 4, SQL</a></footer>
 
-  <script src="assets/js/core.js?v=20261127f"></script>
-  <script src="assets/js/symboler.js?v=20261127f"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
-  <script src="assets/js/sql-lang.js?v=20261127f"></script>
-  <script src="assets/js/pseudocode.js?v=20261127f"></script>
-  <script src="assets/js/stepplayer.js?v=20261127f"></script>
-  <script src="assets/js/viz-relation.js?v=20261127f"></script>
-  <script src="assets/js/viz-er.js?v=20261127f"></script>
-  <script src="assets/js/data-ra.js?v=20261127f"></script>
-  <script src="assets/js/side-ra.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
-  <script src="assets/js/bank.js?v=20261127f"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
+  <script src="assets/js/core.js?v=20261127g"></script>
+  <script src="assets/js/symboler.js?v=20261127g"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127g"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127g"></script>
+  <script src="assets/js/sql-lang.js?v=20261127g"></script>
+  <script src="assets/js/pseudocode.js?v=20261127g"></script>
+  <script src="assets/js/stepplayer.js?v=20261127g"></script>
+  <script src="assets/js/viz-relation.js?v=20261127g"></script>
+  <script src="assets/js/viz-er.js?v=20261127g"></script>
+  <script src="assets/js/data-ra.js?v=20261127g"></script>
+  <script src="assets/js/side-ra.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127g"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127g"></script>
+  <script src="assets/js/bank.js?v=20261127g"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127g"></script>
   <script>
   (function () {
     "use strict";

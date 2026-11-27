@@ -99,7 +99,7 @@
 /* Hurtigfiks: kontrollene står over scenen (flyttes dit i IN.sqlSteps), uten autospill; SQL-en følger med ved rulling */
 .sqlsteps-sp > .sp-controls { margin: 0 0 .5rem; }
 .sqlsteps-sp > .sp-controls > .btn:nth-child(2) { display: none; }
-@media (min-width: 720px) { .sqlsteps > div:first-child { position: sticky; top: 110px; align-self: start; } }
+@media (min-width: 720px) { .sqlsteps > div:first-child { position: sticky; top: var(--stick-h, 110px); align-self: start; } }
 
 /* ---------- Databaseskjema ---------- */
 .schema { padding: 0; }

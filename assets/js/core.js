@@ -356,24 +356,57 @@
     var fromHash = (location.hash.match(/fane=([\w-]+)/) || [])[1];
     var ids = btns.map(function (b) { return b.getAttribute("data-tab"); });
 
-    // Nederst i hvert panel: «↑ Til fanene» og «Neste: <fane> →» (fra IN2120, UI/UX 2026-11-26).
-    // Lenka legges til her og flyttes sist i panelet igjen etter lasting (sidens egne skript fyller vertene).
-    function toBar(id) {
-      var top = bar.getBoundingClientRect().top + window.pageYOffset - (IN.stickyH ? IN.stickyH() : 60) - 8;
-      window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
-      var b = btns.filter(function (x) { return x.getAttribute("data-tab") === id; })[0];
-      if (b) { try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); } }
+    // Fast fanelinje (fra IN2120 ac494bb, 27.11.2026): linja står fast under toppmenyen og nivålinja (CSS .tabs sticky).
+    // --tabs-top = høyden på linjene over; --stick-h = alt som står fast (brukes av scroll-margin).
+    // .stuck gir skygge når linja står fast; .fade-l/.fade-r toner kantene når den ruller sideveis.
+    function tabsTop() { return Math.max(0, IN.stickyH(bar) - 8); }
+    function placeBar() {
+      var t = tabsTop();
+      document.documentElement.style.setProperty("--tabs-top", t + "px");
+      document.documentElement.style.setProperty("--stick-h", (t + bar.offsetHeight + 8) + "px");
+      markBar();
     }
+    function markBar() {
+      var stuck = window.pageYOffset > 0 && bar.getBoundingClientRect().top <= tabsTop() + 1;
+      bar.classList.toggle("stuck", stuck);
+      var ov = bar.scrollWidth > bar.clientWidth + 2;
+      bar.classList.toggle("fade-l", ov && bar.scrollLeft > 2);
+      bar.classList.toggle("fade-r", ov && bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2);
+    }
+    bar.setAttribute("data-sticky", "");
+    placeBar();
+    window.addEventListener("resize", placeBar);
+    window.addEventListener("load", placeBar);
+    window.addEventListener("scroll", markBar, { passive: true });
+    bar.addEventListener("scroll", markBar, { passive: true });
+
+    // Ved fanebytte langt nede på siden: rull til toppen av den nye fanen, rett under den faste linja.
+    function toPanel(id, alltid) {
+      var p = panels.filter(function (x) { return x.getAttribute("data-panel") === id; })[0];
+      if (!p) return;
+      var top = p.getBoundingClientRect().top + window.pageYOffset - IN.stickyH();
+      if (alltid || window.pageYOffset > top) window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
+    }
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () { toPanel(b.getAttribute("data-tab"), false); });
+    });
+
+    // B6: nederst i hvert panel «Fane 2 av 10» og «Neste fane: <fane> →».
+    // Fane-id-er og lenker endres ikke. Linja legges til her og flyttes sist i panelet igjen etter lasting
+    // (sidens egne skript fyller vertene inne i panelet).
     var bunner = [];
     panels.forEach(function (p) {
       var id = p.getAttribute("data-panel"), i = ids.indexOf(id);
       if (i < 0 || p.querySelector(":scope > .tab-bunn")) return;
       var nx = ids[i + 1], nb = nx && btns[i + 1];
       var nav = el("nav", { class: "tab-bunn", "aria-label": "Bytt fane" }, [
-        el("button", { class: "btn tab-opp", type: "button", text: "↑ Til fanene", onclick: function () { toBar(id); } }),
+        el("span", { class: "tab-nr small muted", text: "Fane " + (i + 1) + " av " + ids.length + (nx ? "" : " (siste)") }),
         nx ? el("button", { class: "btn tab-neste", type: "button", "data-neste": nx,
-          text: "Neste: " + (nb.textContent || "").replace(/\s+/g, " ").trim() + " →",
-          onclick: function () { activate(nx, true); toBar(nx); } }) : null
+          text: "Neste fane: " + (nb.textContent || "").replace(/\s+/g, " ").trim() + " →",
+          onclick: function () {
+            activate(nx, true); toPanel(nx, true);
+            try { nb.focus({ preventScroll: true }); } catch (e) { nb.focus(); }
+          } }) : null
       ]);
       p.appendChild(nav);
       bunner.push(nav);
@@ -1990,7 +2023,7 @@
      mellomlager ved oppstart, når fanen blir synlig igjen og hver halvtime. Er den nyere, vises en
      liten melding med «Oppdater». Fremdrift og svar ligger i localStorage og overlever oppdateringen.
      Virker bare over http(s): via file:// finnes det ingen gammel kopi å bekymre seg for. */
-  IN.VERSION = "20261127f";
+  IN.VERSION = "20261127g";
   function initVersionCheck() {
     if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
     var DISMISS = "in2090:ny-versjon-skjult", last = 0, shown = null;
