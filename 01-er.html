@@ -7,11 +7,11 @@
   <title>Blokk 1 · ER-modellering · IN2090</title>
   <meta name="description" content="ER-modellering i IN2090: kursets Chen-notasjon, attributter, kardinalitet og deltakelse, svake entiteter, ternære relasjoner, fra kravtekst til diagram, JA/NEI-lesing og EER – med figurer, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/blokk-er.css?v=20261127f">
 </head>
 <body data-page="er">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -21,6 +21,7 @@
       <h1>Blokk 1 · ER-modellering</h1>
       <p class="lead">ER-oppgaven er oppgave 1 hvert år og en av de tyngste på eksamen. Her lærer du kursets notasjon, hvordan tallene og strekene leses, svake entiteter og ternære relasjoner, og en fast metode fra kravtekst til et begrunnet diagram. Til slutt øver du på å lese et diagram med meningsløse navn, slik eksamen spør.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 22 % av poengene per eksamen. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=er-symboler">ER-symboler</a> · <a href="pugg.html#fane=er-lesing">Les ER-figuren</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_1"><b>H2025</b> · Fritidsbåt-firmaet: ER-modell · <span class="pts">18p</span></a>
@@ -56,7 +57,7 @@
         Kurset bruker Chen-notasjon slik Elmasri/Navathe tegner den, ikke kråkefot og ikke UML.</div>
       <div id="ex-notasjon"></div>
 
-      <h4>Slik tegnes hvert element</h4>
+      <h4>Slik tegnes hvert element <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Element</th><th>Slik tegnes det</th><th>Merk</th></tr></thead>
         <tbody>
@@ -79,7 +80,7 @@
       </table></div>
       <p class="small muted">Farger i eksamensfigurene (blå eller grønne rektangler, røde romber) er bare pynt og betyr ingenting.</p>
 
-      <h4>Hvordan tallene leses</h4>
+      <h4>Hvordan tallene leses <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout snarvei"><span class="lbl">Kjernen</span>
         <ul>
           <li><b>Øvre skranke:</b> tallet som står <b>lengst unna</b> en entitet E (altså på den <i>andre</i> entitetens strek) sier hvor mange E <b>høyst</b> kan være relatert til.</li>
@@ -138,7 +139,7 @@
         </ul></div>
       <div id="ex-attributter"></div>
 
-      <h4>Eksempel</h4>
+      <h4>Eksempel <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Kravtekst</span>
         En frivillig har en unik e-postadresse og et unikt mobilnummer. Navnet består av fornavn og etternavn. Vi lagrer fødselsdato,
         og alderen kan regnes ut fra den. En frivillig kan snakke ett eller flere språk. Et festivalpass identifiseres av årstallet sammen
@@ -179,7 +180,7 @@
         Relasjoner kan ha attributter, men de kan ikke være nøkler.</div>
       <div id="ex-relasjoner"></div>
 
-      <h4>Eksempel</h4>
+      <h4>Eksempel <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Kravtekst</span>
         En artist har høyst ett plateselskap, og et plateselskap kan ha mange artister. Vi lagrer bare plateselskaper som har minst én artist.
         En artist kan beherske mange instrumenter, og et instrument beherskes av mange artister. Vi lagrer nivået artisten har på instrumentet,
@@ -189,7 +190,7 @@
       <figure class="er-fig exam-fig et-er"><div id="fig-sjef"></div>
         <figcaption class="small muted" id="cap-sjef"></figcaption></figure>
 
-      <h4>Les de to figurene</h4>
+      <h4>Les de to figurene <span class="tag">eksamensbasert</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Påstand</th><th>Svar</th><th>Hvorfor</th></tr></thead>
         <tbody>
@@ -233,7 +234,7 @@
         hver identifiserende relasjon. Den kan ha flere identifiserende entiteter og flere nivåer.</div>
       <div id="ex-svake"></div>
 
-      <h4>Eksempel</h4>
+      <h4>Eksempel <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Kravtekst</span>
         En scene har et unikt navn. En konsert går på nøyaktig én scene og har et starttidspunkt som bare er unikt på den scenen. Konserten har
         også et sluttidspunkt, og varigheten kan regnes ut. En scene kan ha mange konserter, men trenger ikke ha noen. Hver konsert har en
@@ -273,7 +274,7 @@
         to andre</b>. Den <b>nedre skranken</b> sier om hver E må være med i minst én forekomst.</div>
       <div id="ex-ternaere"></div>
 
-      <h4>Eksempel</h4>
+      <h4>Eksempel <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Kravtekst</span>
         Frivillige tar vakter på scener med en bestemt oppgave (bar, sikkerhet, rigg). En oppgave har et unikt navn og en beskrivelse. Gitt en
         frivillig og en scene har den frivillige høyst én oppgave der. Gitt en frivillig og en oppgave kan det være mange scener. Gitt en scene
@@ -281,7 +282,7 @@
       <figure class="er-fig exam-fig et-er"><div id="fig-ternaer"></div>
         <figcaption class="small muted" id="cap-ternaer"></figcaption></figure>
 
-      <h4>Hva betyr tallene?</h4>
+      <h4>Hva betyr tallene? <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Gitt</th><th>Hvor mange av</th><th>Tall</th><th>Følge</th></tr></thead>
         <tbody>
@@ -291,7 +292,7 @@
         </tbody>
       </table></div>
 
-      <h4>Kontrast: tre binære relasjoner</h4>
+      <h4>Kontrast: tre binære relasjoner <span class="tag tag-kjerne">kommer ofte</span></h4>
       <figure class="er-fig exam-fig et-er"><div id="fig-trebinaere"></div>
         <figcaption class="small muted" id="cap-trebinaere"></figcaption></figure>
 
@@ -322,7 +323,7 @@
         Kursets metode går fra kravtekst til en <b>begrunnet</b> ER-modell: hvert valg skal kunne pekes tilbake på en formulering i teksten.
         Metoden er første ledd i en kjede: ER-modell → realisering → FD-er → normalform → dekomponering.</div>
 
-      <h4>Fremgangsmåten</h4>
+      <h4>Fremgangsmåten <span class="tag tag-kjerne">kommer ofte</span></h4>
       <ol>
         <li>Finn entitetene.</li>
         <li>Har entiteten en egen nøkkel? Hvis ja, tegn den. Hvis nei, er den svak og tas til slutt.</li>
@@ -334,7 +335,7 @@
       <p>For hvert valg: hvor i teksten står begrunnelsen?</p>
       <div id="ex-tekst"></div>
 
-      <h4>Ordliste: fra formulering til notasjon</h4>
+      <h4>Ordliste: fra formulering til notasjon <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Teksten sier</th><th>Tegn</th></tr></thead>
         <tbody>
@@ -355,7 +356,7 @@
         </tbody>
       </table></div>
 
-      <h4>Eksempel: festivalen</h4>
+      <h4>Eksempel: festivalen <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Kravtekst</span>
         <ol>
           <li>En artist har et unikt artistnummer og et unikt kunstnernavn. Vi lagrer hjemland og én eller flere sjangre.</li>
@@ -368,10 +369,10 @@
           <li>Frivillige tar vakter på scener med en oppgave. En oppgave har et unikt navn og en beskrivelse. Gitt en frivillig og en scene: høyst én oppgave. Gitt en frivillig og en oppgave: mange scener. Gitt en scene og en oppgave: mange frivillige. Alle oppgaver er brukt i minst én vakt. Vi lagrer antall timer.</li>
         </ol></div>
 
-      <h4>Bygg diagrammet steg for steg</h4>
+      <h4>Bygg diagrammet steg for steg <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="steg-festival"></div>
 
-      <h4>Antakelser</h4>
+      <h4>Antakelser <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Eksamen ber deg skrive en kommentar når teksten er uklar, og sensor godtar rimelige tolkninger (H2019 godtok tvetydige krav begge veier).
         Skriv antakelsen <b>kort ved figuren</b>, med henvisning til punktet:</p>
       <ul>
@@ -405,7 +406,7 @@
         ikke gjør det. Riktig svar gir +1, galt svar −1, blankt 0, og oppgaven gir minst 0 til sammen (H2023 «Hemmelig», H2024 «Dataspill»).</div>
       <div id="ex-lese"></div>
 
-      <h4>Det «krypterte» diagrammet</h4>
+      <h4>Det «krypterte» diagrammet <span class="tag">eksamensbasert</span></h4>
       <figure class="er-fig exam-fig et-er"><div id="fig-krypto"></div>
         <figcaption class="small muted" id="cap-krypto"></figcaption></figure>
 
@@ -432,7 +433,7 @@
 
     <!-- ===================== 8 · EER ===================== -->
     <section data-panel="eer">
-      <h3>EER og subklasser <span class="badge nytt">nytt i H2026</span></h3>
+      <h3>EER og subklasser</h3>
       <div class="callout uni"><span class="lbl">Merk</span>
         Temaet kom inn i H2026 og har aldri vært spurt om på eksamen. Kurset <b>tegner ikke</b> EER-symboler i lysarkene: kravene skrives som mengder og logikk.
         Derfor viser guiden heller ingen tegning her.</div>
@@ -450,7 +451,7 @@
       </table></div>
       <div id="ex-eer"></div>
 
-      <h4>Eksempel: sjekk en instans</h4>
+      <h4>Eksempel: sjekk en instans <span class="tag">pensum, ikke spurt før</span></h4>
       <p class="mono">Gjest = {1, 2, 3, 4}, Vip = {1, 2}, Presse = {2, 3}</p>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Krav</th><th>Oppfylt?</th><th>Hvorfor</th></tr></thead>
@@ -501,28 +502,28 @@
 
   <footer class="footer">IN2090-guide · Blokk 1 · ER-modellering</footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/data-er.js?v=20261127e"></script>
-<script src="assets/js/dra.js?v=20261127e"></script>
-<script src="assets/js/data-dra.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/data-er.js?v=20261127f"></script>
+<script src="assets/js/dra.js?v=20261127f"></script>
+<script src="assets/js/data-dra.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

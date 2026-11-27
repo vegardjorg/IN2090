@@ -7,11 +7,11 @@
   <title>Blokk 7 · Normalisering · IN2090</title>
   <meta name="description" content="Normalisering i IN2090: anomalier, normalformene 1NF–BCNF, kursets tre spørsmål per FD, hele relasjonens normalform, BCNF-dekomposisjon med S₁(Y⁺) og S₂(Y ∪ (X − Y⁺)), tapsfrihet og Fagins teorem, og svarmalen sensor vil se – med stegspillere, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261127f">
 </head>
 <body data-page="normalisering">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -21,6 +21,7 @@
       <h1>Blokk 7 · Normalisering</h1>
       <p class="lead">Del 3 av eksamen har nesten alltid samme oppbygning: korte nøkkel- og FD-oppgaver, én normalformoppgave og én dekomposisjon til BCNF med forklaring. Her lærer du de tre spørsmålene per FD, kursets BCNF-algoritme, hvorfor den er tapsfri, og malen sensor gir poeng for. Tillukning og kandidatnøkler fra <a href="06-fd.html">blokk 6</a> brukes hele veien.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 12 % av poengene per eksamen. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=fd-oppgaver">FD-oppgaver</a> · <a href="pugg.html#fane=fd">FD og normalformer</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_3"><b>H2025</b> · Første BCNF-steg og tapsfrihet · <span class="pts">6p</span></a>
@@ -65,7 +66,7 @@
       <p class="small">Hierarkiet: <span class="mono">BCNF ⊆ 3NF ⊆ 2NF ⊆ 1NF</span>. En relasjon på BCNF er også på 3NF, og så videre.</p>
       <div id="ex-normalformer"></div>
 
-      <h4>Eksempel: Billett</h4>
+      <h4>Eksempel: Billett <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Skjema fra blokk 6</span>
         <p class="mono">Billett(billettnr, konsert, sete, kjøper, epost, artist, scene, dato)</p>
         <p class="mono small">FD1 billettnr → konsert, sete, kjøper · FD2 konsert → artist, scene, dato · FD3 scene, dato → konsert · FD4 konsert, sete → billettnr · FD5 kjøper → epost</p>
@@ -122,7 +123,7 @@
         </ol></div>
       <div id="ex-nf-per-fd"></div>
 
-      <h4>De tre spørsmålene steg for steg</h4>
+      <h4>De tre spørsmålene steg for steg <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Tabellen fylles ut én FD og ett spørsmål om gangen. «KN gitt» og H2024 3.2 følger eksamensformatet der KN er oppgitt og du vurderer hver FD alene. Egen input: <span class="mono">ABCDE; AB->C, C->D</span>, eventuelt med <span class="mono">; KN=AB</span>.</p>
       <div id="sp-nf"></div>
       <div id="pc-nf" class="pc-host"></div>
@@ -165,7 +166,7 @@
         «Høyeste normalform relasjonen oppfyller» (H2025 3.2b) er det samme svaret sett fra den andre siden: den svakeste FD-en bestemmer.</div>
       <div id="ex-nf-relasjon"></div>
 
-      <h4>Eksempler</h4>
+      <h4>Eksempler <span class="tag">eksamensbasert</span></h4>
       <div class="callout eksempel"><span class="lbl">Tre FD-er, tre nivåer</span>
         <span class="mono">R(A, B, C, D)</span> med <span class="mono">AB → C</span>, <span class="mono">C → A</span> og <span class="mono">B → D</span>. KN = <span class="mono">{A, B}</span> og <span class="mono">{B, C}</span>.
         <span class="mono">AB → C</span> gir BCNF, <span class="mono">C → A</span> gir 3NF, og <span class="mono">B → D</span> gir 1NF. Relasjonen er på <b>1NF</b>.</div>
@@ -213,7 +214,7 @@
         </ol></div>
       <div id="ex-bcnf-dekomp"></div>
 
-      <h4>Algoritmen som tre</h4>
+      <h4>Algoritmen som tre <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Hver boks er en relasjon med FD-er og KN. En boks som bryter BCNF, får to barn: S₁ = Y⁺ og S₂ = Y pluss resten. Egen input: <span class="mono">ABCDEF; A->B, B->C, D->E, AD->F</span>, eventuelt med <span class="mono">; velg=D->E</span> for å bestemme første splitt.</p>
       <div id="sp-bcnf"></div>
       <div id="pc-bcnf" class="pc-host"></div>
@@ -263,7 +264,7 @@
         Hvert steg i BCNF-algoritmen er tapsfritt per konstruksjon: fellesattributtene er Y, og <span class="mono">Y → Y⁺</span>, altså hele S₁.</div>
       <div id="ex-tapsfri"></div>
 
-      <h4>Med og uten tap</h4>
+      <h4>Med og uten tap <span class="tag">eksamensbasert</span></h4>
       <p class="small muted"><span class="mono">Vakt(ansatt, avdeling, etasje)</span> med <span class="mono">ansatt → avdeling</span> og <span class="mono">avdeling → etasje</span>, delt på to måter.</p>
       <div id="sp-tapsfri"></div>
 
@@ -296,11 +297,11 @@
         og hvorfor hver relasjon er eller ikke er på BCNF. Uten forklaring trekkes det 3 poeng (H2020, H2023, H2024) eller 2 poeng (H2020 R2).</div>
       <div id="ex-svarform"></div>
 
-      <h4>Lag svaret</h4>
+      <h4>Lag svaret <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Velg et eksempel, eller skriv inn din egen relasjon. Generatoren skriver svaret etter malen under, med tillukninger, FD-er og KN for hver relasjon.</p>
       <div id="svar-gen"></div>
 
-      <h4>Malene</h4>
+      <h4>Malene <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Mal: normalform</span>
         <pre class="fdv-pre">KN: … (vis tillukningene eller grupperingen «alltid / aldri / kanskje med»)
 Nøkkelattributter: …   Ikke-nøkkelattributter: …
@@ -364,28 +365,28 @@ R er på den laveste av disse: …NF.</pre></div>
 
   <footer class="footer">IN2090-guide · Blokk 7 · Normalisering · <a href="06-fd.html">Forrige: blokk 6, funksjonelle avhengigheter</a></footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/data-fd.js?v=20261127e"></script>
-<script src="assets/js/dra.js?v=20261127e"></script>
-<script src="assets/js/data-dra.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/data-fd.js?v=20261127f"></script>
+<script src="assets/js/dra.js?v=20261127f"></script>
+<script src="assets/js/data-dra.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

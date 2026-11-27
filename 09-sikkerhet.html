@@ -7,9 +7,9 @@
   <title>Blokk 9 · Sikkerhet · IN2090</title>
   <meta name="description" content="Sikkerhet i IN2090: konfidensialitet, integritet og tilgjengelighet, brukere og roller, GRANT og REVOKE, SQL-injection og parametriserte spørringer (PreparedStatement og %s), med en demo og eksamensoppgaven fra H2023.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
   <style>
     .sik-demo { border: 1px solid var(--color-outline-variant); border-radius: 10px; padding: .8rem; background: var(--color-surface-container-low); margin: .8rem 0 1.2rem; min-width: 0; }
     .sik-demo .btn-row { margin: .35rem 0; }
@@ -46,6 +46,7 @@
       <h1>Blokk 9 · Sikkerhet</h1>
       <p class="lead">En kort blokk. Sikkerhet har nesten aldri vært spurt om på eksamen. Unntaket er SQL-injection: H2023 hadde en programmeringsoppgave der løsningen ikke fikk være sårbar. Lær deg derfor parametriserte spørringer godt, og les resten som bakgrunn. Programmering med SQL generelt ligger i <a href="08-sql-programmering.html">blokk 8</a>.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 1 % av poengene per eksamen (5 p om SQL-injection i H2023). Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-2_7"><b>H2023</b> · Oppdater uten SQL-injection · <span class="pts">5p</span></a>
       </div>
@@ -74,7 +75,7 @@
       <p class="small muted">På engelsk kalles de tre målene ofte CIA (<i>confidentiality, integrity, availability</i>).</p>
       <div id="ex-cia"></div>
 
-      <h4>Hvem sjekker tilgangen?</h4>
+      <h4>Hvem sjekker tilgangen? <span class="tag">pensum, ikke spurt før</span></h4>
       <div class="callout begrep"><span class="lbl">Tre steder</span>
         <ul>
           <li><b>Klienten</b> logger inn brukeren og sjekker hva hen har lov til. Backend og database må stole på klienten, og bare klienten skal komme til backend.</li>
@@ -83,7 +84,7 @@
         </ul>
         Uansett valg er sikkerhet en helhetlig oppgave: hull kan finnes i alle ledd (frontend, backend, nettverk), så hvert ledd må sikres.</div>
 
-      <h4>Brukere, roller og rettigheter</h4>
+      <h4>Brukere, roller og rettigheter <span class="tag">pensum, ikke spurt før</span></h4>
       <div class="callout begrep"><span class="lbl">Begrep</span>
         Tilgang i databasen styres av <b>brukere</b>, <b>roller</b> og <b>rettigheter</b>. En rolle samler rettigheter som hører sammen (for eksempel «bibliotekar»), og brukerne får roller. Det kalles rollebasert tilgangskontroll.
         <ul>
@@ -106,7 +107,7 @@ REVOKE &lt;rettigheter&gt; ON &lt;objekt&gt; FROM &lt;rolle&gt;;</p>
         Rettigheter er for eksempel <span class="mono">SELECT</span>, <span class="mono">INSERT</span>, <span class="mono">UPDATE</span>, <span class="mono">DELETE</span>, <span class="mono">CREATE</span>, <span class="mono">CONNECT</span>, <span class="mono">USAGE</span> og <span class="mono">ALL</span>. Objektet kan være en tabell, et view, et skjema eller en database. <span class="mono">USAGE</span> gjelder skjemaer, ikke tabeller: <span class="mono">GRANT ALL ON SCHEMA s</span> gir bare CREATE og USAGE på selve skjemaet, ingen rettigheter på tabellene i det. Lysarket om sikkerhet i databaser (s. 14) forenkler dette: der står det at <span class="mono">GRANT ALL ON SCHEMA ws</span> gir alle rettigheter innenfor skjemaet, og <span class="mono">REVOKE USAGE ON ws.categories</span> brukes på en tabell. I ekte PostgreSQL trengs <span class="mono">GRANT ALL ON ALL TABLES IN SCHEMA ws</span> for tabellene. GRANT har ikke vært spurt om på eksamenene vi har. Kommer det, er det kursets intensjon som teller: skriv gjerne PostgreSQL-formen, eller lysarkets form, og si i én setning hva du mener rollen skal få. Får en rolle en rettighet, får alle medlemmene den.</div>
       <div id="ex-grant"></div>
 
-      <h4>Eksempel: et lite bibliotek</h4>
+      <h4>Eksempel: et lite bibliotek <span class="tag">pensum, ikke spurt før</span></h4>
       <p class="small muted">Tabellene <span class="mono">bok</span> og <span class="mono">utlaan</span>, rollene <span class="mono">laaner</span> og <span class="mono">bibliotekar</span>, brukerne kari og per.</p>
       <div id="sql-grant"></div>
       <div class="callout eksempel"><span class="lbl">Les linjene</span>
@@ -119,7 +120,7 @@ REVOKE &lt;rettigheter&gt; ON &lt;objekt&gt; FROM &lt;rolle&gt;;</p>
           <li>Bibliotekarene mister retten til å endre utlån. SELECT og INSERT har de fortsatt.</li>
         </ol></div>
 
-      <h4>Tilgang gjennom et view</h4>
+      <h4>Tilgang gjennom et view <span class="tag">pensum, ikke spurt før</span></h4>
       <div class="callout eksempel"><span class="lbl">Eksempel</span>
         Noen ganger skal brukerne bare se en oppsummering, ikke selve radene. Tenk på pasientjournaler: forskere kan få antall pasienter med hver sykdom per kommune, men ikke journalen til hver person. Lag et view og gi tilgang til det:
         <div id="sql-view"></div>
@@ -150,7 +151,7 @@ REVOKE &lt;rettigheter&gt; ON &lt;objekt&gt; FROM &lt;rolle&gt;;</p>
         </ul></div>
       <div id="ex-injection"></div>
 
-      <h4>Prøv selv</h4>
+      <h4>Prøv selv <span class="tag">eksamensbasert</span></h4>
       <p class="small muted">Et program søker etter en bok med tittelen brukeren skriver inn. Databasen har tabellene <span class="mono">bok(bid, tittel, forfatter)</span> og <span class="mono">bruker(brukernavn, passord)</span>. Spørringene kjøres i en liten SQL-tolk i nettleseren. DROP og andre endringer blir bare beskrevet. Bytt mellom strengsammensetting og parameter, og prøv eksemplene.</p>
       <div id="sik-demo"></div>
 
@@ -180,7 +181,7 @@ stmt.execute();</pre>
           <p>Har databasebrukeren til programmet bare de rettighetene det trenger, stopper databasen mye av skaden. Slå på avkrysningen i demoen og prøv «Slett tabellen». Hullet er der likevel, så du trenger parametre uansett. Ikke anta for mye om de andre leddene i systemet.</p></details>
       </div>
 
-      <h4>Steng tilkoblingene</h4>
+      <h4>Steng tilkoblingene <span class="tag">pensum, ikke spurt før</span></h4>
       <p class="small">Tilkoblinger, cursorer, statements og resultatsett holder på ressurser. Steng dem med <span class="mono">close()</span> når du er ferdig, særlig i programmer som kjører lenge. Når en tilkobling stenges, stenges alt som er laget fra den. I Java kan en try-with-resources-blokk gjøre det automatisk. I Python ser <span class="mono">with psycopg2.connect(dsn) as conn:</span> lik ut, men den stenger <b>ikke</b> tilkoblingen. Den avslutter bare transaksjonen (commit, eller rollback ved feil), så du må fortsatt kalle <span class="mono">conn.close()</span> (lysarket om SQL-injection s. 4).</p>
 
       <h4>Test deg selv</h4>
@@ -204,27 +205,27 @@ stmt.execute();</pre>
 
   <footer class="footer">IN2090-guide · Blokk 9 · Sikkerhet · <a href="10-indekser.html">Neste: blokk 10, indekser</a></footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
-  <script src="assets/js/sql-motor.js?v=20261127e"></script>
-  <script src="assets/js/side-sikkerhet.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
+  <script src="assets/js/sql-motor.js?v=20261127f"></script>
+  <script src="assets/js/side-sikkerhet.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

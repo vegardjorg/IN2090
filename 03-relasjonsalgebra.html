@@ -7,9 +7,9 @@
   <title>Blokk 3 · Relasjonsalgebra · IN2090</title>
   <meta name="description" content="Relasjonsalgebra i IN2090: π, σ, ρ, kryssprodukt, join med betingelse og naturlig join, union, snitt og differanse, navngitte resultater og RA-trær. Med stegvis evaluering av uttrykkstrær, fellen med naturlig join, oversettelse mellom SQL og RA, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
   <style>
     /* Blokk 3 · relasjonsalgebra (sidens egen stil) */
     .ra-ops { width: 100%; }
@@ -71,6 +71,7 @@
       <h1>Blokk 3 · Relasjonsalgebra</h1>
       <p class="lead">Relasjonsalgebra (RA) er det presise språket under SQL: operatorer som tar relasjoner og gir nye relasjoner. RA har vært lite spurt om på eksamen, men H2025 hadde 5 poeng, og RA gjør SQL lettere å forstå. Her lærer du alle operatorene i kurset, lager og evaluerer uttrykkstrær steg for steg, og oversetter mellom SQL og RA.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 1 % av poengene per eksamen (5 p i H2025). H2024 hadde i tillegg en SQL-oppgave om ekvivalens, som telles under SQL. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=ra-tegn">Relasjonsalgebra</a> · <a href="pugg.html#fane=sql-regler">SQL-regler</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_3"><b>H2025</b> · Relasjonsalgebra på båtskjemaet · <span class="pts">5p</span></a>
@@ -108,7 +109,7 @@
         </ul></div>
       <div id="ex-grunnlag"></div>
 
-      <h4>Alle operatorene i kurset</h4>
+      <h4>Alle operatorene i kurset <span class="tag">eksamensbasert</span></h4>
       <div class="table-wrap"><table class="cmp-table ra-ops">
         <thead><tr><th>Symbol</th><th>Navn</th><th>Argumenter</th><th>Gjør</th><th>I SQL</th></tr></thead>
         <tbody>
@@ -124,7 +125,7 @@
       </table></div>
       <p class="small">Betingelser skrives med <span class="mono">= ≠ &lt; &gt; ≤ ≥</span>, <span class="mono">∧</span> (og), <span class="mono">∨</span> (eller) og <span class="mono">¬</span> (ikke). Tekstkonstanter står i fnutter: <span class="mono">'Oslo'</span>.</p>
 
-      <h4>Tabellene vi bruker</h4>
+      <h4>Tabellene vi bruker <span class="tag">eksamensbasert</span></h4>
       <p class="small muted">Egne små tabeller, så du kan regne alt for hånd. Kunde og Båt er en forenklet utgave av skjemaet i H2025.</p>
       <div id="ra-tabeller" class="rel-row"></div>
 
@@ -153,14 +154,14 @@
         </ul></div>
       <div id="ex-unaere"></div>
 
-      <h4>Projeksjon: velg kolonner</h4>
+      <h4>Projeksjon: velg kolonner <span class="tag">eksamensbasert</span></h4>
       <div id="mini-pi"></div>
-      <h4>Seleksjon: velg rader</h4>
+      <h4>Seleksjon: velg rader <span class="tag">eksamensbasert</span></h4>
       <div id="mini-sigma"></div>
       <div id="mini-sigma2"></div>
-      <h4>Omdøping: nye navn</h4>
+      <h4>Omdøping: nye navn <span class="tag">pensum, ikke spurt før</span></h4>
       <div id="mini-rho"></div>
-      <h4>Satt sammen: σ innerst, π ytterst</h4>
+      <h4>Satt sammen: σ innerst, π ytterst <span class="tag">eksamensbasert</span></h4>
       <div id="mini-pisigma"></div>
 
       <div class="callout felle"><span class="lbl">Feller</span>
@@ -187,11 +188,11 @@
         </ul></div>
       <div id="ex-join"></div>
 
-      <h4>Kryssprodukt</h4>
+      <h4>Kryssprodukt <span class="tag">pensum, ikke spurt før</span></h4>
       <div id="mini-cross"></div>
-      <h4>Join med betingelse</h4>
+      <h4>Join med betingelse <span class="tag">eksamensbasert</span></h4>
       <div id="mini-theta"></div>
-      <h4>Naturlig join og fellene</h4>
+      <h4>Naturlig join og fellene <span class="tag">eksamensbasert</span></h4>
       <p class="small muted">Velg et tilfelle. Kolonnene naturlig join kobler på, er markert i stegspilleren i fanen <a href="#fane=tre">Uttrykkstre</a>.</p>
       <div id="join-cases"></div>
 
@@ -219,14 +220,14 @@
         De krever at R og S har <b>samme signatur</b>: samme attributtnavn og typer. Ofte trengs π (og kanskje ρ) først for å få det til.</div>
       <div id="ex-mengde"></div>
 
-      <h4>Hver operator for seg</h4>
+      <h4>Hver operator for seg <span class="tag">pensum, ikke spurt før</span></h4>
       <div id="mini-union"></div>
       <div id="mini-diff"></div>
 
-      <h4>«Både og» og ekvivalens med ∨</h4>
+      <h4>«Både og» og ekvivalens med ∨ <span class="tag">eksamensbasert</span></h4>
       <div id="set-cases"></div>
 
-      <h4>«Minst én» mot «bare»</h4>
+      <h4>«Minst én» mot «bare» <span class="tag">eksamensbasert</span></h4>
       <p class="small muted">Den samme fellen som «for alle» mot «finnes» i SQL (H2020 trakk 3 poeng for den).</p>
       <div id="foralle-cases"></div>
 
@@ -245,7 +246,7 @@
 
     <!-- ===================== 5 · UTTRYKKSTRE ===================== -->
     <section data-panel="tre">
-      <h3>Uttrykkstre steg for steg</h3>
+      <h3>Uttrykkstre steg for steg <span class="tag">pensum, ikke spurt før</span></h3>
       <div class="callout begrep"><span class="lbl">Begrep</span>
         Et RA-uttrykk kan tegnes som et tre. <b>Bladene</b> er relasjonene, og hver <b>indre node</b> er en operator med betingelse eller attributtliste i senket skrift.
         Unære operatorer (π, σ, ρ) har ett barn, binære (×, ⋈, ∪, ∩, ∖) har to. Treet evalueres <b>nedenfra og opp</b>, og roten gir svaret.
@@ -278,7 +279,7 @@
         Det er likt <b>bortsett fra duplikater</b>: SQL gir en multimengde, RA gir en mengde.</div>
       <div id="ex-sql"></div>
 
-      <h4>Oversettelsestabell</h4>
+      <h4>Oversettelsestabell <span class="tag">eksamensbasert</span></h4>
       <div class="table-wrap"><table class="cmp-table">
         <thead><tr><th>SQL</th><th>RA</th><th>Merk</th></tr></thead>
         <tbody>
@@ -295,7 +296,7 @@
         </tbody>
       </table></div>
 
-      <h4>Eksempel: SQL → tre</h4>
+      <h4>Eksempel: SQL → tre <span class="tag">pensum, ikke spurt før</span></h4>
       <div class="ra-sqlra">
         <div id="sql-eks"></div>
         <div id="sql-eks-ra"></div>
@@ -318,7 +319,7 @@
 
     <!-- ===================== 7 · ØVING ===================== -->
     <section data-panel="ovelse">
-      <h3>Øv: skriv uttrykket selv</h3>
+      <h3>Øv: skriv uttrykket selv <span class="tag">eksamensbasert</span></h3>
       <p class="muted small">Skriv et RA-uttrykk og trykk «Sjekk». Svaret ditt evalueres på eksempeltabellene og sammenlignes med forslaget som mengde. Det finnes ofte flere riktige uttrykk. Du kan bruke symbolknappene eller ord: <span class="mono">pi[…]</span>, <span class="mono">sigma[…]</span>, <span class="mono">rho[a->b]</span>, <span class="mono">x</span>, <span class="mono">join[…]</span>, <span class="mono">union</span>, <span class="mono">snitt</span>, <span class="mono">minus</span>, <span class="mono">and</span>, <span class="mono">or</span>, <span class="mono">not</span>. Svarene dine lagres i nettleseren.</p>
       <details class="schema card"><summary class="schema-sum"><b>Tabellene</b></summary><div id="ov-tabeller" class="rel-row"></div></details>
       <div id="ra-ovelser"></div>
@@ -343,26 +344,26 @@
 
   <footer class="footer">IN2090-guide · Blokk 3 · Relasjonsalgebra · <a href="04-sql.html">Neste: blokk 4, SQL</a></footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/data-ra.js?v=20261127e"></script>
-  <script src="assets/js/side-ra.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/data-ra.js?v=20261127f"></script>
+  <script src="assets/js/side-ra.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

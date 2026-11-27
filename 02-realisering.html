@@ -7,11 +7,11 @@
   <title>Blokk 2 · Realisering · IN2090</title>
   <meta name="description" content="Realisering i IN2090: fra ER-diagram til relasjonsskjema med kursets algoritme. Entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter, ternære relasjoner og subklasser, med KN, PN og FN i kursets notasjon, stegspiller over et helt eksempel, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261127f">
 </head>
 <body data-page="realisering">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -24,6 +24,7 @@
         reglene én om gangen, ser hele festivalen fra <a href="01-er.html">blokk 1</a> bli realisert tabell for tabell, og lærer
         hvilke begrunnelser sensor ser etter.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 11 % av poengene per eksamen. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=realisering">Realisering</a> · <a href="pugg.html#fane=er-symboler">ER-symboler</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-1_2"><b>H2025</b> · Fritidsbåt-firmaet: realisering · <span class="pts">7p</span></a>
@@ -68,7 +69,7 @@
         </ol>
         <span class="small muted">Realiseringsnotatet s. 2 og realiseringslysarket s. 3, formulert med egne ord. Diagrammet du realiserer, lærer du å tegne i <a href="01-er.html">blokk 1</a>.</span></div>
 
-      <h4>Notasjonen</h4>
+      <h4>Notasjonen <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Én tabell per blokk: navnet med attributtene i parentes, og under den én linje for KN, PN og FN hver for seg. Attributtene som er med i en KN, er understreket, og attributtene i PN står i fet skrift. Det er markeringen eksamensinstruksen ber om (prøveeksamen 2020, H2020, H2023, H2024): understrek alle KN-er, fet skrift for PN.</p>
       <div id="skj-notasjon"></div>
       <ul>
@@ -80,7 +81,7 @@
 
       <div id="ex-algoritmen"></div>
 
-      <h4>Hva som skjer med hvert ER-element</h4>
+      <h4>Hva som skjer med hvert ER-element <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>ER-element</th><th>Resultat</th><th>Fane</th></tr></thead>
         <tbody>
@@ -98,7 +99,7 @@
         </tbody>
       </table></div>
 
-      <h4>Algoritmen som pseudokode</h4>
+      <h4>Algoritmen som pseudokode <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Guidens egen oppsummering av rekkefølgen, ikke kursets kode. Hold musa over en linje for forklaring. Subklasser (nytt i H2026) er ikke med her, se egen fane. I fanen «Hele eksemplet» følger pseudokoden stegene.</p>
       <div id="algo-pseudo"></div>
 
@@ -133,7 +134,7 @@
         bare bladnodene som kolonner. <b>Flerverdiattributter</b> venter til sitt eget steg.</div>
       <div id="ex-entiteter"></div>
 
-      <h4>Eksempel: FRIVILLIG og FESTIVALPASS</h4>
+      <h4>Eksempel: FRIVILLIG og FESTIVALPASS <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="rs-figpair">
         <figure class="er-fig exam-fig et-er"><div id="fig-attributter"></div>
           <figcaption class="small muted" id="cap-attributter"></figcaption></figure>
@@ -178,7 +179,7 @@
         entiteten selv svak, må den realiseres først.</div>
       <div id="ex-svake"></div>
 
-      <h4>Eksempel: KONSERT og LÅTPLASS</h4>
+      <h4>Eksempel: KONSERT og LÅTPLASS <span class="tag tag-kjerne">kommer ofte</span></h4>
       <figure class="er-fig exam-fig et-er"><div id="fig-svak"></div>
         <figcaption class="small muted" id="cap-svak"></figcaption></figure>
       <div id="skj-svake"></div>
@@ -223,7 +224,7 @@
         Er siden den står i i tillegg total, er den aldri NULL. Da er FN-en også en <b>KN</b>.</div>
       <div id="ex-en-til-en"></div>
 
-      <h4>Eksempel A: FN på den totale siden (SJEF)</h4>
+      <h4>Eksempel A: FN på den totale siden (SJEF) <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="rs-figpair">
         <figure class="er-fig exam-fig et-er"><div id="fig-sjef"></div>
           <figcaption class="small muted" id="cap-sjef"></figcaption></figure>
@@ -240,7 +241,7 @@
       </div>
       <p>Med FN i Frivillig blir det NULL for alle som ikke er sjef. Med FN i Scene blir det ingen NULL.</p>
 
-      <h4>Eksempel B: sammensmelting (begge sider totale)</h4>
+      <h4>Eksempel B: sammensmelting (begge sider totale) <span class="tag">eksamensbasert</span></h4>
       <p><i>Hvert festivalpass har nøyaktig ett armbånd, og hvert armbånd hører til nøyaktig ett pass. Et armbånd har en unik chip-id og en farge.</i></p>
       <div class="rs-figpair">
         <figure class="er-fig exam-fig et-er"><div id="fig-armband"></div>
@@ -287,7 +288,7 @@
         der PN = N-sidens PN. Et relasjonsattributt følger med dit FN-en havner.</div>
       <div id="ex-en-til-mange"></div>
 
-      <h4>Eksempel: KONTRAKT med Signert</h4>
+      <h4>Eksempel: KONTRAKT med Signert <span class="tag tag-kjerne">kommer ofte</span></h4>
       <figure class="er-fig exam-fig et-er"><div id="fig-kontrakt"></div>
         <figcaption class="small muted" id="cap-kontrakt"></figcaption></figure>
       <div class="rs-side">
@@ -340,7 +341,7 @@
         realiseres på samme måte, med kolonnenavn etter rollene.</div>
       <div id="ex-mange-til-mange"></div>
 
-      <h4>Eksempel: SPILLER og OPPVARMING</h4>
+      <h4>Eksempel: SPILLER og OPPVARMING <span class="tag tag-kjerne">kommer ofte</span></h4>
       <figure class="er-fig exam-fig et-er"><div id="fig-mn"></div>
         <figcaption class="small muted" id="cap-mn"></figcaption></figure>
       <div id="skj-mn"></div>
@@ -361,7 +362,7 @@
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         Hver realiseringsoppgave har minst én M:N. Det som ofte går galt, er PN-en når en av sidene er svak.</div>
 
-      <h4>Øv: Hvor havner fremmednøkkelen?</h4>
+      <h4>Øv: Hvor havner fremmednøkkelen? <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Seks små diagrammer med 1:1, 1:N og M:N. Velg det beste valget og les begrunnelsen. Der to valg godtas, står det i fasiten.</p>
       <div id="fn-ovelse"></div>
 
@@ -377,7 +378,7 @@
         i tabellen</b>, fordi hver kombinasjon av entitet og verdi forekommer én gang.</div>
       <div id="ex-flerverdi"></div>
 
-      <h4>Eksempel: Sjanger og Språk</h4>
+      <h4>Eksempel: Sjanger og Språk <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="rs-figpair">
         <figure class="er-fig exam-fig et-er"><div id="fig-flerverdi"></div>
           <figcaption class="small muted" id="cap-flerverdi"></figcaption></figure>
@@ -421,7 +422,7 @@
         Relasjonsattributter er aldri en del av KN.</div>
       <div id="ex-naere"></div>
 
-      <h4>Eksempel A: VAKT med 1 ved OPPGAVE</h4>
+      <h4>Eksempel A: VAKT med 1 ved OPPGAVE <span class="tag">eksamensbasert</span></h4>
       <div class="rs-figpair">
         <figure class="er-fig exam-fig et-er"><div id="fig-ternaer"></div>
           <figcaption class="small muted" id="cap-ternaer"></figcaption></figure>
@@ -430,7 +431,7 @@
       <div id="inst-vakt"></div>
       <div id="inst-vaktnei"></div>
 
-      <h4>Eksempel B og C: andre kardinaliteter</h4>
+      <h4>Eksempel B og C: andre kardinaliteter <span class="tag">eksamensbasert</span></h4>
       <div class="rs-side">
         <div class="card">
           <h5>B: 1 ved både OPPGAVE og SCENE</h5>
@@ -475,14 +476,14 @@
         <b>effektivt</b> (få tabeller og få NULL) og <b>tydelig</b> (lett å lese og markert).</div>
       <div id="ex-hele"></div>
 
-      <h4>Festivalen realiseres</h4>
+      <h4>Festivalen realiseres <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Diagrammet er festivalen fra <a href="01-er.html">blokk 1</a>. Elementene steget gjelder, er uthevet. Stiplet rødt betyr at attributtet droppes, og stiplet grått at det venter til et senere steg. Under figuren vokser skjemaet. Den nyeste tabellen er markert, og nye kolonner i en tabell som fantes fra før, er uthevet.</p>
       <div class="rs-algo-grid">
         <div id="steg-hele"></div>
         <div id="algo-hele"></div>
       </div>
 
-      <h4>Oppsummering</h4>
+      <h4>Oppsummering <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Steg</th><th>Element</th><th>Resultat</th><th>Begrunnelse</th></tr></thead>
         <tbody>
@@ -496,7 +497,7 @@
         </tbody>
       </table></div>
 
-      <h4>Ferdig skjema (9 tabeller)</h4>
+      <h4>Ferdig skjema (9 tabeller) <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="skj-festival"></div>
 
       <div class="callout eksempel"><span class="lbl">Hva skjemaet ikke håndhever</span>
@@ -511,7 +512,7 @@
         nøkkelattributt, men 2NF holder, fordi Postnr ikke er en del av noen KN. Det er normaliseringen i
         <a href="07-normalisering.html">blokk 7</a> som fanger slike avhengigheter.</div>
 
-      <h4>Fra skjema til SQL (utdrag)</h4>
+      <h4>Fra skjema til SQL (utdrag) <span class="tag">eksamensbasert</span></h4>
       <p>PN blir <span class="mono">PRIMARY KEY</span>, og en ekstra KN blir <span class="mono">UNIQUE NOT NULL</span> (lysarket om datamanipulering s. 8).
         En FN blir <span class="mono">REFERENCES</span>, og en sammensatt FN skrives som <span class="mono">FOREIGN KEY (…) REFERENCES …</span>.
         Mer om <span class="mono">CREATE TABLE</span> i <a href="04-sql.html">blokk 4</a>.</p>
@@ -539,7 +540,7 @@
 
     <!-- ===================== 10 · SUBKLASSER ===================== -->
     <section data-panel="subklasser">
-      <h3>Subklasser <span class="tag">nytt i H2026</span></h3>
+      <h3>Subklasser</h3>
       <div class="callout begrep"><span class="lbl">Begrep</span>
         En subklasse realiseres med en <b>egen tabell</b> for superklassen og <b>én tabell per subklasse</b>. Subklassetabellen har
         superklassens PN som sin PN, og den er samtidig en FN til superklassen. Det håndhever kravet om delmengde
@@ -548,7 +549,7 @@
         Kravene (disjunkt, total) er forklart i <a href="01-er.html#fane=eer">blokk 1, fanen EER</a>. Kurset tegner ikke ISA-figurer, så her brukes mengdenotasjon.</span></div>
       <div id="ex-subklasser"></div>
 
-      <h4>Eksempel: Gjest, Vip og Presse</h4>
+      <h4>Eksempel: Gjest, Vip og Presse <span class="tag">pensum, ikke spurt før</span></h4>
       <p class="mono">Gjest = {1, 2, 3, 4}, Vip = {1, 2}, Presse = {2, 3}</p>
       <div class="rs-side">
         <div class="card">
@@ -571,7 +572,7 @@
         </div>
       </div>
 
-      <h4>Hva håndheves?</h4>
+      <h4>Hva håndheves? <span class="tag">pensum, ikke spurt før</span></h4>
       <div class="table-wrap"><table class="cmp-table ls-prose">
         <thead><tr><th>Krav</th><th>Håndhevet av skjemaet?</th><th>Oppfylt i instansen?</th></tr></thead>
         <tbody>
@@ -625,28 +626,28 @@
 
   <footer class="footer">IN2090-guide · Blokk 2 · Realisering</footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/data-realisering.js?v=20261127e"></script>
-<script src="assets/js/dra.js?v=20261127e"></script>
-<script src="assets/js/data-dra.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/data-realisering.js?v=20261127f"></script>
+<script src="assets/js/dra.js?v=20261127f"></script>
+<script src="assets/js/data-dra.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

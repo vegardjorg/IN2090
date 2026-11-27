@@ -7,9 +7,9 @@
   <title>Blokk 8 · Views og programmering · IN2090</title>
   <meta name="description" content="Views, transaksjoner og SQL fra program i IN2090: CREATE VIEW og MATERIALIZED VIEW, BEGIN, COMMIT og ROLLBACK med ACID, og psycopg2 og JDBC med parametriserte spørringer, commit og autocommit, med demoer og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
   <style>
     .pg-code-box { margin: .6rem 0; border: 1px solid var(--color-outline-variant); border-radius: 8px; background: var(--color-surface-container-lowest); max-width: 100%; overflow: hidden; }
     .pg-code-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; padding: .3rem .7rem; border-bottom: 1px solid var(--color-outline-variant); background: var(--color-surface-container-low); font-size: var(--text-xs); }
@@ -52,6 +52,7 @@
       <h1>Blokk 8 · Views, transaksjoner og programmering</h1>
       <p class="lead">Tre korte temaer som henger sammen: et <b>view</b> gir en spørring et navn, en <b>transaksjon</b> gjør flere kommandoer til én enhet, og et <b>program</b> sender SQL til databasen med verdiene fra brukeren som parametre. VIEW-oppgaver har vært med på hver eksamen siden 2019, men de er egentlig aggregat- og join-oppgaver, så selve spørringen lærer du i <a href="05-sql-videre.html">blokk 5</a>. Programmering har vært spurt om én gang (H2023, 5 p). Eksemplene bruker biblioteksdatabasen fra <a href="04-sql.html">blokk 4</a>. Triggere er ikke pensum.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> ingen egne oppgaver. SQL-injection-oppgaven fra H2023 står i blokk 9.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-2_7"><b>H2023</b> · Programmering uten SQL-injection · <span class="pts">5p</span></a>
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-2_3"><b>H2025</b> · CREATE TABLE + INSERT i én transaksjon · <span class="pts">7p</span></a>
@@ -79,10 +80,10 @@
         Et <b>materialisert view</b> (<span class="mono">CREATE MATERIALIZED VIEW</span>) lagrer svaret som en tabell og oppdateres bare med <span class="mono">REFRESH MATERIALIZED VIEW</span>.</div>
       <div id="ex-views"></div>
 
-      <h4>Hvorfor views?</h4>
+      <h4>Hvorfor views? <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Tabellene er laget for å lagre data uten gjentakelser, ikke for å lese dem. For å få ut noe interessant må du nesten alltid joine, filtrere og velge kolonner. Går den samme spørringen igjen, gir du den et navn. Views brukes også til å bygge lag over tabellene, så de som spør, ikke trenger å kjenne alle join-ene.</p>
 
-      <h4>Et view på biblioteket</h4>
+      <h4>Et view på biblioteket <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="eks-view"></div>
       <p>Bruk det som en tabell:</p>
       <div id="eks-bruk"></div>
@@ -90,11 +91,11 @@
       <div id="eks-utvidet"></div>
       <p>Svaret er én rad: <i>Peer Gynt</i>. Ada har også lånt <i>Et dukkehjem</i>, men det er levert.</p>
 
-      <h4>Utledbare verdier</h4>
+      <h4>Utledbare verdier <span class="tag">pensum, ikke spurt før</span></h4>
       <p>I ER-modellen finnes utledbare attributter (stiplet oval), og ved <a href="02-realisering.html">realisering</a> droppes de. Et view kan regne dem ut igjen fra det som er lagret, uten at noe må holdes oppdatert:</p>
       <div id="eks-alder"></div>
 
-      <h4 class="demo-h">Prøv selv: VIEW mot MATERIALIZED VIEW</h4>
+      <h4 class="demo-h">Prøv selv: VIEW mot MATERIALIZED VIEW <span class="tag">pensum, ikke spurt før</span></h4>
       <p>Begge er laget fra samme spørring:</p>
       <div id="eks-mat"></div>
       <p>Endre tabellen og se hva hver av dem viser. Grønt er nytt, rødt er en rad som ikke finnes lenger i tabellen.</p>
@@ -141,11 +142,11 @@
         En <b>transaksjon</b> er en gruppe kommandoer som utføres som én enhet: enten lykkes alle, eller ingen. Den starter med <span class="mono">BEGIN;</span> og slutter med <span class="mono">COMMIT;</span> (lagre) eller <span class="mono">ROLLBACK;</span> (angre alt).</div>
       <div id="ex-transaksjoner"></div>
 
-      <h4 class="demo-h">Steg for steg: en overføring</h4>
+      <h4 class="demo-h">Steg for steg: en overføring <span class="tag">eksamensbasert</span></h4>
       <p>Flytt penger fra Ada til Bo. Tabellen er <span class="mono">konto(id, eier, saldo)</span> med <span class="mono">CHECK (saldo &gt;= 0)</span>. Velg et script. Den første tabellen viser hva økta selv ser, den andre det som er lagret og synlig for andre.</p>
       <div id="tx-demo"></div>
 
-      <h4>ACID</h4>
+      <h4>ACID <span class="tag">pensum, ikke spurt før</span></h4>
       <p>Lysarkene sier at en transaksjon skal oppfylle fire krav:</p>
       <div class="pg-acid">
         <div><span class="pg-letter">A</span><b>Atomicity</b><br>Kommandoene er én enhet. Feiler én, feiler alle.</div>
@@ -154,7 +155,7 @@
         <div><span class="pg-letter">D</span><b>Durability</b><br>Det som er lagret med COMMIT, blir værende, også etter en omstart.</div>
       </div>
 
-      <h4>Script som én transaksjon</h4>
+      <h4>Script som én transaksjon <span class="tag">eksamensbasert</span></h4>
       <p>Et SQL-script er en fil med kommandoer som lager tabeller, views og data. Det kjøres med <span class="mono">psql … -f script.sql</span> eller <span class="mono">\i script.sql</span> inne i psql, og <span class="mono">pg_dump</span> kan lage et script som gjenskaper en hel database. Pakker du scriptet inn i en transaksjon, blir det enten kjørt helt eller ikke i det hele tatt. Dette er mønsteret fra H2025 2.3:</p>
       <div id="eks-script"></div>
       <p>Hadde én rad brutt <span class="mono">CHECK</span>, ville INSERT feilet, hele transaksjonen blitt rullet tilbake, og tabellen <span class="mono">emneord</span> ville ikke funnes etterpå.</p>
@@ -196,21 +197,21 @@
 
       <div id="lang-switch"></div>
 
-      <h4>Les fra databasen</h4>
+      <h4>Les fra databasen <span class="tag">eksamensbasert</span></h4>
       <p>Skriv ut titlene på bøkene en låner har lånt. Navnet kommer fra brukeren, så det sendes som parameter.</p>
       <div id="kode-les"></div>
       <p>Med <span class="mono">"Ada"</span> skrives <i>Et dukkehjem</i> og <i>Peer Gynt</i> ut. I Python er hver rad en tuppel, så <span class="mono">rad[0]</span> er første kolonne. I Java peker ResultSet på én rad om gangen. <span class="mono">next()</span> går til neste rad og gir false når det ikke er flere, og <span class="mono">getString(1)</span> henter kolonne 1.</p>
 
-      <h4>Tilkoblingen</h4>
+      <h4>Tilkoblingen <span class="tag">pensum, ikke spurt før</span></h4>
       <div id="kode-tilkobling"></div>
       <p class="small muted">Tilkoblingen skal stenges med <span class="mono">close()</span> når programmet er ferdig med den. Det er viktigst i programmer som kjører lenge (mer i blokk 9 · Sikkerhet).</p>
 
-      <h4 class="demo-h">Prøv selv: sammensetting mot parameter</h4>
+      <h4 class="demo-h">Prøv selv: sammensetting mot parameter <span class="tag">eksamensbasert</span></h4>
       <p>Skriv et navn eller velg et eksempel. Under «Strengsammensetting» limes teksten inn i SQL-strengen med +. Under «Parameter» sendes den for seg.</p>
       <div id="inj-demo"></div>
       <div id="kode-sarbar"></div>
 
-      <h4>Endre data: commit og autocommit</h4>
+      <h4>Endre data: commit og autocommit <span class="tag">eksamensbasert</span></h4>
       <p>En UPDATE eller INSERT fra et program må lagres. Her skiller Python og Java seg:</p>
       <div id="kode-commit"></div>
       <ul>
@@ -220,7 +221,7 @@
       <div id="kode-autocommit"></div>
       <p class="small muted">Autocommit står ikke i lysarkene, og kursets løsningsforslag kaller <span class="mono">conn.commit()</span> også i Java. Det virker bare når autocommit er slått av. Med autocommit på (standard) kaster PostgreSQL-driveren et SQLException.</p>
 
-      <h4>H2023 2.7 gjennomgått</h4>
+      <h4>H2023 2.7 gjennomgått <span class="tag">eksamensbasert</span></h4>
       <p>Oppgaven: lag <span class="mono">vedlikeholdt(conn, omrade)</span> som setter <span class="mono">vedlikeholdt</span> til dagens dato for alle sensorer i området, uten å være sårbar for SQL-injection. Sensoren har bare <span class="mono">oid</span>, så området slås opp på navn i en delspørring. Løsningsforslaget i sensorveiledningen:</p>
       <div id="kode-h23"></div>
       <p class="pg-src">Kilde: sensorveiledning IN2090 H2023 2.7 (ordrett).</p>
@@ -272,25 +273,25 @@
 
   <footer class="footer">IN2090-guide · Blokk 8 · Views, transaksjoner og programmering</footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/side-prog.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/side-prog.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

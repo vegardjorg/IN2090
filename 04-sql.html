@@ -7,15 +7,15 @@
   <title>Blokk 4 · SQL · IN2090</title>
   <meta name="description" content="SQL grunnleggende i IN2090: spørringens anatomi, join (kryssprodukt, indre, selvjoin, NATURAL JOIN-fellen), DISTINCT, ORDER BY og LIMIT, CREATE TABLE og skranker, INSERT, UPDATE og DELETE, med stegvise demoer på en liten biblioteksdatabase og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261127f">
 </head>
 <body data-page="sql">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -25,6 +25,7 @@
       <h1>Blokk 4 · SQL</h1>
       <p class="lead">SQL-delen gir mest poeng på eksamen, og alt bygger på det som står her: hvordan en spørring leses steg for steg, hvordan tabeller kobles, hvordan svaret sorteres og kuttes, og hvilke regler databasen håndhever når du endrer data. Alle eksemplene bruker den samme lille biblioteksdatabasen. Når grunnlaget sitter, går du videre til <a href="05-sql-videre.html">blokk 5 · SQL videregående</a> (aggregering, ytre join, NULL og «for alle»).</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 14 % av poengene per eksamen. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=sql-regler">SQL-regler</a> · <a href="pugg.html#fane=sql-monstre">SQL-mønstre</a></p>
       <div class="badges" id="badges-sql"></div>
     </div>
@@ -52,7 +53,7 @@
         <span class="mono">FROM</span> sier hvilke tabeller som brukes, <span class="mono">WHERE</span> hvilke rader som beholdes, og <span class="mono">SELECT</span> hvilke kolonner som vises. Svaret er alltid en ny tabell.</div>
       <div id="ex-anatomi"></div>
 
-      <h4>Den logiske rekkefølgen</h4>
+      <h4>Den logiske rekkefølgen <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout snarvei"><span class="lbl">Kjernen</span>
         <ol>
           <li><span class="mono">FROM</span> (med alle join-er): bygg tabellen det skal velges fra.</li>
@@ -66,23 +67,23 @@
         Skriverekkefølgen er fast: <span class="mono">WITH, SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET</span> (LIMIT og OFFSET kan bytte plass).
         <span class="small muted">Lysarkene viser skriverekkefølgen og navnereglene. Lista med evalueringsrekkefølgen er vår oppsummering.</span></div>
 
-      <h4>Under panseret: hva databasen gjør med spørringen</h4>
+      <h4>Under panseret: hva databasen gjør med spørringen <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span></h4>
       <p class="small muted">Valgfritt. Slå på for å se fasene en spørring går gjennom, og i hvilken fase en feil blir oppdaget. Valget gjelder hele guiden.</p>
       <div id="panser-anatomi"></div>
 
-      <h4 class="demo-h">Steg for steg: grunnformen, og NULL i WHERE</h4>
+      <h4 class="demo-h">Steg for steg: grunnformen, og NULL i WHERE <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Tittel og år på bøker fra før 1900 med mer enn 100 sider. Se hva som skjer med Folkeeventyr, som mangler sidetall.</p>
       <div id="steg-wherenull"></div>
 
-      <h4 class="demo-h">Steg for steg: hele løpet</h4>
+      <h4 class="demo-h">Steg for steg: hele løpet <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>De to siste lånene som ikke er levert. Her ser du FROM, WHERE, SELECT, ORDER BY og LIMIT etter tur.</p>
       <div id="steg-anatomi"></div>
 
-      <h4>LIKE skiller mellom store og små bokstaver</h4>
+      <h4>LIKE skiller mellom store og små bokstaver <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="eks-an2"></div>
       <p class="small muted">SQLite sin LIKE skiller ikke mellom store og små bokstaver, så tallene over er regnet etter PostgreSQL-regelen.</p>
 
-      <h4>SELECT-navn finnes ikke i WHERE</h4>
+      <h4>SELECT-navn finnes ikke i WHERE <span class="tag">pensum, ikke spurt før</span></h4>
       <div id="eks-an4"></div>
       <p>Skriv uttrykket på nytt i WHERE (<span class="mono">WHERE sider / 100 &gt;= 2</span>). I <span class="mono">ORDER BY hundrer</span> hadde navnet vært lov. Merk også at <span class="mono">sider / 100</span> er heltallsdivisjon: 250 / 100 = 2.</p>
 
@@ -126,19 +127,19 @@
         <b>Naturlig join</b> (<span class="mono">NATURAL JOIN</span>) joiner automatisk på <i>alle</i> kolonner med likt navn.</div>
       <div id="ex-join"></div>
 
-      <h4 class="demo-h">Steg for steg: fra kryssprodukt til indre join</h4>
+      <h4 class="demo-h">Steg for steg: fra kryssprodukt til indre join <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="steg-innerjoin"></div>
 
-      <h4>Fire tabeller</h4>
+      <h4>Fire tabeller <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Hvem har lånt hvilken bok, og hvem skrev den?</p>
       <div id="eks-j2"></div>
       <p>6 rader, én per utlån. Begge <span class="mono">navn</span>-kolonnene får hvert sitt alias. Ellers får svaret to kolonner med samme navn.</p>
 
-      <h4 class="demo-h">Steg for steg: NATURAL JOIN-fellen</h4>
+      <h4 class="demo-h">Steg for steg: NATURAL JOIN-fellen <span class="tag">eksamensbasert</span></h4>
       <p>Samme spørsmål, skrevet «kort». Svaret blir 0 rader, uten feilmelding.</p>
       <div id="steg-natural"></div>
 
-      <h4 class="demo-h">Steg for steg: selvjoin</h4>
+      <h4 class="demo-h">Steg for steg: selvjoin <span class="tag">eksamensbasert</span></h4>
       <p>Par av lånere som bor på samme sted:</p>
       <div id="steg-selvjoin"></div>
 
@@ -176,22 +177,22 @@
         <span class="mono">ORDER BY</span> sorterer svaret, <span class="mono">DESC</span> snur rekkefølgen, <span class="mono">LIMIT n</span> tar bare de n første radene og <span class="mono">OFFSET m</span> hopper over de m første.</div>
       <div id="ex-distinct"></div>
 
-      <h4>Multimengde mot mengde</h4>
+      <h4>Multimengde mot mengde <span class="tag">eksamensbasert</span></h4>
       <div class="grid cols-2 sql-pair">
         <div id="eks-d1a"></div>
         <div id="eks-d1b"></div>
       </div>
       <p>Rekkefølgen er ikke garantert. <span class="mono">SELECT bid FROM utlån</span> gir 6 rader, men <span class="mono">SELECT DISTINCT bid FROM utlån</span> gir 5, fordi Et dukkehjem (10) er lånt to ganger.</p>
 
-      <h4>Sortering på flere kolonner</h4>
+      <h4>Sortering på flere kolonner <span class="tag">eksamensbasert</span></h4>
       <div id="eks-d2"></div>
       <p>Ada og Cato har samme sted og sorteres derfor på navn. Dina står sist fordi PostgreSQL legger NULL sist ved stigende sortering.</p>
 
-      <h4 class="demo-h">Prøv selv: LIMIT og OFFSET</h4>
+      <h4 class="demo-h">Prøv selv: LIMIT og OFFSET <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Endre tallene og se hvilke rader som blir med. Grønt er med i svaret, rødt er kuttet.</p>
       <div id="lo-demo"></div>
 
-      <h4>NULL først ved DESC (PostgreSQL) <span class="tag">Tilleggsfelle</span></h4>
+      <h4>NULL først ved DESC (PostgreSQL) <span class="tag">Ikke pensum</span></h4>
       <p>«De tre tykkeste bøkene»:</p>
       <div id="eks-d4"></div>
       <p>Med <span class="mono">WHERE sider IS NOT NULL</span> før sorteringen blir svaret Kristin Lavransdatter (1000), Peer Gynt (250) og Brødrene Løvehjerte (230). SQLite sorterer NULL motsatt vei, så svaret over følger PostgreSQL-regelen.</p>
@@ -205,7 +206,7 @@
           <p>Når en join kan gi samme svar flere ganger (en låner som har lånt flere Ibsen-bøker), og oppgaven sier «unike» eller «hvilke», trenger du DISTINCT. Ikke legg den til overalt: den endrer ikke svaret der radene allerede er unike, og den kan skjule en feil join.</p></details>
         <details class="grense"><summary>Hvorfor gir DISTINCT én NULL-rad når NULL = NULL ikke er TRUE?</summary>
           <p>DISTINCT (og GROUP BY) bruker en egen likhetsregel der to NULL-er regnes som like. WHERE gjør det ikke. Dette er en kjent inkonsekvens i SQL.</p></details>
-        <details class="grense"><summary>Hvorfor står NULL øverst i «topp n»? <span class="tag">Tilleggsfelle</span></summary>
+        <details class="grense"><summary>Hvorfor står NULL øverst i «topp n»? <span class="tag">Ikke pensum</span></summary>
           <p>I PostgreSQL kommer NULL øverst med DESC. Filtrer med <span class="mono">IS NOT NULL</span> når kolonnen kan være NULL. Dette står ikke i lysarkene.</p></details>
       </div>
 
@@ -229,14 +230,14 @@
         <span class="mono">REFERENCES</span> (fremmednøkkel: verdien må finnes i den andre tabellen) og <span class="mono">CHECK</span> (et vilkårlig vilkår).</div>
       <div id="ex-skranker"></div>
 
-      <h4>Biblioteket som CREATE TABLE</h4>
+      <h4>Biblioteket som CREATE TABLE <span class="tag">eksamensbasert</span></h4>
       <div id="eks-create"></div>
 
       <h4 class="demo-h">Går denne gjennom?</h4>
       <p>Hver kommando prøves fra de opprinnelige dataene, ikke etter hverandre. Avgjør om databasen godtar eller avviser den. Forklaringen nevner skranken som avgjør.</p>
       <div id="tf-skranker"></div>
 
-      <h4>En tabell med de fleste skrankene</h4>
+      <h4>En tabell med de fleste skrankene <span class="tag">eksamensbasert</span></h4>
       <p>En tabell for reservasjoner:</p>
       <div id="eks-reserv"></div>
 
@@ -277,27 +278,27 @@
       <div id="ex-endring"></div>
 
       <p class="small muted">Hvert eksempel starter fra de opprinnelige dataene.</p>
-      <h4 class="demo-h">Steg for steg: UPDATE med NULL-test</h4>
+      <h4 class="demo-h">Steg for steg: UPDATE med NULL-test <span class="tag">eksamensbasert</span></h4>
       <p>Sett ny frist for lån som ikke er levert:</p>
       <div id="steg-update"></div>
 
-      <h4>UPDATE uten WHERE og NULL i aritmetikk</h4>
+      <h4>UPDATE uten WHERE og NULL i aritmetikk <span class="tag">eksamensbasert</span></h4>
       <div id="eks-e2"></div>
       <p>Alle 6 rader berøres. Fem bøker får 10 sider mer (130, 260, 1010, 210, 240), mens Folkeeventyr fortsatt har NULL, fordi <span class="mono">NULL + 10</span> er NULL.</p>
 
-      <h4 class="demo-h">Steg for steg: DELETE</h4>
+      <h4 class="demo-h">Steg for steg: DELETE <span class="tag">eksamensbasert</span></h4>
       <div id="steg-delete"></div>
 
-      <h4>DELETE med delspørring</h4>
+      <h4>DELETE med delspørring <span class="tag">eksamensbasert</span></h4>
       <p>Slett bøker som aldri er lånt ut:</p>
       <div id="eks-e4"></div>
       <p>1 rad slettes: Folkeeventyr (15). Det er lovlig fordi ingen utlån peker på den. <span class="mono">bid</span> i <span class="mono">utlån</span> er del av primærnøkkelen og kan ikke være NULL, så NOT IN er trygg her (se <a href="05-sql-videre.html#fane=null">NULL-fellen i blokk 5</a>).</p>
 
-      <h4>INSERT … SELECT</h4>
+      <h4>INSERT … SELECT <span class="tag">eksamensbasert</span></h4>
       <p>Lag en purreliste:</p>
       <div id="eks-e5"></div>
 
-      <h4>Transaksjon</h4>
+      <h4>Transaksjon <span class="tag">eksamensbasert</span></h4>
       <p>Ny tabell og data som én enhet, samme mønster som H2025 2.3:</p>
       <div id="eks-e6"></div>
       <p>Hadde den siste raden vært <span class="mono">(14, 'ok')</span>, ville CHECK feilet, INSERT feilet, og hele transaksjonen blitt rullet tilbake. Da finnes heller ikke tabellen <span class="mono">emneord</span> etterpå.</p>
@@ -363,36 +364,36 @@
 
   <footer class="footer">IN2090-guide · Blokk 4 · SQL</footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/data-sql.js?v=20261127e"></script>
-  <script src="assets/js/dra.js?v=20261127e"></script>
-  <script src="assets/js/data-dra.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
-  <script src="assets/js/sql-motor.js?v=20261127e"></script>
-  <script src="assets/js/sql-oppgave.js?v=20261127e"></script>
-  <script src="assets/js/data-sql-ovelser.js?v=20261127e"></script>
-  <script src="assets/js/data-sql-panser.js?v=20261127e"></script>
-  <script src="assets/js/sql-panser.js?v=20261127e"></script>
-  <script src="assets/js/sql-pipeline.js?v=20261127e"></script>
-  <script src="assets/js/data-sql-bygger.js?v=20261127e"></script>
-  <script src="assets/js/sql-bygger.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/data-sql.js?v=20261127f"></script>
+  <script src="assets/js/dra.js?v=20261127f"></script>
+  <script src="assets/js/data-dra.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
+  <script src="assets/js/sql-motor.js?v=20261127f"></script>
+  <script src="assets/js/sql-oppgave.js?v=20261127f"></script>
+  <script src="assets/js/data-sql-ovelser.js?v=20261127f"></script>
+  <script src="assets/js/data-sql-panser.js?v=20261127f"></script>
+  <script src="assets/js/sql-panser.js?v=20261127f"></script>
+  <script src="assets/js/sql-pipeline.js?v=20261127f"></script>
+  <script src="assets/js/data-sql-bygger.js?v=20261127f"></script>
+  <script src="assets/js/sql-bygger.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

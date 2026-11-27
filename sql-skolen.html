@@ -7,12 +7,12 @@
   <title>SQL-skolen · IN2090</title>
   <meta name="description" content="SQL-skolen i IN2090: kursets skrivemåte for SQL og relasjonsalgebra, linjeleser med forklaring per linje på tre nivåer, Parsons-oppgaver for spørringer, øving i å lese spørringer og en guide til hvordan eksamenssvar i SQL skrives.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261127f">
   <style>
     /* SQL-skolen: sidespesifikt */
     .sqs-ra { font-family: var(--font-mono, ui-monospace, monospace); }
@@ -69,6 +69,7 @@
         kursets skrivemåte for SQL og relasjonsalgebra, spørringer forklart linje for linje, linjer som skal i riktig rekkefølge,
         spørringer du skal lese og forstå, og hvordan et godt eksamenssvar ser ut. Stoffet selv står i
         <a href="04-sql.html">blokk 4 · SQL</a> og <a href="05-sql-videre.html">blokk 5 · SQL videregående</a>.</p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
     </div>
 
     <div id="skjema"></div>
@@ -86,7 +87,7 @@
       <h3>SQL og relasjonsalgebra slik kurset skriver dem</h3>
       <div id="ex-notasjon"></div>
 
-      <h4>SQL</h4>
+      <h4>SQL <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Kurset bruker PostgreSQL. Nøkkelord skrives med store bokstaver, tabeller og kolonner med små, og funksjoner som <span class="mono">count</span> med små. Det er stil, ikke krav. Lenkene går til stedet der stoffet forklares.</p>
       <div class="table-wrap">
         <table class="sqs-tab">
@@ -95,7 +96,7 @@
         </table>
       </div>
 
-      <h4>Relasjonsalgebra</h4>
+      <h4>Relasjonsalgebra <span class="tag">eksamensbasert</span></h4>
       <p class="small muted">Relasjonsalgebra har vært med på eksamen to ganger (P2020 og H2025, 5 poeng). Kursets RA har ikke divisjon og ikke ytre join. Mer om RA i <a href="03-relasjonsalgebra.html">blokk 3</a>.</p>
       <div class="table-wrap">
         <table class="sqs-tab">
@@ -109,10 +110,10 @@
         seleksjon med WHERE, projeksjon med SELECT. Likheten gjelder «opp til duplikater», fordi RA jobber med mengder og SQL med multimengder.
         <span class="small muted">(lysarket «Intro til SQL» s. 12–13, formulert med egne ord.)</span></div>
 
-      <h4>Et RA-uttrykk, to skrivemåter</h4>
+      <h4>Et RA-uttrykk, to skrivemåter <span class="tag">eksamensbasert</span></h4>
       <div class="card" id="ra-eksempel"></div>
 
-      <h4>Koble RA til SQL</h4>
+      <h4>Koble RA til SQL <span class="tag">eksamensbasert</span></h4>
       <div class="card dra-card"><div id="ra-match"></div></div>
 
       <h4>Sant eller usant?</h4>
@@ -121,7 +122,7 @@
 
     <!-- ===================== LINJELESER ===================== -->
     <section data-panel="linjeleser">
-      <h3>Linjeleser</h3>
+      <h3>Linjeleser <span class="tag tag-kjerne">kommer ofte</span></h3>
       <p class="muted small">Velg en spørring. Klikk en linje (eller bruk <span class="kbd">↑</span> <span class="kbd">↓</span>) for forklaring.
         Bryteren i forklaringsboksen styrer nivået bare for dette feltet. Linjer med <b>?</b> har en felle forklart under.</p>
       <div class="btn-row" id="ll-picker" role="group" aria-label="Velg spørring"></div>
@@ -133,7 +134,7 @@
 
     <!-- ===================== PARSONS ===================== -->
     <section data-panel="parsons">
-      <h3>Sett linjene i riktig rekkefølge</h3>
+      <h3>Sett linjene i riktig rekkefølge <span class="tag tag-kjerne">kommer ofte</span></h3>
       <p class="muted small">Linjene til en riktig spørring er stokket. Velg en oppgave og sett linjene på plass.</p>
       <div class="btn-row" id="pa-picker" role="group" aria-label="Velg oppgave"></div>
       <div class="card dra-card"><div id="pa-host"></div></div>
@@ -147,19 +148,19 @@
       <p>På eksamen må du kunne lese en spørring og si hva den gir, både i flervalget om antall rader og når du sjekker ditt eget svar.
         Skjemaet øverst på siden har alle radene i biblioteksdatabasen. Fest det, så har du det for hånden.</p>
 
-      <h4>Hva spør spørringen om?</h4>
+      <h4>Hva spør spørringen om? <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="les-quiz"></div>
 
-      <h4>Hvor mange rader?</h4>
+      <h4>Hvor mange rader? <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Regn for hånd på biblioteksdatabasen. Svaret og tabellen regnes ut av guidens SQL-motor.
         Med eksamens poengregel (+2 for riktig, −0,5 for galt) og flere oppgaver: <a href="05-sql-videre.html#fane=radantall">blokk 5, «Hvor mange rader?»</a>.</p>
       <div id="radantall"></div>
 
-      <h4>Finn feilen</h4>
+      <h4>Finn feilen <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Hver spørring har én feil som sensor ville trukket for. Klikk linja med feilen. Du har to forsøk.</p>
       <div id="ff-host"></div>
 
-      <h4>Prøv selv</h4>
+      <h4>Prøv selv <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Skriv en hvilken som helst SELECT-spørring mot biblioteksdatabasen og se hva den gir. Motoren følger PostgreSQL-reglene kurset bruker.</p>
       <div class="card" id="sandkasse"></div>
     </section>
@@ -169,13 +170,13 @@
       <h3>Slik skriver du et eksamenssvar i SQL</h3>
       <div id="ex-skriv"></div>
 
-      <h4>Det oppgaveteksten sier</h4>
+      <h4>Det oppgaveteksten sier <span class="tag">eksamensbasert</span></h4>
       <div id="sg-sitat-oppgave"></div>
 
-      <h4>Oppskrift</h4>
+      <h4>Oppskrift <span class="tag tag-kjerne">kommer ofte</span></h4>
       <ol id="sg-oppskrift"></ol>
 
-      <h4>Fra oppgavetekst til SQL</h4>
+      <h4>Fra oppgavetekst til SQL <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Ordene i oppgaven forteller hvilket verktøy du trenger.</p>
       <div class="table-wrap">
         <table class="sqs-tab">
@@ -184,21 +185,21 @@
         </table>
       </div>
 
-      <h4>Uklart og presist svar på samme oppgave</h4>
+      <h4>Uklart og presist svar på samme oppgave <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p id="sg-oppgave"></p>
       <div class="grid cols-2 sqs-pair">
         <div><div class="card" id="sg-bad"><h4 style="margin-top:.2rem">Gir trekk</h4></div></div>
         <div><div class="card" id="sg-good"><h4 style="margin-top:.2rem">Full uttelling</h4></div></div>
       </div>
 
-      <h4>Sensors faste trekkliste</h4>
+      <h4>Sensors faste trekkliste <span class="tag">eksamensbasert</span></h4>
       <div id="sg-sitat-sensor"></div>
       <p class="small">I tillegg har sensor trukket for NATURAL JOIN der tabellene deler <span class="mono">navn</span>, for hardkodede ID-er, for indre join der rader med 0 skulle vært med, for <span class="mono">!= NULL</span>, for manglende CREATE VIEW og for manglende DESC. Hele oversikten med år står under «Hva eksamen spør om» i <a href="04-sql.html">blokk 4</a> og <a href="05-sql-videre.html">blokk 5</a>.</p>
 
-      <h4>Sjekkliste før du leverer</h4>
+      <h4>Sjekkliste før du leverer <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="card" id="sg-sjekk"></div>
 
-      <h4>Svar i relasjonsalgebra</h4>
+      <h4>Svar i relasjonsalgebra <span class="tag">eksamensbasert</span></h4>
       <ul id="sg-ra"></ul>
       <div class="callout snarvei"><span class="lbl">Snarvei</span>
         Skriv svaret som SQL i hodet først, og oversett: tabellene i FROM og join-betingelsene blir ⋈ (eller × og σ), WHERE blir σ, og SELECT blir π ytterst.
@@ -212,20 +213,20 @@
 
   <footer class="footer">IN2090-guide · SQL-skolen</footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/data-sql.js?v=20261127e"></script>
-  <script src="assets/js/dra.js?v=20261127e"></script>
-  <script src="assets/js/sql-motor.js?v=20261127e"></script>
-  <script src="assets/js/data-sqlskolen.js?v=20261127e"></script>
-  <script src="assets/js/side-sqlskolen.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/data-sql.js?v=20261127f"></script>
+  <script src="assets/js/dra.js?v=20261127f"></script>
+  <script src="assets/js/sql-motor.js?v=20261127f"></script>
+  <script src="assets/js/data-sqlskolen.js?v=20261127f"></script>
+  <script src="assets/js/side-sqlskolen.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

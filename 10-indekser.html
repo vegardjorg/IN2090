@@ -7,9 +7,9 @@
   <title>Blokk 10 · Indekser · IN2090</title>
   <meta name="description" content="Indekser i IN2090 på oversiktsnivå: hva en indeks er, disk mot RAM, B-tre og hash, når en indeks hjelper, PRIMARY KEY og CREATE INDEX, og hva indekser koster ved skriving – med en demo som teller diskblokker med og uten indeks.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
   <style>
     .ix-demo { border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg); padding: var(--d-md); background: var(--color-surface-container-lowest); }
     .ix-lbl { margin-top: .2rem; font-weight: 600; }
@@ -58,6 +58,7 @@
       <h1>Blokk 10 · Indekser</h1>
       <p class="lead">Indekser har aldri vært spurt om på eksamen, og kurset tar dem bare på oversiktsnivå. Denne siden er derfor kort: hva en indeks er, de to hovedtypene B-tre og hash, når en indeks hjelper, og hvordan du lager en med <span class="mono">CREATE INDEX</span>.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> ingen oppgaver.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Indekser">
@@ -83,7 +84,7 @@
         </ul></div>
       <div id="ex-indeks"></div>
 
-      <h4>Prøv selv: finn rader med og uten indeks</h4>
+      <h4>Prøv selv: finn rader med og uten indeks <span class="tag">pensum, ikke spurt før</span></h4>
       <p class="small muted">Tabellen <span class="mono">vare(vnr, navn, pris)</span> ligger i seks diskblokker. Velg spørring og indeks, og gå steg for steg. Hvert steg leser én blokk: en indeksnode, en hash-adresse eller en datablokk. Grønt er treff. Tallene er laget for guiden, og indeksene er forenklet.</p>
       <div id="ix-demo"></div>
 
@@ -97,13 +98,13 @@
 
     <!-- ===================== 2 · B-TRE OG HASH ===================== -->
     <section data-panel="strukturer">
-      <h3>B-tre og hash</h3>
+      <h3>B-tre og hash <span class="tag">pensum, ikke spurt før</span></h3>
       <div class="grid cols-2">
         <div class="callout begrep"><span class="lbl">B-tre</span>
           <ul>
             <li>Et tre der hver node kan ha <b>mange barn</b>.</li>
             <li>Hver node er like stor som en <b>diskblokk</b>, så én node koster ett diskoppslag. Mange barn per node gir et lavt tre og få oppslag.</li>
-            <li>Løvnodene har <b>pekere til radene</b> i tabellen. (B+-tre-detalj, ikke pensum: løvene er sortert og lenket sammen, derfor er intervallsøk billige.)</li>
+            <li>Løvnodene har <b>pekere til radene</b> i tabellen. <span class="tag">Ikke pensum</span> B+-tre-detalj: løvene er sortert og lenket sammen, derfor er intervallsøk billige.</li>
             <li>Effektivt for oppslag på konkrete verdier <b>og</b> for intervallsøk (<span class="mono">&lt;</span>, <span class="mono">&gt;</span>, <span class="mono">BETWEEN</span>).</li>
           </ul></div>
         <div class="callout begrep"><span class="lbl">Hash</span>
@@ -154,7 +155,7 @@
         </ul></div>
       <div id="ex-nar"></div>
 
-      <h4>Hvor databasen bestemmer det: spørreprosessering i korte trekk</h4>
+      <h4>Hvor databasen bestemmer det: spørreprosessering i korte trekk <span class="tag">pensum, ikke spurt før</span></h4>
       <div class="ix-flyt" aria-label="Stegene i spørreprosesseringen">
         <span class="pill">sjekk av spørringen</span><span aria-hidden="true">→</span>
         <span class="pill">spørretre i relasjonsalgebra</span><span aria-hidden="true">→</span>
@@ -178,7 +179,7 @@
 
     <!-- ===================== 4 · CREATE INDEX ===================== -->
     <section data-panel="lage">
-      <h3>CREATE INDEX</h3>
+      <h3>CREATE INDEX <span class="tag">pensum, ikke spurt før</span></h3>
       <div class="callout begrep"><span class="lbl">Syntaks</span>
         <div id="sql-syntaks"></div>
         <ul>
@@ -211,13 +212,13 @@
 
   <footer class="footer">IN2090-guide · Blokk 10 · Indekser · <a href="index.html">Til forsiden</a></footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/side-indekser.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/side-indekser.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";

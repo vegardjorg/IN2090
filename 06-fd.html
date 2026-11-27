@@ -7,11 +7,11 @@
   <title>Blokk 6 · FD · IN2090</title>
   <meta name="description" content="Funksjonelle avhengigheter i IN2090: hva en FD er, instanser som bryter FD-er, tillukning X⁺, supernøkkel, kandidatnøkkel og nøkkelattributt, og kursets metode for å finne alle kandidatnøkler – med stegspillere, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
-  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127f">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261127f">
+  <link rel="stylesheet" href="assets/css/blokk-fd.css?v=20261127f">
 </head>
 <body data-page="fd">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -21,6 +21,7 @@
       <h1>Blokk 6 · Funksjonelle avhengigheter</h1>
       <p class="lead">FD-oppgavene står som oppgave 3 hvert år. Her lærer du hva en FD betyr, hvordan du sjekker en instans mot FD-ene, hvordan du regner ut tillukningen X⁺, og kursets faste metode for å finne alle kandidatnøkler. Alt dette trengs igjen i <a href="07-normalisering.html">blokk 7 (normalisering)</a>.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 7 % av poengene per eksamen. Stolpene viser poeng per år.</span></p>
+      <p class="small merke-forkl">Merkene i overskriftene: <span class="tag tag-kjerne">kommer ofte</span> = spurt om i minst tre av de fem ordinære eksamenene, <span class="tag">eksamensbasert</span> = bygger på en konkret eksamensoppgave, <span class="tag">pensum, ikke spurt før</span>, <span class="tag tag-fordyp">Fordypning, ikke nødvendig til eksamen</span> og <span class="tag">Ikke pensum</span> = utenfor kursets kilder.</p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=fd">FD og normalformer</a> · <a href="pugg.html#fane=fd-oppgaver">FD-oppgaver</a></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2025-3_1"><b>H2025</b> · Bryter instansen FD-ene? · <span class="pts">4p</span></a>
@@ -58,7 +59,7 @@
         </ul></div>
       <div id="ex-fd-begrep"></div>
 
-      <h4>Eksempelet i blokk 6 og 7: Billett</h4>
+      <h4>Eksempelet i blokk 6 og 7: Billett <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="callout eksempel"><span class="lbl">Skjema</span>
         <p class="mono">Billett(billettnr, konsert, sete, kjøper, epost, artist, scene, dato)</p>
         <ul class="mono">
@@ -78,7 +79,7 @@
           <li>FD2 splittet: <span class="mono">konsert → artist</span>, <span class="mono">konsert → scene</span>, <span class="mono">konsert → dato</span>.</li>
         </ul></div>
 
-      <h4>Prøv selv: holder FD-en i radene?</h4>
+      <h4>Prøv selv: holder FD-en i radene? <span class="tag">eksamensbasert</span></h4>
       <p class="small muted">Fire rader fra Billett. Velg en påstått FD. Grønne rader har lik venstreside og lik høyreside, røde rader viser et brudd.</p>
       <div id="billett-sjekk"></div>
 
@@ -109,13 +110,13 @@
         At FD-en holder i dataene i dag, sier ingenting om alle lovlige tilstander.</div>
       <div id="ex-fd-instans"></div>
 
-      <h4>Eksempel A: bryter instansen FD-ene?</h4>
+      <h4>Eksempel A: bryter instansen FD-ene? <span class="tag">eksamensbasert</span></h4>
       <div class="callout eksempel"><span class="lbl">Oppgave</span>
         <span class="mono">Vakt(ansatt, avdeling, etasje, dag)</span> med <span class="mono">ansatt → avdeling</span> og <span class="mono">avdeling → etasje</span>.
         Fem instanser. For hver: grupper radene etter venstresiden og se om høyresiden er lik i gruppen.</div>
       <div id="sp-instans"></div>
 
-      <h4>Eksempel B: fyll inn ?</h4>
+      <h4>Eksempel B: fyll inn ? <span class="tag">eksamensbasert</span></h4>
       <div class="callout eksempel"><span class="lbl">Oppgave</span>
         <span class="mono">R(A, B, C, D, E)</span> med <span class="mono">AB → C</span>, <span class="mono">C → D</span>, <span class="mono">D → A</span> og <span class="mono">E → B</span>.
         Hver <span class="mono">?</span> skal erstattes med den eneste verdien som gjør at instansen oppfyller FD-ene.
@@ -157,12 +158,12 @@
         <b>X er en supernøkkel hvis og bare hvis X⁺ inneholder alle attributtene i R.</b></div>
       <div id="ex-tillukning"></div>
 
-      <h4>Algoritmen steg for steg</h4>
+      <h4>Algoritmen steg for steg <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Velg et eksempel, eller skriv ditt eget på formen <span class="mono">ABCDE; A->B, BC->D; X=AC</span>. Brikkene viser X (mørk), nye attributter (markert) og resten av X⁺. FD-lista viser hvilken FD som brukes, og hva de andre mangler.</p>
       <div id="sp-tillukning"></div>
       <div id="pc-tillukning" class="pc-host"></div>
 
-      <h4>Flere tillukninger i Billett</h4>
+      <h4>Flere tillukninger i Billett <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div class="table-wrap"><table class="cmp-table">
         <thead><tr><th>X</th><th>X⁺</th><th>Supernøkkel (SN), X⁺ = R?</th></tr></thead>
         <tbody>
@@ -210,7 +211,7 @@
         </ul></div>
       <div id="ex-nokler"></div>
 
-      <h4>Eksempel: Billett</h4>
+      <h4>Eksempel: Billett <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p>Billett har tre kandidatnøkler (utregnet i fanen <a href="#fane=finn-kn">Finn alle KN</a>): <span class="mono">{billettnr}</span>, <span class="mono">{konsert, sete}</span> og <span class="mono">{scene, dato, sete}</span>.</p>
       <div class="table-wrap"><table class="cmp-table">
         <thead><tr><th>Spørsmål</th><th>Svar</th><th>Begrunnelse</th></tr></thead>
@@ -224,7 +225,7 @@
         </tbody>
       </table></div>
 
-      <h4>Prøv selv: SN eller KN?</h4>
+      <h4>Prøv selv: SN eller KN? <span class="tag tag-kjerne">kommer ofte</span></h4>
       <div id="nokkel-sjekk"></div>
 
       <div class="callout felle"><span class="lbl">Feller</span>
@@ -269,7 +270,7 @@
         </ol></div>
       <div id="ex-finn-kn"></div>
 
-      <h4>Metoden steg for steg</h4>
+      <h4>Metoden steg for steg <span class="tag tag-kjerne">kommer ofte</span></h4>
       <p class="small muted">Eksempelet med bokstaver og «Billett» følger den håndregnede gangen. «Billett (alle tester)» og eksamensoppgavene viser hver eneste kombinasjon motoren prøver. Egen input: <span class="mono">ABCDE; A->B, B->A, AC->D, D->E</span>.</p>
       <div id="sp-kn"></div>
       <div id="pc-kn" class="pc-host"></div>
@@ -330,28 +331,28 @@
 
   <footer class="footer">IN2090-guide · Blokk 6 · Funksjonelle avhengigheter · <a href="07-normalisering.html">Neste: blokk 7, normalisering</a></footer>
 
-  <script src="assets/js/core.js?v=20261127e"></script>
-  <script src="assets/js/symboler.js?v=20261127e"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
-  <script src="assets/js/sql-lang.js?v=20261127e"></script>
-  <script src="assets/js/pseudocode.js?v=20261127e"></script>
-  <script src="assets/js/stepplayer.js?v=20261127e"></script>
-  <script src="assets/js/varline.js?v=20261127e"></script>
-  <script src="assets/js/viz-relation.js?v=20261127e"></script>
-  <script src="assets/js/viz-er.js?v=20261127e"></script>
-  <script src="assets/js/data-fd.js?v=20261127e"></script>
-<script src="assets/js/dra.js?v=20261127e"></script>
-<script src="assets/js/data-dra.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
-  <script src="assets/js/bank.js?v=20261127e"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/core.js?v=20261127f"></script>
+  <script src="assets/js/symboler.js?v=20261127f"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127f"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127f"></script>
+  <script src="assets/js/sql-lang.js?v=20261127f"></script>
+  <script src="assets/js/pseudocode.js?v=20261127f"></script>
+  <script src="assets/js/stepplayer.js?v=20261127f"></script>
+  <script src="assets/js/varline.js?v=20261127f"></script>
+  <script src="assets/js/viz-relation.js?v=20261127f"></script>
+  <script src="assets/js/viz-er.js?v=20261127f"></script>
+  <script src="assets/js/data-fd.js?v=20261127f"></script>
+<script src="assets/js/dra.js?v=20261127f"></script>
+<script src="assets/js/data-dra.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127f"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127f"></script>
+  <script src="assets/js/bank.js?v=20261127f"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127f"></script>
   <script>
   (function () {
     "use strict";
