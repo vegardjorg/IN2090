@@ -7,9 +7,9 @@
   <title>Blokk 3 · Relasjonsalgebra · IN2090</title>
   <meta name="description" content="Relasjonsalgebra i IN2090: π, σ, ρ, kryssprodukt, join med betingelse og naturlig join, union, snitt og differanse, navngitte resultater og RA-trær. Med stegvis evaluering av uttrykkstrær, fellen med naturlig join, oversettelse mellom SQL og RA, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
   <style>
     /* Blokk 3 · relasjonsalgebra (sidens egen stil) */
     .ra-ops { width: 100%; }
@@ -93,6 +93,11 @@
     <!-- ===================== 1 · GRUNNLAG ===================== -->
     <section data-panel="grunnlag">
       <h3>Hva er relasjonsalgebra?</h3>
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Relasjonsalgebra er sjelden på eksamen: én oppgave på 5 p i H2025 1.3 og på prøveeksamen P2020 11.
+        Begge gangene skulle du skrive et uttrykk med σ, π og join på et gitt skjema (i H2025: kunder i ett postnummer, og kunder med minst én båt).
+        Feil tabeller eller operatorer ga 0 poeng, mens småfeil med riktig hovedidé kostet 0,5. H2024 2.4 er en SQL-oppgave, men bygger på en RA-ekvivalens.
+        Mengdeoperatorer, ρ og uttrykkstrær har ikke hatt egne oppgaver.</div>
       <div class="callout begrep"><span class="lbl">Begrep</span>
         En <b>algebra</b> er en mengde operasjoner der argumentene og resultatet er av samme slag, som + og × over tall eller ∪ og ∩ over mengder.
         I relasjonsalgebra er argumentene og resultatet <b>relasjoner</b>. Hver operator tar én eller to relasjoner og gir en ny relasjon. Derfor kan du sette operatorene inn i hverandre og bygge store uttrykk av små.
@@ -130,7 +135,7 @@
           <p>Kursets relasjonsalgebra har bare operatorene i tabellen over. Ytre join finnes bare i SQL i kurset (blokk 5). «For alle»-spørsmål løses med differanse, se fanen <a href="#fane=mengde">∪, ∩ og ∖</a>.</p></details>
         <ul>
           <li><b>Skrivemåte.</b> Kurset skriver betingelser og attributtlister med senket skrift. Har du ikke senket skrift, skriv for eksempel <span class="mono">π_{navn}(…)</span>. Det viktige er at operator, betingelse og argument er tydelige.</li>
-          <li><b>Differanse</b> skrives <span class="mono">\</span> i lysarkene om relasjonsalgebra (her ∖). Naturlig join står som <span class="mono">⋈</span> uten senket skrift, men lysarket som definerer naturlig join (F02-03) og ukesoppgavene for uke 2 bruker <span class="mono">⋆</span>. Begge betyr det samme, og evaluatoren på denne siden godtar begge.</li>
+          <li><b>Differanse</b> skrives <span class="mono">\</span> i lysarkene om relasjonsalgebra (her ∖). Naturlig join står som <span class="mono">⋈</span> uten senket skrift, men lysarket som definerer naturlig join (lysarket om relasjonsalgebra) og ukesoppgavene om relasjonsalgebra bruker <span class="mono">⋆</span>. Begge betyr det samme, og evaluatoren på denne siden godtar begge.</li>
         </ul></div>
 
       <h4>Test deg selv</h4>
@@ -177,7 +182,7 @@
       <div class="callout begrep"><span class="lbl">Begrep</span>
         <ul>
           <li><b>Kartesisk produkt</b> <span class="mono">R × S</span>: alle attributtene fra begge, og alle kombinasjoner av en rad fra R og en rad fra S. Har R n rader og S m rader, har produktet n · m.</li>
-          <li><b>Join med betingelse</b> <span class="mono">R ⋈<sub>betingelse</sub> S</span>: kombinasjonene som oppfyller betingelsen. Per definisjon er <span class="mono">R ⋈<sub>b</sub> S = σ<sub>b</sub>(R × S)</span>. Alle attributtene blir med, også begge kopiene av en kolonne med samme navn. Skriv da relasjonsnavnet foran, <span class="mono">Student.snr = Tatt.snr</span> (som i løsningsforslaget til H2025), eller gi den ene kolonnen nytt navn med ρ før joinen, slik lysarkene gjør (F02-03 lysark 11–12): <span class="mono">Karakterer ⋈<sub>Fagkode = Kode</sub> ρ<sub>Fagkode→Kode</sub>(Kurs)</span>.</li>
+          <li><b>Join med betingelse</b> <span class="mono">R ⋈<sub>betingelse</sub> S</span>: kombinasjonene som oppfyller betingelsen. Per definisjon er <span class="mono">R ⋈<sub>b</sub> S = σ<sub>b</sub>(R × S)</span>. Alle attributtene blir med, også begge kopiene av en kolonne med samme navn. Skriv da relasjonsnavnet foran, <span class="mono">Student.snr = Tatt.snr</span> (som i løsningsforslaget til H2025), eller gi den ene kolonnen nytt navn med ρ før joinen, slik lysarkene gjør (lysarket om relasjonsalgebra s. 11–12): <span class="mono">Karakterer ⋈<sub>Fagkode = Kode</sub> ρ<sub>Fagkode→Kode</sub>(Kurs)</span>.</li>
           <li><b>Naturlig join</b> <span class="mono">R ⋈ S</span>: kobler på <b>alle</b> attributter med likt navn og tar med hvert felles attributt én gang. Finnes ingen felles navn, blir resultatet kryssproduktet.</li>
         </ul></div>
       <div id="ex-join"></div>
@@ -322,7 +327,7 @@
     <!-- ===================== EKSAMEN ===================== -->
     <section data-panel="eksamen">
       <h3>Eksamensoppgaver</h3>
-      <p class="muted small">Relasjonsalgebra har vært spurt om i H2025 (oppgave 1.3, 5 p) og på prøveeksamen 2020 (oppgave 11, 5 p). H2024 2.4 er en SQL-oppgave, men ideen er en RA-ekvivalens: union over samme tabell er det samme som én seleksjon med ∨.</p>
+      <p class="muted small">Relasjonsalgebra har vært spurt om i H2025 1.3 (5 p) og på prøveeksamen P2020 11 (5 p). H2024 2.4 er en SQL-oppgave, men ideen er en RA-ekvivalens: union over samme tabell er det samme som én seleksjon med ∨.</p>
       <div id="bank-ra"></div>
       <h3>Samme idé i SQL: H2024 2.4</h3>
       <div id="bank-ra-2024"></div>
@@ -338,26 +343,26 @@
 
   <footer class="footer">IN2090-guide · Blokk 3 · Relasjonsalgebra · <a href="04-sql.html">Neste: blokk 4, SQL</a></footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
-  <script src="assets/js/sql-lang.js?v=20261127d"></script>
-  <script src="assets/js/pseudocode.js?v=20261127d"></script>
-  <script src="assets/js/stepplayer.js?v=20261127d"></script>
-  <script src="assets/js/viz-relation.js?v=20261127d"></script>
-  <script src="assets/js/viz-er.js?v=20261127d"></script>
-  <script src="assets/js/data-ra.js?v=20261127d"></script>
-  <script src="assets/js/side-ra.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127d"></script>
-  <script src="assets/js/bank.js?v=20261127d"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
+  <script src="assets/js/sql-lang.js?v=20261127e"></script>
+  <script src="assets/js/pseudocode.js?v=20261127e"></script>
+  <script src="assets/js/stepplayer.js?v=20261127e"></script>
+  <script src="assets/js/viz-relation.js?v=20261127e"></script>
+  <script src="assets/js/viz-er.js?v=20261127e"></script>
+  <script src="assets/js/data-ra.js?v=20261127e"></script>
+  <script src="assets/js/side-ra.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
+  <script src="assets/js/bank.js?v=20261127e"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
   <script>
   (function () {
     "use strict";

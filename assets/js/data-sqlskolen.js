@@ -7,7 +7,7 @@
    regnes ut av sql-motor.js når siden lastes (tallene i tekstene er kontrollert mot motoren
    med plan/verktoy-uavhengig node-test i agentens scratch).
    Alt fagstoff er formulert med egne ord. Kildelinjene peker på lysark og eksamen.
-   Sitatene i skriveguiden er eksamenstekst og sensorveiledning (H25), gjengitt ordrett med kilde.
+   Sitatene i skriveguiden er eksamenstekst og sensorveiledning (H2025), gjengitt ordrett med kilde.
    Klassisk script. Lastes etter core.js. Ingen DOM ved lasting.
    ============================================================ */
 (function () {
@@ -51,7 +51,7 @@
     { kode: "ρ<sub>A→B</sub>(R)", navn: "Omdøping", betyr: "Gi attributtet A det nye navnet B.", sql: "SELECT A AS B …" },
     { kode: "R × S", navn: "Kryssprodukt", betyr: "Alle kombinasjoner av en rad fra R og en rad fra S (kartesisk produkt).", sql: "FROM R, S" },
     { kode: "R ⋈<sub>betingelse</sub> S", navn: "Theta-join", betyr: "Det samme som σ<sub>betingelse</sub>(R × S): kryssproduktet, men bare kombinasjonene som oppfyller betingelsen.", sql: "R INNER JOIN S ON (betingelse)" },
-    { kode: "R ⋈ S", navn: "Naturlig join", betyr: "Join på alle attributter med likt navn. Ett lysark (F02-03) skriver ⋆ for det samme.", sql: "R NATURAL JOIN S" },
+    { kode: "R ⋈ S", navn: "Naturlig join", betyr: "Join på alle attributter med likt navn. Ett lysark (lysarket om relasjonsalgebra) skriver ⋆ for det samme.", sql: "R NATURAL JOIN S" },
     { kode: "R ∪ S · R ∩ S · R ∖ S", navn: "Union, snitt, differanse", betyr: "Krever lik signatur: samme attributtnavn og typer. Kildene skriver differanse på flere måter; vi bruker ∖.", sql: "UNION · INTERSECT · EXCEPT" },
     { kode: "Navn := uttrykk", navn: "Navngitt resultat", betyr: "Gi et mellomresultat et navn og bruk det videre. Gjør lange uttrykk lettere å lese.", sql: "WITH Navn AS (…)" }
   ];
@@ -89,7 +89,7 @@
     ],
     answer: { pi: "z-select", sigma: "z-where", theta: "z-join", kryss: "z-from", rho: "z-as", union: "z-union", diff: "z-except" },
     oppsummering: "<p>Huskeregel: σ er silen (rader, WHERE), π er saksa (kolonner, SELECT). Theta-join er σ på et kryssprodukt, akkurat som en join-betingelse i SQL.</p>",
-    kilde: [K("F02-03 (operatorene)"), K("F03-01 lysark 12–13 (SQL til RA, mengde mot multimengde)")]
+    kilde: [K("lysarket om relasjonsalgebra (operatorene)"), K("lysarket «Intro til SQL» s. 12–13 (SQL til RA, mengde mot multimengde)")]
   };
 
   /* Et RA-eksempel regnet ut, med to likeverdige skrivemåter */
@@ -143,7 +143,7 @@
           "Koble hvert lån til låneren gjennom fremmednøkkelen " + m("lid") + ". Indre join beholder bare lån som har en låner.",
           "Dette er " + m("utlån ⋈<sub>u.lid = l.lid</sub> låner") + ", altså σ på kryssproduktet. Kryssproduktet har 6 · 5 = 30 rader, og betingelsen beholder de 6 som hører sammen.",
           { q: "Hvorfor ON og ikke NATURAL JOIN?",
-            a: "NATURAL JOIN kobler på alle kolonner med likt navn. Kommer forfatter med senere, deler den kolonnen " + m("navn") + " med låner, og svaret blir galt uten feilmelding. Sensor har trukket for dette (−2 i H19, −1 i H20)." }),
+            a: "NATURAL JOIN kobler på alle kolonner med likt navn. Kommer forfatter med senere, deler den kolonnen " + m("navn") + " med låner, og svaret blir galt uten feilmelding. Sensor har trukket for dette (−2 i H2019, −1 i H2020)." }),
         L("  INNER JOIN bok AS b ON (u.bid = b.bid)",
           "Så finner vi boka med samme boknummer og legger den til i bunken.",
           "Samme mønster en gang til: koble lånet til boka via " + m("bid") + ".",
@@ -153,7 +153,7 @@
           "Et lån som ikke er levert, har " + m("levert") + " lik NULL. Tre lån er ute.",
           m("IS NULL") + " er det eneste som gir TRUE for en NULL-verdi.",
           { q: "Hvorfor IS NULL og ikke = NULL?",
-            a: m("levert = NULL") + " blir NULL for alle rader, så du får 0 rader. Sensor trakk −1 for " + m("!= NULL") + " i stedet for " + m("IS NOT NULL") + " (H20)." }),
+            a: m("levert = NULL") + " blir NULL for alle rader, så du får 0 rader. Sensor trakk −1 for " + m("!= NULL") + " i stedet for " + m("IS NOT NULL") + " (H2020)." }),
         L("ORDER BY l.navn;",
           "Til slutt sorterer vi etter navnet til låneren.",
           "Sorter alfabetisk på navn: Ada, Cato, Ibsen.",
@@ -167,7 +167,7 @@
           "Navnet, og hvor mange lån hver låner har. " + m("count(u.bid)") + " teller bare rader der " + m("u.bid") + " ikke er NULL.",
           "Aggregatet regnes én gang per gruppe. Navnet " + m("antall") + " kan brukes i ORDER BY, men ikke i HAVING.",
           { q: "Hvorfor count(u.bid) og ikke count(*)?",
-            a: "Dina har ingen lån, men LEFT JOIN gir henne likevel én rad, med NULL i alle kolonnene fra utlån. " + m("count(*)") + " teller raden og gir 1. " + m("count(u.bid)") + " teller bare verdier som ikke er NULL og gir 0. Sensor trakk −1 for count(*) her (H19 2.5)." }),
+            a: "Dina har ingen lån, men LEFT JOIN gir henne likevel én rad, med NULL i alle kolonnene fra utlån. " + m("count(*)") + " teller raden og gir 1. " + m("count(u.bid)") + " teller bare verdier som ikke er NULL og gir 0. Sensor trakk −1 for count(*) her (H2019 2.5)." }),
         L("FROM låner AS l",
           "Vi starter med personkortene, for alle personer skal være med.",
           "Start i tabellen der <i>alle</i> radene skal med i svaret.",
@@ -177,7 +177,7 @@
           "Ytre join: lånere uten lån blir med, med NULL i lånekolonnene. Dina får én slik rad.",
           "Venstre ytre join gir den indre joinen pluss én rad for hver låner uten partner, fylt ut med NULL.",
           { q: "Hvorfor LEFT JOIN og ikke INNER JOIN?",
-            a: "Oppgaven sier «også dem uten lån». INNER JOIN fjerner Dina før tellingen. Sensor trakk −2 for INNER JOIN der rader med 0 skulle vært med (H19 2.5)." }),
+            a: "Oppgaven sier «også dem uten lån». INNER JOIN fjerner Dina før tellingen. Sensor trakk −2 for INNER JOIN der rader med 0 skulle vært med (H2019 2.5)." }),
         L("GROUP BY l.lid, l.navn",
           "Vi lager én haug per person og teller kortene i hver haug.",
           "Én gruppe per låner. Vi grupperer på " + m("lid") + " også, fordi to lånere kan hete det samme.",
@@ -215,7 +215,7 @@
           "HAVING filtrerer <i>grupper</i> etter at de er telt. Svaret er Ibsen med 2.",
           "HAVING er en slags WHERE for grupper. Den evalueres etter aggregatene og før SELECT.",
           { q: "Hvorfor HAVING count(*) >= 2 og ikke WHERE count(*) >= 2 eller HAVING antall >= 2?",
-            a: "I WHERE finnes ikke gruppene ennå, så et aggregat der er en feil. Sensor trekker −2 for aggregat i WHERE (H23 og H25). Navnet " + m("antall") + " lages først i SELECT, som kommer etter HAVING, så du må skrive aggregatet på nytt." })
+            a: "I WHERE finnes ikke gruppene ennå, så et aggregat der er en feil. Sensor trekker −2 for aggregat i WHERE (H2023 og H2025). Navnet " + m("antall") + " lages først i SELECT, som kommer etter HAVING, så du må skrive aggregatet på nytt." })
       ] },
 
     { id: "notexists", label: "NOT EXISTS", tittel: "Lånere som aldri har lånt noe",
@@ -339,7 +339,7 @@
       ] },
     { id: "view", label: "VIEW", oppgave: "Lag et view som viser hver boktittel og hvor mange ganger boka er lånt ut, mest lånt først. Bøker som aldri er lånt, skal med.",
       linjer: [
-        ["CREATE VIEW utlånstall AS", "VIEW-oppgaver har vært med hvert år. Uten CREATE VIEW trakk sensor −3 (H20)."],
+        ["CREATE VIEW utlånstall AS", "VIEW-oppgaver har vært med hvert år. Uten CREATE VIEW trakk sensor −3 (H2020)."],
         ["SELECT b.tittel, count(u.lid) AS ganger", "count på en kolonne fra utlån, så bøker uten lån får 0."],
         ["FROM bok AS b", "Alle bøker skal med, så bok står til venstre."],
         ["  LEFT JOIN utlån AS u ON (b.bid = u.bid)", "Ytre join beholder Folkeeventyr."],
@@ -355,37 +355,37 @@
       options: ["Lånere som har levert alle lånene sine", "Lånere som har levert minst ett lån", "Lånere som ikke har noe ute nå", "Alle lånere som har lånt noe"],
       answer: 1,
       explain: "WHERE ser på ett lån om gangen. Én levert bok er nok til at låneren kommer med. Ada er med selv om hun fortsatt har Peer Gynt ute. Svaret er Ada, Bo og Cato. «Alle levert» krever NOT EXISTS, EXCEPT eller en telling i HAVING.",
-      kilde: [K("Eksamen H2020 oppgave 4 («for alle» mot «finnes»)")] },
+      kilde: [K("Eksamen H2020 4 («for alle» mot «finnes»)")] },
     { sql: S("SELECT f.navn", "FROM forfatter AS f", "WHERE NOT EXISTS (", "  SELECT *", "  FROM bok AS b", "  WHERE b.fid = f.fid AND b.år >= 1900", ");"),
       q: "Hvilke forfattere gir den?",
       options: ["Forfattere som har minst én bok fra før 1900", "Forfattere der alle bøkene er fra før 1900, også forfattere uten bøker", "Forfattere der alle bøkene er fra før 1900, men bare de som har bøker", "Forfattere uten bøker"],
       answer: 1,
       explain: "NOT EXISTS er sann når det ikke finnes noen bok fra 1900 eller senere. Det gjelder Ibsen (1867 og 1879), men også Ferrante, som ikke har noen bøker i det hele tatt. «For alle» er sant for en tom mengde. Skal bare forfattere med bøker være med, må du i tillegg kreve at det finnes minst én bok.",
-      kilde: [K("F10-02 lysark 11 (måter å finne «uten» på)")] },
+      kilde: [K("lysarket om mengdeoperatorer s. 11 (måter å finne «uten» på)")] },
     { sql: S("SELECT b.tittel, u.dato", "FROM bok AS b", "  LEFT JOIN utlån AS u ON (b.bid = u.bid)", "WHERE u.levert IS NULL;"),
       q: "Hvilke bøker kommer med?",
       options: ["Bøker som er ute nå", "Bøker som aldri er lånt ut", "Bøker som er ute nå, og bøker som aldri er lånt ut", "Alle bøker"],
       answer: 2,
       explain: "Bøker som er ute, har et lån med " + m("levert") + " lik NULL. Men Folkeeventyr, som aldri er lånt, får også NULL i alle utlån-kolonnene fra LEFT JOIN, og kommer med. Svaret blir 4 rader: Et dukkehjem (Cato), Peer Gynt, Kristin Lavransdatter og Folkeeventyr med dato NULL. Vil du bare ha bøkene som er ute, holder det med INNER JOIN.",
-      kilde: [K("F10-01 lysark 8–12 (ytre join)")] },
+      kilde: [K("lysarket om ytre join s. 8–12 (ytre join)")] },
     { sql: S("SELECT sted, count(*)", "FROM låner", "GROUP BY sted", "HAVING count(*) > 1;"),
       q: "Hva gir den?",
       options: ["Lånere som bor på samme sted som en annen", "Steder der mer enn én låner bor, med antallet", "Antall lånere med kjent sted", "Én rad per låner, med antall lånere på stedet"],
       answer: 1,
       explain: "Én gruppe per sted, og bare grupper med mer enn én rad blir igjen. Svaret er én rad: Oslo med 2. Dina (NULL) havner i en egen gruppe for NULL, men den har bare én rad.",
-      kilde: [K("F09-02 lysark 11–12 (GROUP BY og HAVING)")] },
+      kilde: [K("grupperingslysarket s. 11–12 (GROUP BY og HAVING)")] },
     { ra: "π<sub>navn</sub>(σ<sub>land = 'Norge'</sub>(forfatter))",
       q: "Hvilken SQL svarer til dette RA-uttrykket?",
       options: [m("SELECT DISTINCT navn FROM forfatter WHERE land = 'Norge';"), m("SELECT land FROM forfatter WHERE navn = 'Norge';"), m("SELECT * FROM forfatter WHERE land = 'Norge';"), m("SELECT navn FROM forfatter WHERE land = 'Norge';")],
       answer: 0, godta: [3],
       explain: "σ velger rader (WHERE), π velger kolonner (SELECT). π fjerner duplikater, så det nøyaktige motstykket har DISTINCT. Uten DISTINCT er svaret bare likt «opp til duplikater». Her blir det likt uansett (Ibsen og Undset), så begge godtas. Alternativ 3 beholder alle kolonnene, og alternativ 2 har byttet om på kolonnene.",
-      kilde: [K("F03-01 lysark 12–13 (SQL til RA, mengde mot multimengde)")] },
+      kilde: [K("lysarket «Intro til SQL» s. 12–13 (SQL til RA, mengde mot multimengde)")] },
     { ra: "π<sub>tittel</sub>(bok ⋈<sub>bok.fid = forfatter.fid</sub> σ<sub>land = 'Sverige'</sub>(forfatter))",
       q: "Hva gir uttrykket?",
       options: ["Titlene på bøker av svenske forfattere", "Svenske forfattere og titlene deres", "Titlene på alle bøker, og svenske forfattere", "Forfattere som har skrevet en bok om Sverige"],
       answer: 0,
       explain: "Les innenfra og ut: først de svenske forfatterne (σ), så bøkene deres (⋈ på fid), så bare tittelen (π). Svaret er Brødrene Løvehjerte.",
-      kilde: [K("F02-03 (RA-operatorene)")] }
+      kilde: [K("lysarket om relasjonsalgebra (RA-operatorene)")] }
   ];
 
   /* ================= Radantall ================= */
@@ -417,11 +417,11 @@
     { oppgave: "Alle lånere med antall lån, flest først.",
       sql: S("SELECT l.navn, count(u.bid) AS antall", "FROM låner AS l", "  LEFT JOIN utlån AS u ON (l.lid = u.lid)", "GROUP BY l.lid, l.navn", "ORDER BY antall;"),
       feil: [5], rett: "ORDER BY antall DESC;",
-      forklaring: "Standard er stigende, så de med færrest kommer først. «Flest først» krever DESC. Sensor trakk −1 for manglende DESC (H19 2.7)." },
+      forklaring: "Standard er stigende, så de med færrest kommer først. «Flest først» krever DESC. Sensor trakk −1 for manglende DESC (H2019 2.7)." },
     { oppgave: "Tittel og lånedato for hvert lån.",
       sql: S("SELECT b.tittel, u.dato", "FROM bok AS b, utlån AS u", "WHERE u.dato >= '2026-01-01';"),
       feil: [2, 3], rett: "WHERE b.bid = u.bid AND u.dato >= '2026-01-01';  (eller INNER JOIN … ON)",
-      forklaring: "Det mangler en join-betingelse. Uten den blir det et kryssprodukt: hver bok sammen med hvert lån, 6 · 6 = 36 rader. Sensor trekker −1 for manglende eller feil tabeller i joinen (H20, H23, H25)." },
+      forklaring: "Det mangler en join-betingelse. Uten den blir det et kryssprodukt: hver bok sammen med hvert lån, 6 · 6 = 36 rader. Sensor trekker −1 for manglende eller feil tabeller i joinen (H2020, H2023, H2025)." },
     { oppgave: "Hver låner med antall lån.",
       sql: S("SELECT l.navn, b.tittel, count(*) AS antall", "FROM utlån AS u", "  INNER JOIN låner AS l ON (u.lid = l.lid)", "  INNER JOIN bok AS b ON (u.bid = b.bid)", "GROUP BY l.lid, l.navn;"),
       feil: [1, 5], rett: "SELECT l.navn, count(*) AS antall  (dropp b.tittel, og joinen mot bok trengs ikke)",
@@ -430,14 +430,14 @@
 
   /* ================= Fra oppgavetekst til SQL ================= */
   D.ordliste = [
-    ["«for hver …», «per …»", "GROUP BY på nøkkelen til det det telles per", "Gruppér på primærnøkkelen. Navn alene slår sammen like navn (H20 ga ikke trekk, men det er tryggest).", ["05-sql-videre.html#fane=aggregering", "Aggregering"]],
+    ["«for hver …», «per …»", "GROUP BY på nøkkelen til det det telles per", "Gruppér på primærnøkkelen. Navn alene slår sammen like navn (H2020 ga ikke trekk, men det er tryggest).", ["05-sql-videre.html#fane=aggregering", "Aggregering"]],
     ["«også de som ikke har …», «med 0»", "LEFT JOIN og " + m("count(kol)") + " fra høyre tabell", m("count(*)") + " gir 1 i stedet for 0.", ["05-sql-videre.html#fane=ytre-join", "Ytre join"]],
     ["«ingen», «aldri», «uten»", "NOT EXISTS, NOT IN, EXCEPT eller LEFT JOIN … IS NULL", "NOT IN og NULL i delspørringen.", ["05-sql-videre.html#fane=delsporringer", "Delspørringer"]],
     ["«alle», «bare», «hver eneste»", "NOT EXISTS («finnes ingen som ikke …») eller en telling i HAVING", "Å filtrere rader gir «minst én», ikke «alle».", ["05-sql-videre.html#fane=for-alle", "«For alle»"]],
     ["«minst n», «mer enn n»", "HAVING " + m("count(…) &gt;= n"), "Aggregat i WHERE.", ["05-sql-videre.html#fane=aggregering", "Aggregering"]],
     ["«flest», «høyest», «den største»", "ORDER BY … DESC LIMIT 1, eller " + m("max") + " i en delspørring", "Uavgjort: LIMIT 1 gir bare én.", ["05-sql-videre.html#fane=with", "WITH"]],
     ["«unike», «hvilke», «ingen duplikater»", "DISTINCT", "En join kan gi samme rad flere ganger.", ["04-sql.html#fane=distinct", "DISTINCT"]],
-    ["«sortert», «nyeste først»", "ORDER BY, og DESC for synkende", "Manglende ORDER BY gir −2 (H23, H25).", ["04-sql.html#fane=distinct", "ORDER BY"]],
+    ["«sortert», «nyeste først»", "ORDER BY, og DESC for synkende", "Manglende ORDER BY gir −2 (H2023, H2025).", ["04-sql.html#fane=distinct", "ORDER BY"]],
     ["«som inneholder …», «begynner med …»", "LIKE med " + m("%"), "= i stedet for LIKE, eller LIKE uten %.", ["04-sql.html#fane=anatomi", "LIKE"]],
     ["«eller»", "OR, med parentes rundt", "AND i stedet for OR.", ["04-sql.html#fane=anatomi", "Feller"]],
     ["«mangler …», «ikke registrert»", "IS NULL", "= NULL gir 0 rader.", ["05-sql-videre.html#fane=null", "NULL"]],
@@ -486,11 +486,11 @@
     "WHERE fid = 1",
     "GROUP BY navn");
   D.skrivDarligFeil = [
-    m("fid = 1") + " er en ID lest av eksempeldataene. Spørringen skal virke selv om Ibsen får en annen ID. Sensor trakk −1 for en slik hardkodet ID (H20).",
-    "Indre join fjerner Bo, Dina og låneren Ibsen, som skulle vært med med 0. Sensor har trukket −2 for indre join der rader med 0 skal med (H19 2.5).",
+    m("fid = 1") + " er en ID lest av eksempeldataene. Spørringen skal virke selv om Ibsen får en annen ID. Sensor trakk −1 for en slik hardkodet ID (H2020).",
+    "Indre join fjerner Bo, Dina og låneren Ibsen, som skulle vært med med 0. Sensor har trukket −2 for indre join der rader med 0 skal med (H2019 2.5).",
     "NATURAL JOIN gir riktig kobling her, men bare fordi tabellene tilfeldigvis ikke deler andre kolonnenavn. Joines forfatter inn, kobles det også på " + m("navn") + ".",
-    m("GROUP BY navn") + " slår sammen to lånere som heter det samme. Sensor har ikke trukket for dette (H20: «Ingen trekk for å bruke GROUP BY på navn»), men gruppering på " + m("lid") + " er riktig uansett data.",
-    "Ingen ORDER BY. Manglende ORDER BY gir −2 (H23, H25).",
+    m("GROUP BY navn") + " slår sammen to lånere som heter det samme. Sensor har ikke trukket for dette (H2020: «Ingen trekk for å bruke GROUP BY på navn»), men gruppering på " + m("lid") + " er riktig uansett data.",
+    "Ingen ORDER BY. Manglende ORDER BY gir −2 (H2023, H2025).",
     "Ingen semikolon. Det gir ikke trekk, men skriv det likevel."
   ];
   D.skrivGod = S(
@@ -515,7 +515,7 @@
     "Gruppering på " + m("lid") + " skiller to lånere med samme navn."
   ];
 
-  /* Ordrett fra eksamen og sensorveiledning H25 (lov å gjengi, med kilde) */
+  /* Ordrett fra eksamen og sensorveiledning H2025 (lov å gjengi, med kilde) */
   D.sitatOppgave = {
     tekst: "Du må gjerne inkludere kommentarer i spørringene (gjøres med “–” i SQL). Dersom det er uklarheter eller tvetydigheter i oppgavebeskrivelsen, bruk sunn fornuft og skriv en kommentar om hvilke antagelser og tolkinger du gjør.",
     kilde: "Oppgavetekst: UiO, IN2090, eksamen H2025, innledningen til del 2 (SQL). Samme tekst står i H2023. Tegnet “–” er to bindestreker (--) i SQL."
@@ -547,7 +547,7 @@
   /* ================= Sant/usant om notasjonen ================= */
   D.tf = [
     { s: "I relasjonsalgebra fjerner π duplikater. I SQL gjør SELECT det ikke uten DISTINCT.", answer: true,
-      explain: "RA jobber med mengder, SQL med multimengder.", kilde: K("F03-01 lysark 13") },
+      explain: "RA jobber med mengder, SQL med multimengder.", kilde: K("lysarket «Intro til SQL» s. 13") },
     { s: "σ velger kolonner, og π velger rader.", answer: false,
       explain: "Motsatt: σ (seleksjon) velger rader og svarer til WHERE. π (projeksjon) velger kolonner og svarer til SELECT." },
     { s: "R ⋈<sub>θ</sub> S er det samme som σ<sub>θ</sub>(R × S).", answer: true,
@@ -561,6 +561,6 @@
     { s: "Et navn laget med AS i SELECT kan brukes i ORDER BY.", answer: true,
       explain: "ORDER BY evalueres etter SELECT. I WHERE og HAVING finnes navnet ikke." },
     { s: "En enkel skrivefeil i SQL, som et manglende komma, gir alltid trekk på eksamen.", answer: false,
-      explain: "Sensorveiledningene H23 og H25 sier at enkle syntaksfeil man ville funnet ved å kjøre spørringen, ikke gir trekk. Feil klausul eller feil operator er ikke en skrivefeil." }
+      explain: "Sensorveiledningene H2023 og H2025 sier at enkle syntaksfeil man ville funnet ved å kjøre spørringen, ikke gir trekk. Feil klausul eller feil operator er ikke en skrivefeil." }
   ];
 })();

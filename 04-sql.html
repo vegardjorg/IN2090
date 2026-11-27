@@ -7,15 +7,15 @@
   <title>Blokk 4 · SQL · IN2090</title>
   <meta name="description" content="SQL grunnleggende i IN2090: spørringens anatomi, join (kryssprodukt, indre, selvjoin, NATURAL JOIN-fellen), DISTINCT, ORDER BY og LIMIT, CREATE TABLE og skranker, INSERT, UPDATE og DELETE, med stegvise demoer på en liten biblioteksdatabase og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/dra.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261127e">
 </head>
 <body data-page="sql">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -88,9 +88,9 @@
 
       <div class="callout felle"><span class="lbl">Feller</span>
         <details class="grense"><summary>Hvorfor LIKE '%Gynt%' og ikke = '%Gynt%'?</summary>
-          <p>Med <span class="mono">=</span> sammenlignes strengen tegn for tegn, også prosenttegnene, så ingen rad matcher. <span class="mono">%</span> er bare jokertegn inne i LIKE. Sensor har trukket for = der det skulle vært LIKE, og mer for å glemme % (H19).</p></details>
+          <p>Med <span class="mono">=</span> sammenlignes strengen tegn for tegn, også prosenttegnene, så ingen rad matcher. <span class="mono">%</span> er bare jokertegn inne i LIKE. Sensor har trukket for = der det skulle vært LIKE, og mer for å glemme % (H2019).</p></details>
         <details class="grense"><summary>Hvorfor OR og ikke AND?</summary>
-          <p>«Bøker av Ibsen eller fra før 1850» betyr at <i>én</i> av betingelsene holder. AND krever begge. Å bytte dem har gitt −2 (H19).</p></details>
+          <p>«Bøker av Ibsen eller fra før 1850» betyr at <i>én</i> av betingelsene holder. AND krever begge. Å bytte dem har gitt −2 (H2019).</p></details>
         <details class="grense"><summary>Hvorfor parenteser rundt OR?</summary>
           <p>AND binder sterkere enn OR. <span class="mono">a OR b AND c</span> leses som <span class="mono">a OR (b AND c)</span>.</p></details>
         <details class="grense"><summary>Hvorfor IS NULL og ikke = NULL?</summary>
@@ -100,16 +100,16 @@
         <details class="grense"><summary>Hvorfor kan jeg ikke bruke et SELECT-alias i WHERE?</summary>
           <p>WHERE evalueres før SELECT, så navnet finnes ikke ennå. Se eksemplet over.</p></details>
         <details class="grense"><summary>Hvorfor 'Oslo' med fnutter?</summary>
-          <p>Tekst- og datoverdier skrives i enkle fnutter. Uten fnutter tolkes ordet som et kolonnenavn. Sensor har ikke trukket for datoformat (H19, H20).</p></details>
+          <p>Tekst- og datoverdier skrives i enkle fnutter. Uten fnutter tolkes ordet som et kolonnenavn. Sensor har ikke trukket for datoformat (H2019, H2020).</p></details>
         <ul>
-          <li><b>Hardkodede ID-er.</b> Spør oppgaven etter «bøker av Ibsen», skal du joine mot <span class="mono">forfatter</span> og filtrere på <span class="mono">navn = 'Ibsen'</span>, ikke skrive <span class="mono">fid = 1</span> fordi du ser det i eksempeldataene. Sensor trakk −1 for dette (H20).</li>
+          <li><b>Hardkodede ID-er.</b> Spør oppgaven etter «bøker av Ibsen», skal du joine mot <span class="mono">forfatter</span> og filtrere på <span class="mono">navn = 'Ibsen'</span>, ikke skrive <span class="mono">fid = 1</span> fordi du ser det i eksempeldataene. Sensor trakk −1 for dette (H2020).</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>Korte spørringer på 5 poeng med WHERE, LIKE, AND/OR og join: H19 2.2 (LIKE og OR), H24 2.2 (join og aritmetikk), H25 2.2 (join og <span class="mono">current_date</span>).</li>
-          <li>Radantall-flervalg på arkets eksempeldata, med minuspoeng: H23 2.1, H25 2.1. <span class="mono">LIKE '%i%'</span> og <span class="mono">navn != navn</span> har vært med. Øv i <a href="05-sql-videre.html#fane=radantall">blokk 5, «Hvor mange rader?»</a>.</li>
-          <li>Sensors faste liste: −0,5 for manglende kolonner i SELECT, −1 for manglende begrensning i WHERE, ingen trekk for enkle syntaksfeil (H23, H25). Datoformat ga ikke trekk i H19 og H20.</li>
+          <li>Korte spørringer på 5 poeng med WHERE, LIKE, AND/OR og join: H2019 2.2 (LIKE og OR), H2024 2.2 (join og aritmetikk), H2025 2.2 (join og <span class="mono">current_date</span>).</li>
+          <li>Radantall-flervalg på arkets eksempeldata, med minuspoeng: H2023 2.1, H2025 2.1. <span class="mono">LIKE '%i%'</span> og <span class="mono">navn != navn</span> har vært med. Øv i <a href="05-sql-videre.html#fane=radantall">blokk 5, «Hvor mange rader?»</a>.</li>
+          <li>Sensors faste liste: −0,5 for manglende kolonner i SELECT, −1 for manglende begrensning i WHERE, ingen trekk for enkle syntaksfeil (H2023, H2025). Datoformat ga ikke trekk i H2019 og H2020.</li>
         </ul></div>
 
       <h4>Test deg selv</h4>
@@ -144,15 +144,15 @@
 
       <div class="callout felle"><span class="lbl">Feller</span>
         <details class="grense"><summary>Hvorfor INNER JOIN … ON og ikke NATURAL JOIN?</summary>
-          <p>NATURAL JOIN joiner på alle like kolonnenavn, også de du ikke tenkte på (<span class="mono">navn</span>). Sensor trakk −1 i H20 og −2 i H19 for NATURAL JOIN der tabellene delte <span class="mono">navn</span>. Bruk ON eller <span class="mono">USING (kol)</span> og vær eksplisitt.</p></details>
+          <p>NATURAL JOIN joiner på alle like kolonnenavn, også de du ikke tenkte på (<span class="mono">navn</span>). Sensor trakk −1 i H2020 og −2 i H2019 for NATURAL JOIN der tabellene delte <span class="mono">navn</span>. Bruk ON eller <span class="mono">USING (kol)</span> og vær eksplisitt.</p></details>
         <details class="grense"><summary>Hvorfor gir låner NATURAL JOIN låner AS l2 4 rader og ikke 5?</summary>
-          <p>En tabell joinet naturlig med seg selv gir tabellen tilbake (H25 2.1), <i>men bare</i> radene uten NULL. Dina har NULL i <span class="mono">sted</span>, og NULL er ikke lik seg selv.</p></details>
+          <p>En tabell joinet naturlig med seg selv gir tabellen tilbake (H2025 2.1), <i>men bare</i> radene uten NULL. Dina har NULL i <span class="mono">sted</span>, og NULL er ikke lik seg selv.</p></details>
         <details class="grense"><summary>Hvorfor l1.lid &lt; l2.lid og ikke !=?</summary>
           <p><span class="mono">!=</span> gir hvert par to ganger (Ada–Cato og Cato–Ada). Spør oppgaven etter unike par, bruk <span class="mono">&lt;</span>, eller DISTINCT hvis oppgaven godtar begge rekkefølger.</p></details>
         <details class="grense"><summary>Hvorfor ikke bare FROM bok, forfatter?</summary>
-          <p>Uten join-betingelse får du kryssproduktet (30 rader). Sensor trekker −1 for manglende eller feil tabeller i join (H20, H23, H25) og −2 for kryssprodukt med OR der det skulle vært join (H19 2.4).</p></details>
+          <p>Uten join-betingelse får du kryssproduktet (30 rader). Sensor trekker −1 for manglende eller feil tabeller i join (H2020, H2023, H2025) og −2 for kryssprodukt med OR der det skulle vært join (H2019 2.4).</p></details>
         <details class="grense"><summary>Hvorfor alias på begge navn-kolonnene?</summary>
-          <p>To kolonner som heter <span class="mono">navn</span> i svaret er uklart og gir problemer i et VIEW. H19 2.7 trakk −0,5 for ikke å gi kolonnene egne navn.</p></details>
+          <p>To kolonner som heter <span class="mono">navn</span> i svaret er uklart og gir problemer i et VIEW. H2019 2.7 trakk −0,5 for ikke å gi kolonnene egne navn.</p></details>
         <details class="grense"><summary>Hvorfor forsvinner Ferrante og Folkeeventyr?</summary>
           <p>Indre join beholder bare rader med partner. Skal de være med, trenger du ytre join (<a href="05-sql-videre.html#fane=ytre-join">blokk 5</a>).</p></details>
       </div>
@@ -160,7 +160,7 @@
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
           <li>Nesten alle SQL-oppgaver krever join over 2–4 tabeller, ofte fra en hendelsestabell (her <span class="mono">utlån</span>) via fremmednøklene.</li>
-          <li>NATURAL JOIN i radantall-oppgaver: H24 2.1 og H25 2.1 (naturlig selvjoin). INNER JOIN og LIKE i H20 S1.</li>
+          <li>NATURAL JOIN i radantall-oppgaver: H2024 2.1 og H2025 2.1 (naturlig selvjoin). INNER JOIN og LIKE i H2020 S1.</li>
           <li>Kurset viser ofte to likeverdige løsninger (implisitt og eksplisitt join, ON og USING). Begge gir full uttelling.</li>
         </ul></div>
 
@@ -198,7 +198,7 @@
 
       <div class="callout felle"><span class="lbl">Feller</span>
         <details class="grense"><summary>Hvorfor DESC og ikke bare ORDER BY?</summary>
-          <p>Standard er stigende. «Nyeste først» og «flest først» krever DESC. Manglende DESC ga −1 i H19 2.7, og manglende ORDER BY gir −2 (H23, H25; −1 i H20).</p></details>
+          <p>Standard er stigende. «Nyeste først» og «flest først» krever DESC. Manglende DESC ga −1 i H2019 2.7, og manglende ORDER BY gir −2 (H2023, H2025; −1 i H2020).</p></details>
         <details class="grense"><summary>Hvorfor ORDER BY før LIMIT?</summary>
           <p>Uten sortering er det tilfeldig hvilke rader LIMIT gir deg. «De fem dyreste» krever <span class="mono">ORDER BY pris DESC LIMIT 5</span>.</p></details>
         <details class="grense"><summary>Hvorfor DISTINCT her?</summary>
@@ -211,9 +211,9 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>Sortering og «topp n»: H20 S2 (sortert værmelding), H23 2.2 (kronologisk sortert), H19 2.7 (ti nyeste album i et VIEW).</li>
-          <li>DISTINCT og LIMIT/OFFSET i radantall-oppgaver: H23 2.1 (DISTINCT, <span class="mono">LIMIT 4</span>), H25 2.1 (<span class="mono">LIMIT 1 OFFSET 5</span>, svaret var 0), H24 2.1 (GROUP BY med OFFSET).</li>
-          <li>H24 2.4: skriv om en UNION-spørring uten UNION (svaret bruker OR og DISTINCT).</li>
+          <li>Sortering og «topp n»: H2020 S2 (sortert værmelding), H2023 2.2 (kronologisk sortert), H2019 2.7 (ti nyeste album i et VIEW).</li>
+          <li>DISTINCT og LIMIT/OFFSET i radantall-oppgaver: H2023 2.1 (DISTINCT, <span class="mono">LIMIT 4</span>), H2025 2.1 (<span class="mono">LIMIT 1 OFFSET 5</span>, svaret var 0), H2024 2.1 (GROUP BY med OFFSET).</li>
+          <li>H2024 2.4: skriv om en UNION-spørring uten UNION (svaret bruker OR og DISTINCT).</li>
         </ul></div>
 
       <h4>Test deg selv</h4>
@@ -252,15 +252,15 @@
         <details class="grense"><summary>Hvorfor lykkes DELETE FROM forfatter WHERE fid = 5, men ikke fid = 1?</summary>
           <p>Fremmednøkler beskytter begge veier: du kan ikke sette inn en peker til noe som ikke finnes, og du kan ikke slette noe det pekes på (med mindre fremmednøkkelen er laget med <span class="mono">ON DELETE CASCADE</span>).</p></details>
         <ul>
-          <li><b>DROP mot DELETE.</b> <span class="mono">DROP TABLE</span> sletter hele tabellen, <span class="mono">DELETE FROM</span> sletter rader. H19 2.6 trakk −1 for DROP der det skulle vært DELETE.</li>
-          <li><b>DROP TABLE … CASCADE</b> fjerner i PostgreSQL skranker og views som avhenger av tabellen, ikke de andre tabellene selv. En fremmednøkkel i en annen tabell forsvinner, men tabellen blir stående (relevant for H19 2.1). Lysarket F04-01 lysark 20 sier at også tabeller som avhenger av den slettes. Det stemmer ikke med PostgreSQL, så regn med det PostgreSQL faktisk gjør.</li>
+          <li><b>DROP mot DELETE.</b> <span class="mono">DROP TABLE</span> sletter hele tabellen, <span class="mono">DELETE FROM</span> sletter rader. H2019 2.6 trakk −1 for DROP der det skulle vært DELETE.</li>
+          <li><b>DROP TABLE … CASCADE</b> fjerner i PostgreSQL skranker og views som avhenger av tabellen, ikke de andre tabellene selv. En fremmednøkkel i en annen tabell forsvinner, men tabellen blir stående (relevant for H2019 2.1). Lysarket om datamanipulering, s. 20, sier at også tabeller som avhenger av den slettes. Det stemmer ikke med PostgreSQL, så regn med det PostgreSQL faktisk gjør.</li>
           <li><b>CREATE TABLE … AS SELECT mister skrankene.</b> Lag heller tabellen med skranker først og bruk <span class="mono">INSERT INTO … SELECT</span>.</li>
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>Skriv CREATE TABLE med alle skranker fra en tekst: H25 2.3 (ny tabell med <span class="mono">CHECK (length(ord) &gt;= 3)</span> og fremmednøkkel, sammen med INSERT i én transaksjon, 7 p).</li>
-          <li>Lovlig eller ulovlig: H19 2.1 (10 p). Kommandoene testet PK, FK (også mot samme tabell), UNIQUE med NULL, CHECK og <span class="mono">DROP TABLE … CASCADE</span>.</li>
+          <li>Skriv CREATE TABLE med alle skranker fra en tekst: H2025 2.3 (ny tabell med <span class="mono">CHECK (length(ord) &gt;= 3)</span> og fremmednøkkel, sammen med INSERT i én transaksjon, 7 p).</li>
+          <li>Lovlig eller ulovlig: H2019 2.1 (10 p). Kommandoene testet PK, FK (også mot samme tabell), UNIQUE med NULL, CHECK og <span class="mono">DROP TABLE … CASCADE</span>.</li>
           <li>Realiseringsoppgavene i del 1 bruker de samme begrepene (KN, PN, FN), men skrives uten SQL.</li>
         </ul></div>
 
@@ -298,7 +298,7 @@
       <div id="eks-e5"></div>
 
       <h4>Transaksjon</h4>
-      <p>Ny tabell og data som én enhet, samme mønster som H25 2.3:</p>
+      <p>Ny tabell og data som én enhet, samme mønster som H2025 2.3:</p>
       <div id="eks-e6"></div>
       <p>Hadde den siste raden vært <span class="mono">(14, 'ok')</span>, ville CHECK feilet, INSERT feilet, og hele transaksjonen blitt rullet tilbake. Da finnes heller ikke tabellen <span class="mono">emneord</span> etterpå.</p>
 
@@ -306,7 +306,7 @@
         <details class="grense"><summary>Hvorfor WHERE i UPDATE og DELETE?</summary>
           <p>Uten WHERE endres eller slettes <i>alle</i> rader. Dobbeltsjekk alltid.</p></details>
         <details class="grense"><summary>Hvorfor DELETE FROM bok WHERE … og ikke DELETE FROM bok JOIN …?</summary>
-          <p>DELETE tar én tabell. Bruk en delspørring i WHERE (NOT IN, NOT EXISTS) for å se på andre tabeller. H19 2.6 trakk −2 for join-er i FROM i en DELETE.</p></details>
+          <p>DELETE tar én tabell. Bruk en delspørring i WHERE (NOT IN, NOT EXISTS) for å se på andre tabeller. H2019 2.6 trakk −2 for join-er i FROM i en DELETE.</p></details>
         <details class="grense"><summary>Hvorfor feiler DELETE FROM låner WHERE lid = 1?</summary>
           <p>Fremmednøkkelen fra <span class="mono">utlån</span> hindrer det. Slett lånene først, eller la være.</p></details>
         <details class="grense"><summary>Hvorfor IS NULL i UPDATE?</summary>
@@ -321,9 +321,9 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>UPDATE med korrelert delspørring: H25 2.4 (5 p, <a href="05-sql-videre.html#fane=delsporringer">blokk 5</a>).</li>
-          <li>INSERT … SELECT: H24 2.6 (fyll en tabell fra en aggregatspørring, 10 p).</li>
-          <li>DELETE med NOT IN: H19 2.6. Transaksjon: H25 2.3 (inne i en DDL-oppgave). Transaksjoner og script ligger ellers i blokk 8.</li>
+          <li>UPDATE med korrelert delspørring: H2025 2.4 (5 p, <a href="05-sql-videre.html#fane=delsporringer">blokk 5</a>).</li>
+          <li>INSERT … SELECT: H2024 2.6 (fyll en tabell fra en aggregatspørring, 10 p).</li>
+          <li>DELETE med NOT IN: H2019 2.6. Transaksjon: H2025 2.3 (inne i en DDL-oppgave). Transaksjoner og script ligger ellers i blokk 8.</li>
         </ul></div>
     </section>
 
@@ -363,36 +363,36 @@
 
   <footer class="footer">IN2090-guide · Blokk 4 · SQL</footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
-  <script src="assets/js/sql-lang.js?v=20261127d"></script>
-  <script src="assets/js/pseudocode.js?v=20261127d"></script>
-  <script src="assets/js/stepplayer.js?v=20261127d"></script>
-  <script src="assets/js/varline.js?v=20261127d"></script>
-  <script src="assets/js/viz-relation.js?v=20261127d"></script>
-  <script src="assets/js/viz-er.js?v=20261127d"></script>
-  <script src="assets/js/data-sql.js?v=20261127d"></script>
-  <script src="assets/js/dra.js?v=20261127d"></script>
-  <script src="assets/js/data-dra.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127d"></script>
-  <script src="assets/js/bank.js?v=20261127d"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127d"></script>
-  <script src="assets/js/sql-motor.js?v=20261127d"></script>
-  <script src="assets/js/sql-oppgave.js?v=20261127d"></script>
-  <script src="assets/js/data-sql-ovelser.js?v=20261127d"></script>
-  <script src="assets/js/data-sql-panser.js?v=20261127d"></script>
-  <script src="assets/js/sql-panser.js?v=20261127d"></script>
-  <script src="assets/js/sql-pipeline.js?v=20261127d"></script>
-  <script src="assets/js/data-sql-bygger.js?v=20261127d"></script>
-  <script src="assets/js/sql-bygger.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
+  <script src="assets/js/sql-lang.js?v=20261127e"></script>
+  <script src="assets/js/pseudocode.js?v=20261127e"></script>
+  <script src="assets/js/stepplayer.js?v=20261127e"></script>
+  <script src="assets/js/varline.js?v=20261127e"></script>
+  <script src="assets/js/viz-relation.js?v=20261127e"></script>
+  <script src="assets/js/viz-er.js?v=20261127e"></script>
+  <script src="assets/js/data-sql.js?v=20261127e"></script>
+  <script src="assets/js/dra.js?v=20261127e"></script>
+  <script src="assets/js/data-dra.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
+  <script src="assets/js/bank.js?v=20261127e"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/sql-motor.js?v=20261127e"></script>
+  <script src="assets/js/sql-oppgave.js?v=20261127e"></script>
+  <script src="assets/js/data-sql-ovelser.js?v=20261127e"></script>
+  <script src="assets/js/data-sql-panser.js?v=20261127e"></script>
+  <script src="assets/js/sql-panser.js?v=20261127e"></script>
+  <script src="assets/js/sql-pipeline.js?v=20261127e"></script>
+  <script src="assets/js/data-sql-bygger.js?v=20261127e"></script>
+  <script src="assets/js/sql-bygger.js?v=20261127e"></script>
   <script>
   (function () {
     "use strict";

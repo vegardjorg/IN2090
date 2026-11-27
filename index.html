@@ -7,8 +7,8 @@
   <title>IN2090 – interaktiv eksamensguide</title>
   <meta name="description" content="Interaktiv eksamensguide for IN2090 Databaser og datamodellering. Slik ser eksamen ut, og alle eksamensoppgavene fra H2019 til H2025.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
   <style>
     /* Fargene på eksamensdelene i IN2090 (styles.css har 2010-delene) */
     .a4-er   { --a4-c: var(--c-sorted); }
@@ -85,7 +85,7 @@
         <h2 id="eo-h">Slik ser eksamen ut</h2>
         <div id="exam-flow"></div>
         <p class="a4-legend">Lenkene åpner riktig fane.
-          <span class="a4-task a4-task-demo" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M3 1.25h4.1L9.5 3.65v7.1H3z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M4.6 6h3.3M4.6 8.2h3.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>H23</span></span>
+          <span class="a4-task a4-task-demo" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M3 1.25h4.1L9.5 3.65v7.1H3z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M4.6 6h3.3M4.6 8.2h3.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>H2023</span></span>
           går rett til en eksamensoppgave som er løst der. Pek på ikonet, eller tab til det, for å se hvilken.</p>
       </section>
 
@@ -148,10 +148,10 @@
     IN2090-guide · laget for eksamensøving · fungerer frakoblet (file://) og på GitHub Pages.
   </footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
   <script>
   (function () {
     var IN = window.IN, el = IN.el;
@@ -251,7 +251,7 @@
         el("span", { text: content }));
       return el("span", { class: "a4-tw" }, [a, el("span", { class: "a4-tip", "aria-hidden": "true", text: taskName(t) + " (" + t[3] + " p)" })]);
     }
-    function chip(t) { return taskLink(t, t[0], "a4-task"); }
+    function chip(t) { return taskLink(t, fullYear(t[0]), "a4-task"); }
     // [side, fane, tekst, (valgfritt) oppgaver som ikoner] → lenke + oppgaveikoner
     function links(list) {
       var box = el("div", { class: "a4-links" });

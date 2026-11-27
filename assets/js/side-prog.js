@@ -347,8 +347,8 @@
         explain: "Et vanlig view er en navngitt spørring. Svaret regnes ut på nytt hver gang viewet brukes. Det er det materialiserte viewet som lagrer svaret." },
       { q: "En ny rad settes inn i en tabell som et MATERIALIZED VIEW bygger på. Hva skjer med det materialiserte viewet?", options: ["Det oppdateres med en gang", "Ingenting, før noen kjører REFRESH MATERIALIZED VIEW", "Det slettes", "INSERT feiler"], answer: 1,
         explain: "Et materialisert view er et lagret svar. Det oppdateres ikke av seg selv. Du må kjøre " + m("REFRESH MATERIALIZED VIEW navn;") + "." },
-      { q: "Oppgaven sier «Lag et view som viser …». Du skriver en korrekt SELECT, men glemmer " + m("CREATE VIEW") + ". Hva har sensor gjort før?", options: ["Ingen trekk, spørringen er riktig", "Trukket 3 poeng (H20 S5)", "Gitt 0 poeng", "Trukket 0,5 poeng"], answer: 1,
-        explain: "Sensorveiledningen for H20 trakk −3 for manglende CREATE VIEW. Skriv alltid " + m("CREATE VIEW navn AS") + " foran spørringen når oppgaven ber om et view." }
+      { q: "Oppgaven sier «Lag et view som viser …». Du skriver en korrekt SELECT, men glemmer " + m("CREATE VIEW") + ". Hva har sensor gjort før?", options: ["Ingen trekk, spørringen er riktig", "Trukket 3 poeng (H2020 S5)", "Gitt 0 poeng", "Trukket 0,5 poeng"], answer: 1,
+        explain: "Sensorveiledningen for H2020 trakk −3 for manglende CREATE VIEW. Skriv alltid " + m("CREATE VIEW navn AS") + " foran spørringen når oppgaven ber om et view." }
     ],
     transaksjoner: [
       { q: "Du kjører " + m("BEGIN;") + ", to UPDATE-er der den første bryter en CHECK, og så " + m("COMMIT;") + ". Hva er lagret etterpå (PostgreSQL)?", options: ["Bare den andre UPDATE-en", "Begge, fordi COMMIT tvinger det gjennom", "Ingen av dem", "Den første, uten CHECK"], answer: 2,
@@ -356,7 +356,7 @@
       { q: "Hvilken ACID-egenskap sier at endringer som er lagret med COMMIT, fortsatt finnes etter en omstart?", options: ["Atomicity", "Consistency", "Isolation", "Durability"], answer: 3,
         explain: "Durability: det som er lagret, blir værende. Atomicity er alt eller ingenting, consistency er at skrankene holder, og isolation er at samtidige transaksjoner gir samme svar som om de kjørte etter hverandre." },
       { q: "Et script lager en tabell og setter inn data. Det skal ikke bli liggende en tom tabell hvis INSERT feiler. Hva gjør du?", options: ["Setter INSERT før CREATE TABLE", "Pakker hele scriptet inn i BEGIN; … COMMIT;", "Bruker CREATE TABLE IF NOT EXISTS", "Kjører scriptet to ganger"], answer: 1,
-        explain: "Det er mønsteret i H25 2.3 og repetisjonsoppgave 7. IF NOT EXISTS hindrer feil når tabellen finnes fra før, men gjør ikke kommandoene til én enhet." }
+        explain: "Det er mønsteret i H2025 2.3 og repetisjonsoppgave 7. IF NOT EXISTS hindrer feil når tabellen finnes fra før, men gjør ikke kommandoene til én enhet." }
     ],
     program: [
       { q: "Hvilken linje er trygg mot SQL-injection i Python (psycopg2)?", options: [
@@ -395,6 +395,6 @@
     { s: "Med en PreparedStatement og " + m("?") + " kan en fnutt i brukerens input ikke endre spørringen.", answer: true, tema: "Program",
       explain: "Verdien sendes for seg og leses alltid som data." },
     { s: "I JDBC er autocommit av som standard, så du må alltid kalle " + m("conn.commit()") + ".", answer: false, tema: "Program",
-      explain: "Det er motsatt: autocommit er på som standard i JDBC. Det er i psycopg2 at du må kalle commit. Se merknaden om H23 2.7." }
+      explain: "Det er motsatt: autocommit er på som standard i JDBC. Det er i psycopg2 at du må kalle commit. Se merknaden om H2023 2.7." }
   ];
 })();

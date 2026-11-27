@@ -7,9 +7,9 @@
   <title>Blokk 8 · Views og programmering · IN2090</title>
   <meta name="description" content="Views, transaksjoner og SQL fra program i IN2090: CREATE VIEW og MATERIALIZED VIEW, BEGIN, COMMIT og ROLLBACK med ACID, og psycopg2 og JDBC med parametriserte spørringer, commit og autocommit, med demoer og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
   <style>
     .pg-code-box { margin: .6rem 0; border: 1px solid var(--color-outline-variant); border-radius: 8px; background: var(--color-surface-container-lowest); max-width: 100%; overflow: hidden; }
     .pg-code-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; padding: .3rem .7rem; border-bottom: 1px solid var(--color-outline-variant); background: var(--color-surface-container-low); font-size: var(--text-xs); }
@@ -50,7 +50,7 @@
   <main id="main" class="wrap">
     <div class="pagehead">
       <h1>Blokk 8 · Views, transaksjoner og programmering</h1>
-      <p class="lead">Tre korte temaer som henger sammen: et <b>view</b> gir en spørring et navn, en <b>transaksjon</b> gjør flere kommandoer til én enhet, og et <b>program</b> sender SQL til databasen med verdiene fra brukeren som parametre. VIEW-oppgaver har vært med på hver eksamen siden 2019, men de er egentlig aggregat- og join-oppgaver, så selve spørringen lærer du i <a href="05-sql-videre.html">blokk 5</a>. Programmering har vært spurt om én gang (H23, 5 p). Eksemplene bruker biblioteksdatabasen fra <a href="04-sql.html">blokk 4</a>. Triggere er ikke pensum.</p>
+      <p class="lead">Tre korte temaer som henger sammen: et <b>view</b> gir en spørring et navn, en <b>transaksjon</b> gjør flere kommandoer til én enhet, og et <b>program</b> sender SQL til databasen med verdiene fra brukeren som parametre. VIEW-oppgaver har vært med på hver eksamen siden 2019, men de er egentlig aggregat- og join-oppgaver, så selve spørringen lærer du i <a href="05-sql-videre.html">blokk 5</a>. Programmering har vært spurt om én gang (H2023, 5 p). Eksemplene bruker biblioteksdatabasen fra <a href="04-sql.html">blokk 4</a>. Triggere er ikke pensum.</p>
       <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> ingen egne oppgaver. SQL-injection-oppgaven fra H2023 står i blokk 9.</span></p>
       <div class="badges">
         <a class="badge" href="#fane=eksamen&amp;oppg=o-H2023-2_7"><b>H2023</b> · Programmering uten SQL-injection · <span class="pts">5p</span></a>
@@ -114,9 +114,9 @@
 
       <div class="callout felle"><span class="lbl">Feller</span>
         <details class="grense"><summary>Hvorfor CREATE VIEW og ikke bare SELECT-en?</summary>
-          <p>Ber oppgaven om et view, er det viewet som skal leveres. Manglende <span class="mono">CREATE VIEW navn AS</span> ga −3 i H20 S5, selv med riktig spørring.</p></details>
+          <p>Ber oppgaven om et view, er det viewet som skal leveres. Manglende <span class="mono">CREATE VIEW navn AS</span> ga −3 i H2020 S5, selv med riktig spørring.</p></details>
         <details class="grense"><summary>Hvorfor gi kolonnene egne navn med AS?</summary>
-          <p>Kolonnene i viewet får navnene fra SELECT. To kolonner som begge heter <span class="mono">navn</span>, eller en kolonne som bare heter <span class="mono">count</span>, er uklart, og PostgreSQL godtar ikke to kolonner med samme navn i et view. H19 2.7 trakk −0,5 for manglende kolonnenavn.</p></details>
+          <p>Kolonnene i viewet får navnene fra SELECT. To kolonner som begge heter <span class="mono">navn</span>, eller en kolonne som bare heter <span class="mono">count</span>, er uklart, og PostgreSQL godtar ikke to kolonner med samme navn i et view. H2019 2.7 trakk −0,5 for manglende kolonnenavn.</p></details>
         <details class="grense"><summary>Hvorfor VIEW og ikke WITH?</summary>
           <p>WITH gir en delspørring et navn inne i én spørring. Et view lagres i databasen og kan brukes av alle senere spørringer. Står det ikke «view» i oppgaven, er WITH (eller en vanlig spørring) riktig.</p></details>
         <details class="grense"><summary>Hvorfor viser det materialiserte viewet gamle rader?</summary>
@@ -125,7 +125,7 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>«Lag et view som …» med 5–10 poeng hvert år: H19 2.7 (ti nyeste album), H20 S5 (UNION og IS NOT NULL), H23 2.5 (fyll inn manglende verdier med UNION ALL), H24 2.5 (join og <span class="mono">!=</span>, med en NULL-felle løsningsforslaget ikke tar opp), H25 2.6 (prosent ferdig med <span class="mono">count(kol)</span> mot <span class="mono">count(*)</span>).</li>
+          <li>«Lag et view som …» med 5–10 poeng hvert år: H2019 2.7 (ti nyeste album), H2020 S5 (UNION og IS NOT NULL), H2023 2.5 (fyll inn manglende verdier med UNION ALL), H2024 2.5 (join og <span class="mono">!=</span>, med en NULL-felle løsningsforslaget ikke tar opp), H2025 2.6 (prosent ferdig med <span class="mono">count(kol)</span> mot <span class="mono">count(*)</span>).</li>
           <li>Poengene sitter i spørringen inni. Øv på aggregering, ytre join og NULL i <a href="05-sql-videre.html">blokk 5</a>, og husk <span class="mono">CREATE VIEW navn AS</span> og kolonnenavn.</li>
           <li>Materialiserte views har ikke vært spurt om.</li>
         </ul></div>
@@ -155,7 +155,7 @@
       </div>
 
       <h4>Script som én transaksjon</h4>
-      <p>Et SQL-script er en fil med kommandoer som lager tabeller, views og data. Det kjøres med <span class="mono">psql … -f script.sql</span> eller <span class="mono">\i script.sql</span> inne i psql, og <span class="mono">pg_dump</span> kan lage et script som gjenskaper en hel database. Pakker du scriptet inn i en transaksjon, blir det enten kjørt helt eller ikke i det hele tatt. Dette er mønsteret fra H25 2.3:</p>
+      <p>Et SQL-script er en fil med kommandoer som lager tabeller, views og data. Det kjøres med <span class="mono">psql … -f script.sql</span> eller <span class="mono">\i script.sql</span> inne i psql, og <span class="mono">pg_dump</span> kan lage et script som gjenskaper en hel database. Pakker du scriptet inn i en transaksjon, blir det enten kjørt helt eller ikke i det hele tatt. Dette er mønsteret fra H2025 2.3:</p>
       <div id="eks-script"></div>
       <p>Hadde én rad brutt <span class="mono">CHECK</span>, ville INSERT feilet, hele transaksjonen blitt rullet tilbake, og tabellen <span class="mono">emneord</span> ville ikke funnes etterpå.</p>
       <p><span class="mono">CREATE TABLE IF NOT EXISTS</span> og <span class="mono">DROP TABLE IF EXISTS</span> feiler ikke når tabellen allerede finnes eller mangler. Det er nyttig i et script som kjøres flere ganger, fordi én feil ellers ødelegger hele transaksjonen.</p>
@@ -171,7 +171,7 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>Transaksjon har vært spurt om én gang: H25 2.3 (CREATE TABLE og INSERT i én transaksjon, 7 p, poengene ligger mest på skrankene). Oppgave 7 i SQL-repetisjonen er samme mønster.</li>
+          <li>Transaksjon har vært spurt om én gang: H2025 2.3 (CREATE TABLE og INSERT i én transaksjon, 7 p, poengene ligger mest på skrankene). Oppgave 7 i SQL-repetisjonen er samme mønster.</li>
           <li>ACID og samtidighet har ikke vært spurt om. Låsing og samtidighetskontroll er ikke pensum.</li>
         </ul></div>
 
@@ -220,10 +220,10 @@
       <div id="kode-autocommit"></div>
       <p class="small muted">Autocommit står ikke i lysarkene, og kursets løsningsforslag kaller <span class="mono">conn.commit()</span> også i Java. Det virker bare når autocommit er slått av. Med autocommit på (standard) kaster PostgreSQL-driveren et SQLException.</p>
 
-      <h4>H23 2.7 gjennomgått</h4>
+      <h4>H2023 2.7 gjennomgått</h4>
       <p>Oppgaven: lag <span class="mono">vedlikeholdt(conn, omrade)</span> som setter <span class="mono">vedlikeholdt</span> til dagens dato for alle sensorer i området, uten å være sårbar for SQL-injection. Sensoren har bare <span class="mono">oid</span>, så området slås opp på navn i en delspørring. Løsningsforslaget i sensorveiledningen:</p>
       <div id="kode-h23"></div>
-      <p class="pg-src">Kilde: sensorveiledning IN2090 H2023, oppgave 2.7 (ordrett).</p>
+      <p class="pg-src">Kilde: sensorveiledning IN2090 H2023 2.7 (ordrett).</p>
       <ul>
         <li>Det som gir poeng: en riktig UPDATE og områdenavnet som parameter (<span class="mono">%s</span> eller <span class="mono">?</span>), ikke limt inn med +.</li>
         <li>Navn er ikke UNIQUE i skjemaet. Har to områder samme navn, feiler <span class="mono">oid = (SELECT …)</span>. <span class="mono">oid IN (SELECT …)</span> tåler det.</li>
@@ -247,7 +247,7 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         <ul>
-          <li>Én oppgave hittil: H23 2.7 (5 p), en funksjon i Python eller Java som kjører en UPDATE uten SQL-injection. Du velger språk selv, og unntak trenger du ikke håndtere.</li>
+          <li>Én oppgave hittil: H2023 2.7 (5 p), en funksjon i Python eller Java som kjører en UPDATE uten SQL-injection. Du velger språk selv, og unntak trenger du ikke håndtere.</li>
           <li>SQL-repetisjonen hadde samme type (sett inn et nytt barn) og en injection-oppgave der du skulle finne input som lekker en annen tabell. Injection-angrep hører til blokk 9 · Sikkerhet.</li>
         </ul></div>
 
@@ -272,25 +272,25 @@
 
   <footer class="footer">IN2090-guide · Blokk 8 · Views, transaksjoner og programmering</footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
-  <script src="assets/js/sql-lang.js?v=20261127d"></script>
-  <script src="assets/js/pseudocode.js?v=20261127d"></script>
-  <script src="assets/js/stepplayer.js?v=20261127d"></script>
-  <script src="assets/js/varline.js?v=20261127d"></script>
-  <script src="assets/js/viz-relation.js?v=20261127d"></script>
-  <script src="assets/js/viz-er.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127d"></script>
-  <script src="assets/js/bank.js?v=20261127d"></script>
-  <script src="assets/js/side-prog.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
+  <script src="assets/js/sql-lang.js?v=20261127e"></script>
+  <script src="assets/js/pseudocode.js?v=20261127e"></script>
+  <script src="assets/js/stepplayer.js?v=20261127e"></script>
+  <script src="assets/js/varline.js?v=20261127e"></script>
+  <script src="assets/js/viz-relation.js?v=20261127e"></script>
+  <script src="assets/js/viz-er.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
+  <script src="assets/js/bank.js?v=20261127e"></script>
+  <script src="assets/js/side-prog.js?v=20261127e"></script>
   <script>
   (function () {
     "use strict";

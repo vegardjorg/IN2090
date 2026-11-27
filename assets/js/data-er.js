@@ -336,7 +336,7 @@
                   "Tallet 1 alene ved SCENE."],
         answer: 1,
         explain: "«Nøyaktig én» er to skranker: høyst én (1 på motpartens strek, altså ved FRIVILLIG) og minst én (dobbel strek ved scenen selv). 1 alene betyr bare «høyst én».",
-        kilde: K("F05-02 lysark 3–4") }
+        kilde: K("lysarket om ER-relasjoner s. 3–4") }
     ],
     attributter: [
       { q: "«En frivillig har både en unik e-post og et unikt mobilnummer.» Hvordan tegnes nøklene?",
@@ -356,7 +356,7 @@
                   "Et plateselskap kan lagres uten artister."],
         answer: 1,
         explain: "Tallet ved PLATESELSKAP teller plateselskaper per artist. Den doble streken gjelder PLATESELSKAP, så C og D er feil.",
-        kilde: K("F05-02 lysark 3–4") }
+        kilde: K("lysarket om ER-relasjoner s. 3–4") }
     ],
     svake: [
       { q: "«En konsert har et starttidspunkt som bare er unikt på den scenen den går på.» Hvilken tegning er riktig?",
@@ -366,7 +366,7 @@
                   "SCENE i dobbelt rektangel, fordi konsertene er avhengige av den."],
         answer: 1,
         explain: "Det er den svake entiteten som får dobbel boks og stiplet nøkkel, og relasjonen til den identifiserende entiteten skal være en dobbel rombe. C mangler den identifiserende relasjonen (−1 hos sensor).",
-        kilde: K("F05-03 lysark 3–5") }
+        kilde: K("lysarket om svake entiteter s. 3–5") }
     ],
     ternaere: [
       { q: "I VAKT står 1 ved OPPGAVE, N ved SCENE og M ved FRIVILLIG. Hvilken påstand følger?",
@@ -376,46 +376,46 @@
                   "En oppgave kan bare brukes på én scene."],
         answer: 2,
         explain: "I en ternær relasjon sier tallet ved E hvor mange E det kan være gitt én kombinasjon av de to andre. 1 ved OPPGAVE holder (frivillig, scene) fast.",
-        kilde: K("F06-01 lysark 2–5") }
+        kilde: K("lysarket om ternære relasjoner s. 2–5") }
     ],
     "tekst-til-diagram": [
       { q: "«En konsert har minst én artist, og en artist kan spille på mange konserter.» Hvor skal den doble streken stå i SPILLER?",
         options: ["Ved ARTIST.", "Ved KONSERT.", "Ved begge.", "Ingen steder, «minst én» uttrykkes med tallet 1."],
         answer: 1,
         explain: "Det er konsertene som <i>må</i> delta. Nedre skranke vises med strektypen ved den entiteten som må delta, ikke med et tall.",
-        kilde: K("F05-02 lysark 4") }
+        kilde: K("lysarket om ER-relasjoner s. 4") }
     ],
     eer: [
       { q: "<span class=\"mono\">Gjest = {1,2,3,4}</span>, <span class=\"mono\">Vip = {1,2}</span>, <span class=\"mono\">Presse = {2,3}</span>. Hvilken kombinasjon av krav tillater instansen?",
         options: ["Total og disjunkt.", "Total og overlappende.", "Partiell og disjunkt.", "Partiell og overlappende."],
         answer: 3,
         explain: "Gjest 2 er i begge subklassene (ikke disjunkt), og gjest 4 er i ingen (ikke total).",
-        kilde: K("F13-uttrykkskraft s. 4–9") }
+        kilde: K("lysarket om uttrykkskraft s. 4–9") }
     ]
   };
 
   /* ---------- Sant/usant for hele blokken ---------- */
   var TF = [
     { s: "Et flerverdiattributt kan være nøkkel.", answer: false, blokk: "attributter",
-      explain: "Én entitet har flere verdier, så verdien kan ikke identifisere den.", kilde: K("F05-01 lysark 7") },
+      explain: "Én entitet har flere verdier, så verdien kan ikke identifisere den.", kilde: K("lysarket om ER-entiteter s. 7") },
     { s: "Et attributt på en relasjon kan være nøkkel.", answer: false, blokk: "relasjoner",
-      explain: "Relasjonsattributter kan aldri være nøkler.", kilde: K("F05-02 lysark 5") },
+      explain: "Relasjonsattributter kan aldri være nøkler.", kilde: K("lysarket om ER-relasjoner s. 5") },
     { s: "En stiplet oval viser hvordan verdien regnes ut.", answer: false, blokk: "attributter",
-      explain: "Den sier bare at verdien kan utledes, ikke hvordan.", kilde: K("F05-01 lysark 6–9") },
+      explain: "Den sier bare at verdien kan utledes, ikke hvordan.", kilde: K("lysarket om ER-entiteter s. 6–9") },
     { s: "Dobbel strek ved E betyr at hver E må være med i relasjonen minst én gang.", answer: true, blokk: "notasjon",
-      explain: "Dobbel strek er total deltakelse, altså minst én.", kilde: K("F05-02 lysark 4") },
+      explain: "Dobbel strek er total deltakelse, altså minst én.", kilde: K("lysarket om ER-relasjoner s. 4") },
     { s: "«Nøyaktig én» tegnes med 1 alene.", answer: false, blokk: "notasjon",
-      explain: "Det krever også dobbel strek ved entiteten selv. 1 alene betyr «høyst én».", kilde: K("F05-02 lysark 3–4") },
+      explain: "Det krever også dobbel strek ved entiteten selv. 1 alene betyr «høyst én».", kilde: K("lysarket om ER-relasjoner s. 3–4") },
     { s: "En svak entitet har alltid total deltakelse i den identifiserende relasjonen.", answer: true, blokk: "svake",
-      explain: "Den kan ikke finnes uten den identifiserende entiteten.", kilde: K("F05-03 lysark 3–5") },
+      explain: "Den kan ikke finnes uten den identifiserende entiteten.", kilde: K("lysarket om svake entiteter s. 3–5") },
     { s: "En svak entitet kan bare ha én identifiserende entitet.", answer: false, blokk: "svake",
-      explain: "Den kan ha flere identifiserende entiteter og flere nivåer.", kilde: K("F05-03 lysark 5") },
+      explain: "Den kan ha flere identifiserende entiteter og flere nivåer.", kilde: K("lysarket om svake entiteter s. 5") },
     { s: "En ternær relasjon kan alltid byttes ut med tre binære uten at noe går tapt.", answer: false, blokk: "ternaere",
-      explain: "Da går kombinasjonen av de tre tapt.", kilde: K("F06-01 lysark 7") },
+      explain: "Da går kombinasjonen av de tre tapt.", kilde: K("lysarket om ternære relasjoner s. 7") },
     { s: "Hver forekomst av en ternær relasjon relaterer nøyaktig tre entiteter.", answer: true, blokk: "ternaere",
-      explain: "En ternær relasjon relaterer alltid tre entiteter samtidig.", kilde: K("F06-01 lysark 2–5") },
+      explain: "En ternær relasjon relaterer alltid tre entiteter samtidig.", kilde: K("lysarket om ternære relasjoner s. 2–5") },
     { s: "Kurset bruker tall som 2 eller 5 for kardinalitet når teksten sier det.", answer: false, blokk: "notasjon",
-      explain: "Kurset skiller bare mellom 1 og mange (en bokstav som N eller M).", kilde: K("F05-02 lysark 3–4") },
+      explain: "Kurset skiller bare mellom 1 og mange (en bokstav som N eller M).", kilde: K("lysarket om ER-relasjoner s. 3–4") },
     { s: "Når en konto kan være både til-konto og fra-konto, bør KONTO deles i to entiteter.", answer: false, blokk: "relasjoner",
       explain: "Bruk én entitet med to relasjoner (eller én rekursiv). Sensor trakk 2 poeng for oppdelingen i H2023.", kilde: false },
     { s: "I en sammensatt nøkkel er hver del unik for seg.", answer: false, blokk: "attributter",

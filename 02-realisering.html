@@ -7,11 +7,11 @@
   <title>Blokk 2 · Realisering · IN2090</title>
   <meta name="description" content="Realisering i IN2090: fra ER-diagram til relasjonsskjema med kursets algoritme. Entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter, ternære relasjoner og subklasser, med KN, PN og FN i kursets notasjon, stegspiller over et helt eksempel, øving og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
-<link rel="stylesheet" href="assets/css/dra.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
+<link rel="stylesheet" href="assets/css/dra.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/blokk-realisering.css?v=20261127e">
 </head>
 <body data-page="realisering">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -44,7 +44,7 @@
       <button data-tab="flerverdi">Flerverdi</button>
       <button data-tab="naere">Ternære</button>
       <button data-tab="hele">Hele eksemplet</button>
-      <button data-tab="subklasser">Subklasser <span class="nytt-mark">nytt i H26</span></button>
+      <button data-tab="subklasser">Subklasser <span class="nytt-mark">nytt i H2026</span></button>
       <button data-tab="dra">Øv: dra og sorter</button>
       <button data-tab="eksamen">Eksamensoppgaver</button>
       <button data-tab="test">Sant/usant</button>
@@ -66,7 +66,7 @@
           <li>flerverdiattributter</li>
           <li>ternære og n-ære relasjoner</li>
         </ol>
-        <span class="small muted">Realiseringsnotatet s. 2 og F06-02 lysark 3, formulert med egne ord. Diagrammet du realiserer, lærer du å tegne i <a href="01-er.html">blokk 1</a>.</span></div>
+        <span class="small muted">Realiseringsnotatet s. 2 og realiseringslysarket s. 3, formulert med egne ord. Diagrammet du realiserer, lærer du å tegne i <a href="01-er.html">blokk 1</a>.</span></div>
 
       <h4>Notasjonen</h4>
       <p>Én tabell per blokk: navnet med attributtene i parentes, og under den én linje for KN, PN og FN hver for seg. Attributtene som er med i en KN, er understreket, og attributtene i PN står i fet skrift. Det er markeringen eksamensinstruksen ber om (prøveeksamen 2020, H2020, H2023, H2024): understrek alle KN-er, fet skrift for PN.</p>
@@ -99,7 +99,7 @@
       </table></div>
 
       <h4>Algoritmen som pseudokode</h4>
-      <p class="small muted">Guidens egen oppsummering av rekkefølgen, ikke kursets kode. Hold musa over en linje for forklaring. Subklasser (nytt i H26) er ikke med her, se egen fane. I fanen «Hele eksemplet» følger pseudokoden stegene.</p>
+      <p class="small muted">Guidens egen oppsummering av rekkefølgen, ikke kursets kode. Hold musa over en linje for forklaring. Subklasser (nytt i H2026) er ikke med her, se egen fane. I fanen «Hele eksemplet» følger pseudokoden stegene.</p>
       <div id="algo-pseudo"></div>
 
       <div class="callout felle"><span class="lbl">Feller</span>
@@ -115,8 +115,8 @@
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
-        Realisering av en gitt ER-figur har kommet hvert år, til 7–15 poeng (typisk 10–12): P19 bygg og rom, H19 bok og forlag,
-        P20 sjakk, H20 musikkalbum, H23 nettavis, H24 utleiebyrå og H25 din egen båtmodell. Instruksen har nesten alltid vært den samme (H2019–H2024):
+        Realisering av en gitt ER-figur har kommet hvert år, til 7–15 poeng (typisk 10–12): P2019 bygg og rom, H2019 bok og forlag,
+        P2020 sjakk, H2020 musikkalbum, H2023 nettavis, H2024 utleiebyrå og H2025 din egen båtmodell. Instruksen har nesten alltid vært den samme (H2019–H2024):
         skjemaet skal være korrekt, effektivt og tydelig, valgene skal forklares, og KN, PN og FN skal markeres. H2025 1.2 ba bare om
         tabeller med PN og FN.</div>
 
@@ -460,7 +460,7 @@
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
         H2024 1.3 hadde en ternær relasjon (visning: leietaker, agent og eiendom) i realiseringen. Ternære har også vært med i
-        ER-tegningen i P19, H19, P20 og H20. Riktig KN ut fra 1-tallene er det sensor ser etter.</div>
+        ER-tegningen i P2019, H2019, P2020 og H2020. Riktig KN ut fra 1-tallene er det sensor ser etter.</div>
 
       <h4>Test deg selv</h4>
       <div id="quiz-naere"></div>
@@ -505,14 +505,14 @@
 
       <div class="callout uni"><span class="lbl">Bare 1NF er garantert</span>
         Realiseringen gir et skjema på minst 1NF, men det kan bryte BCNF hvis domenet har funksjonelle avhengigheter som ER-diagrammet
-        ikke kan uttrykke (F08-03 lysark 3). Eksempel: en frivillig har Postnr og Poststed, og postnummeret bestemmer poststedet. I
+        ikke kan uttrykke (lysarket «Design i praksis» s. 3). Eksempel: en frivillig har Postnr og Poststed, og postnummeret bestemmer poststedet. I
         <span class="mono">Frivillig(Epost, Postnr, Poststed)</span> er {Epost} den eneste KN-en. FD-en <span class="mono">Postnr → Poststed</span>
         har en venstreside som ikke er en supernøkkel, så tabellen bryter BCNF. Den bryter også 3NF, siden Poststed ikke er et
         nøkkelattributt, men 2NF holder, fordi Postnr ikke er en del av noen KN. Det er normaliseringen i
         <a href="07-normalisering.html">blokk 7</a> som fanger slike avhengigheter.</div>
 
       <h4>Fra skjema til SQL (utdrag)</h4>
-      <p>PN blir <span class="mono">PRIMARY KEY</span>, og en ekstra KN blir <span class="mono">UNIQUE NOT NULL</span> (F04-01 lysark 8).
+      <p>PN blir <span class="mono">PRIMARY KEY</span>, og en ekstra KN blir <span class="mono">UNIQUE NOT NULL</span> (lysarket om datamanipulering s. 8).
         En FN blir <span class="mono">REFERENCES</span>, og en sammensatt FN skrives som <span class="mono">FOREIGN KEY (…) REFERENCES …</span>.
         Mer om <span class="mono">CREATE TABLE</span> i <a href="04-sql.html">blokk 4</a>.</p>
       <div id="sql-hele"></div>
@@ -539,12 +539,12 @@
 
     <!-- ===================== 10 · SUBKLASSER ===================== -->
     <section data-panel="subklasser">
-      <h3>Subklasser <span class="tag">nytt i H26</span></h3>
+      <h3>Subklasser <span class="tag">nytt i H2026</span></h3>
       <div class="callout begrep"><span class="lbl">Begrep</span>
         En subklasse realiseres med en <b>egen tabell</b> for superklassen og <b>én tabell per subklasse</b>. Subklassetabellen har
         superklassens PN som sin PN, og den er samtidig en FN til superklassen. Det håndhever kravet om delmengde
         (<span class="mono">Vip ⊆ Gjest</span>), men <b>ikke</b> disjunkthet eller totalitet. De må uttrykkes som egne krav.
-        <br><span class="small muted">F13-uttrykkskraft s. 8–11, med egne ord. Lysarkene skriver PK/FK og «constraint». Guiden bruker PN/FN som resten av kurset.
+        <br><span class="small muted">lysarket om uttrykkskraft s. 8–11, med egne ord. Lysarkene skriver PK/FK og «constraint». Guiden bruker PN/FN som resten av kurset.
         Kravene (disjunkt, total) er forklart i <a href="01-er.html#fane=eer">blokk 1, fanen EER</a>. Kurset tegner ikke ISA-figurer, så her brukes mengdenotasjon.</span></div>
       <div id="ex-subklasser"></div>
 
@@ -594,7 +594,7 @@
         </ul></div>
 
       <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
-        Ukjent, fordi temaet er nytt i H26 og ikke har vært gitt på eksamen. Det mest sannsynlige er en kort oppgave om hvilke krav
+        Ukjent, fordi temaet er nytt i H2026 og ikke har vært gitt på eksamen. Det mest sannsynlige er en kort oppgave om hvilke krav
         PN og FN håndhever, eller om en gitt instans oppfyller kravene.</div>
 
       <h4>Test deg selv</h4>
@@ -625,28 +625,28 @@
 
   <footer class="footer">IN2090-guide · Blokk 2 · Realisering</footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
-  <script src="assets/js/sql-lang.js?v=20261127d"></script>
-  <script src="assets/js/pseudocode.js?v=20261127d"></script>
-  <script src="assets/js/stepplayer.js?v=20261127d"></script>
-  <script src="assets/js/varline.js?v=20261127d"></script>
-  <script src="assets/js/viz-relation.js?v=20261127d"></script>
-  <script src="assets/js/viz-er.js?v=20261127d"></script>
-  <script src="assets/js/data-realisering.js?v=20261127d"></script>
-<script src="assets/js/dra.js?v=20261127d"></script>
-<script src="assets/js/data-dra.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127d"></script>
-  <script src="assets/js/bank.js?v=20261127d"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
+  <script src="assets/js/sql-lang.js?v=20261127e"></script>
+  <script src="assets/js/pseudocode.js?v=20261127e"></script>
+  <script src="assets/js/stepplayer.js?v=20261127e"></script>
+  <script src="assets/js/varline.js?v=20261127e"></script>
+  <script src="assets/js/viz-relation.js?v=20261127e"></script>
+  <script src="assets/js/viz-er.js?v=20261127e"></script>
+  <script src="assets/js/data-realisering.js?v=20261127e"></script>
+<script src="assets/js/dra.js?v=20261127e"></script>
+<script src="assets/js/data-dra.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
+  <script src="assets/js/bank.js?v=20261127e"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
   <script>
   (function () {
     "use strict";
@@ -753,7 +753,7 @@
       "ex-algoritmen": {
         eli5: "<p>Du har en tegning med bokser og romber og skal bygge den som et sett med regneark. Hver boks blir et ark. Strekene blir kolonner som peker til et annet ark. Du gjør det i en fast rekkefølge, så du ikke glemmer noe og ikke lager flere ark enn nødvendig.</p>",
         normal: "<p>Hver entitet blir en tabell, og nøklene blir kandidatnøkler. Relasjoner blir enten en fremmednøkkel i en av tabellene (når minst én side har 1) eller en egen tabell (M:N og ternære). Flerverdiattributter får alltid egen tabell.</p><p>Der du kan velge, velger du det som gir færrest tabeller og færrest NULL-er, og du <b>skriver én setning om hvorfor</b>. Eksamen gir poeng for forklaringen.</p>",
-        teknisk: "<p>Rekkefølgen er ikke tilfeldig. Svake entiteter trenger PN-en til den identifiserende entiteten, så den må være realisert først. 1:1 og 1:N kan ofte realiseres uten ny tabell, mens M:N, flerverdi og n-ære alltid gir nye tabeller som peker på tabeller som allerede finnes.</p><p>Resultatet oppfyller alltid 1NF, men realiseringen garanterer ikke BCNF. ER kan ikke uttrykke alle funksjonelle avhengigheter, så det kan finnes FD-er i domenet som ingen nøkkel fanger opp (F08-03 lysark 3, se fanen «Hele eksemplet»). Skjemaet håndhever heller ikke all informasjon fra diagrammet. KN og FN uttrykker unikhet og «må finnes», men ikke at hver entitet på den <i>refererte</i> siden deltar minst én gang.</p>"
+        teknisk: "<p>Rekkefølgen er ikke tilfeldig. Svake entiteter trenger PN-en til den identifiserende entiteten, så den må være realisert først. 1:1 og 1:N kan ofte realiseres uten ny tabell, mens M:N, flerverdi og n-ære alltid gir nye tabeller som peker på tabeller som allerede finnes.</p><p>Resultatet oppfyller alltid 1NF, men realiseringen garanterer ikke BCNF. ER kan ikke uttrykke alle funksjonelle avhengigheter, så det kan finnes FD-er i domenet som ingen nøkkel fanger opp (lysarket «Design i praksis» s. 3, se fanen «Hele eksemplet»). Skjemaet håndhever heller ikke all informasjon fra diagrammet. KN og FN uttrykker unikhet og «må finnes», men ikke at hver entitet på den <i>refererte</i> siden deltar minst én gang.</p>"
       },
       "ex-entiteter": {
         eli5: "<p>Hver boks blir et ark. Overskriftene er egenskapene. Det du kan regne ut selv, trenger ikke egen kolonne. Et navn som består av fornavn og etternavn, får to kolonner. Lister (flere språk) venter du med, for de passer ikke inn i én rute.</p>",
@@ -773,7 +773,7 @@
       "ex-en-til-mange": {
         eli5: "<p>Hver artist har høyst ett plateselskap. Da er det lett å skrive plateselskapet i én rute på artistarket. Motsatt går ikke: et plateselskap har mange artister, og de får ikke plass i én rute.</p>",
         normal: "<p>Finn siden der hver entitet høyst har én partner. Det er siden med N på sin egen strek (og 1 ved motparten). Legg motpartens PN som FN-kolonne der. Er N-siden partiell, får de som ikke er relatert, NULL i FN-kolonnen.</p><p>Vil du unngå det, kan du lage en egen tabell. Den har bare rader for de som faktisk er relatert, og PN er N-sidens PN, fordi hver av dem bare kan forekomme én gang.</p>",
-        teknisk: "<p>FN-en på N-siden er <i>ikke</i> en KN, fordi mange rader kan ha samme verdi. Er N-siden total, blir FN-en aldri NULL (den kan få <span class=\"mono\">NOT NULL</span> i SQL). Er den partiell, må du veie én tabell mindre mot NULL-verdier. Begge løsningene godtas når valget er forklart.</p><p>I en egen tabell er PN-en N-sidens PN alene, ikke paret. Det er nettopp det som sikrer «høyst én» på 1-siden. Et relasjonsattributt bor i samme tabell som FN-en, fordi det avhenger av paret, og paret er bestemt av N-sidens PN. Ukesoppgavene for uke 6 gjør det samme med et periodeattributt på en ansattrelasjon.</p>"
+        teknisk: "<p>FN-en på N-siden er <i>ikke</i> en KN, fordi mange rader kan ha samme verdi. Er N-siden total, blir FN-en aldri NULL (den kan få <span class=\"mono\">NOT NULL</span> i SQL). Er den partiell, må du veie én tabell mindre mot NULL-verdier. Begge løsningene godtas når valget er forklart.</p><p>I en egen tabell er PN-en N-sidens PN alene, ikke paret. Det er nettopp det som sikrer «høyst én» på 1-siden. Et relasjonsattributt bor i samme tabell som FN-en, fordi det avhenger av paret, og paret er bestemt av N-sidens PN. Ukesoppgavene om realisering gjør det samme med et periodeattributt på en ansattrelasjon.</p>"
       },
       "ex-mange-til-mange": {
         eli5: "<p>En artist spiller på mange konserter, og en konsert har mange artister. Ingen av arkene har plass til en liste, så du lager et nytt ark der hver rad er ett par: denne artisten på denne konserten.</p>",
@@ -798,7 +798,7 @@
       "ex-subklasser": {
         eli5: "<p>Alle gjester står på gjestelisten. VIP-listen og presselisten har bare gjestenummeret og det som er spesielt for dem. Listene passer på at ingen står på VIP-listen uten å være gjest. De passer ikke på at ingen står på begge, eller at alle står på minst én.</p>",
         normal: "<p>Lag tabellen for superklassen med alle felles attributter. For hver subklasse lager du en tabell med superklassens PN og subklassens egne attributter. PN-en er en FN til superklassen, så hver rad i en subklasse må finnes i superklassen. Disjunkthet (ingen i to subklasser) og totalitet (alle i minst én) følger ikke av nøklene.</p>",
-        teknisk: "<p>FN håndhever inklusjonen <span class=\"mono\">∀x (Vip(x) → Gjest(x))</span>. Disjunkthet <span class=\"mono\">∀x ¬(Vip(x) ∧ Presse(x))</span> er et krav på tvers av to tabeller, og totalitet <span class=\"mono\">∀x (Gjest(x) → (Vip(x) ∨ Presse(x)))</span> krever at noe <i>finnes</i> i en annen tabell. Ingen av dem kan uttrykkes med PRIMARY KEY, UNIQUE eller REFERENCES alene.</p><p>F13 bruker dette til å vise at hvert språk (ER, relasjonsskjema, logikk) har begrenset uttrykkskraft. F13 lysark 20–21 viser hva som gjenstår: PK og FK alene stopper ikke brudd på totalitet og disjunkthet. Alternativene er å endre skjemaet (f.eks. én tabell med en <span class=\"mono\">type</span>-kolonne med NOT NULL og CHECK, som gir disjunkthet og totalitet, men da kan ingen være både student og ansatt), å bruke triggere, eller å sjekke i applikasjonen.</p>"
+        teknisk: "<p>FN håndhever inklusjonen <span class=\"mono\">∀x (Vip(x) → Gjest(x))</span>. Disjunkthet <span class=\"mono\">∀x ¬(Vip(x) ∧ Presse(x))</span> er et krav på tvers av to tabeller, og totalitet <span class=\"mono\">∀x (Gjest(x) → (Vip(x) ∨ Presse(x)))</span> krever at noe <i>finnes</i> i en annen tabell. Ingen av dem kan uttrykkes med PRIMARY KEY, UNIQUE eller REFERENCES alene.</p><p>Lysarket om uttrykkskraft bruker dette til å vise at hvert språk (ER, relasjonsskjema, logikk) har begrenset uttrykkskraft. Lysarket om uttrykkskraft s. 20–21 viser hva som gjenstår: PK og FK alene stopper ikke brudd på totalitet og disjunkthet. Alternativene er å endre skjemaet (f.eks. én tabell med en <span class=\"mono\">type</span>-kolonne med NOT NULL og CHECK, som gir disjunkthet og totalitet, men da kan ingen være både student og ansatt), å bruke triggere, eller å sjekke i applikasjonen.</p>"
       }
     };
     Object.keys(EX).forEach(function (id) {

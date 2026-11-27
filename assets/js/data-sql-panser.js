@@ -40,7 +40,7 @@
       hvorfor: {
         eli5: "Databasen leser først hva du har skrevet, sjekker at alle navnene finnes, og så gjør den jobben i sin egen rekkefølge: først henter den alle lånene, så kaster den de gamle, så legger den lånene i hauger per person, teller haugene og tar vare på de store. Til slutt skriver den ut navnet og tallet.",
         normal: "Legg merke til at spørringen skrives med SELECT først, men regnes ut nesten sist: FROM og joinen bygger radene, WHERE filtrerer dem, GROUP BY lager grupper, HAVING filtrerer gruppene, og først da regner SELECT ut kolonnene og navnet <span class=\"mono\">antall</span>. Derfor kan ORDER BY bruke <span class=\"mono\">antall</span>, mens HAVING må skrive <span class=\"mono\">count(*)</span> på nytt.",
-        teknisk: "Skriverekkefølgen er fast i grammatikken (F09-02 lysark 12), mens svaret er definert av den logiske rekkefølgen FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. Navnereglene følger av den: et SELECT-alias finnes i ORDER BY, men ikke i WHERE eller HAVING (F09-02 lysark 13). Databasen kan regne ut svaret på en annen måte enn denne rekkefølgen, så lenge resultatet blir det samme."
+        teknisk: "Skriverekkefølgen er fast i grammatikken (grupperingslysarket s. 12), mens svaret er definert av den logiske rekkefølgen FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. Navnereglene følger av den: et SELECT-alias finnes i ORDER BY, men ikke i WHERE eller HAVING (grupperingslysarket s. 13). Databasen kan regne ut svaret på en annen måte enn denne rekkefølgen, så lenge resultatet blir det samme."
       },
       kjede: [["FROM", 6], ["WHERE", 5], ["GROUP BY", 4, "grupper"], ["HAVING", 1, "grupper"], ["SELECT", 1], ["ORDER BY", 1]],
       svar: { kolonner: ["navn", "antall"], rader: [["Cato", 2]] }
@@ -57,10 +57,10 @@
       hvorfor: {
         eli5: "Det er som en oppskrift der det står «server», og så «skrell potetene». Kokken leser oppskriften før han begynner, ser at rekkefølgen er umulig, og nekter å starte. Ingen poteter er rørt.",
         normal: "Grammatikken bestemmer rekkefølgen klausulene skal skrives i. Etter ORDER BY er bare LIMIT, OFFSET eller slutten av spørringen lov. Parseren har allerede passert plassen der WHERE kunne stått, og stopper. Databasen har ikke sett på en eneste rad, fordi den ikke vet hva spørringen betyr ennå.",
-        teknisk: "Feilen fanges av parseren, som bare ser på ordene og grammatikken. Den vet ikke om tabellen <span class=\"mono\">bok</span> finnes, og den har ikke lest data. Derfor peker meldingen på ordet der grammatikken slutter å stemme, ikke på hva du mente. Rett ved å flytte WHERE opp foran ORDER BY. Merk: sensor trekker normalt ikke for slike syntaksfeil (H23, H25), men spørringen kjører ikke."
+        teknisk: "Feilen fanges av parseren, som bare ser på ordene og grammatikken. Den vet ikke om tabellen <span class=\"mono\">bok</span> finnes, og den har ikke lest data. Derfor peker meldingen på ordet der grammatikken slutter å stemme, ikke på hva du mente. Rett ved å flytte WHERE opp foran ORDER BY. Merk: sensor trekker normalt ikke for slike syntaksfeil (H2023, H2025), men spørringen kjører ikke."
       },
       rettet: S("SELECT tittel", "FROM bok", "WHERE sider > 100", "ORDER BY år;"),
-      sensor: "Ingen trekk for enkle syntaksfeil (H23/H25), men spørringen kjører ikke."
+      sensor: "Ingen trekk for enkle syntaksfeil (H2023/H25), men spørringen kjører ikke."
     },
     {
       id: "dobbelfnutt", tittel: "\"Oslo\" i doble anførselstegn", nivaa: "intro", tema: "Navn og regler",
@@ -90,10 +90,10 @@
       hvorfor: {
         eli5: "WHERE er en dørvakt som ser på én person om gangen. Du ber dørvakten slippe inn «de som er mer enn én». Det kan ikke dørvakten svare på, for han ser bare én person, og gruppene lages først inne i salen.",
         normal: "WHERE ser på én rad om gangen, og det skjer <em>før</em> GROUP BY har laget gruppene. <span class=\"mono\">count(*)</span> teller rader i en gruppe, men i WHERE finnes det ingen grupper å telle i ennå. Databasen ser det uten å se på data: den vet hvor aggregater er lov. Et filter på grupper skal stå i HAVING.",
-        teknisk: "Grammatikken tillater et uttrykk etter WHERE, og <span class=\"mono\">count(*) > 1</span> er et uttrykk, så parseren godtar spørringen. Feilen fanges i navne- og regelsjekken, som vet at aggregater bare kan regnes ut per gruppe, altså i SELECT, HAVING og ORDER BY. HAVING er «en slags WHERE for grupper» (F09-02 lysark 11)."
+        teknisk: "Grammatikken tillater et uttrykk etter WHERE, og <span class=\"mono\">count(*) > 1</span> er et uttrykk, så parseren godtar spørringen. Feilen fanges i navne- og regelsjekken, som vet at aggregater bare kan regnes ut per gruppe, altså i SELECT, HAVING og ORDER BY. HAVING er «en slags WHERE for grupper» (grupperingslysarket s. 11)."
       },
       rettet: S("SELECT fid, count(*)", "FROM bok", "GROUP BY fid", "HAVING count(*) > 1;"),
-      sensor: "−2 for aggregat i WHERE i stedet for HAVING (H23, H25, og i én oppgave i H20)."
+      sensor: "−2 for aggregat i WHERE i stedet for HAVING (H2023, H2025, og i én oppgave i H2020)."
     },
     {
       id: "alias", tittel: "SELECT-alias brukt i WHERE", nivaa: "eksamen", tema: "Navn og regler",
@@ -107,7 +107,7 @@
       hvorfor: {
         eli5: "Det er som å be noen hente «den røde koppen» før noen har malt den rød. Fargen kommer senere, så akkurat nå finnes det ingen rød kopp.",
         normal: "Navnet <span class=\"mono\">hundre</span> lages i SELECT, og SELECT kommer nesten sist i den logiske rekkefølgen. WHERE kommer før, så når WHERE skal slå opp navnet, finnes bare kolonnene i <span class=\"mono\">bok</span>. Skriv uttrykket på nytt: <span class=\"mono\">WHERE sider / 100 > 2</span>. I ORDER BY hadde <span class=\"mono\">hundre</span> virket, for den kommer etter SELECT.",
-        teknisk: "Navneoppslaget i WHERE ser bare tabellene i FROM. Kurset sier det som en regel: SELECT-navn kan brukes i ORDER BY og i ytre spørringer, ikke i WHERE eller HAVING (F09-02 lysark 13). PostgreSQL sier bare at kolonnen ikke finnes. Den sier ikke at det er et alias, så meldingen er lett å misforstå."
+        teknisk: "Navneoppslaget i WHERE ser bare tabellene i FROM. Kurset sier det som en regel: SELECT-navn kan brukes i ORDER BY og i ytre spørringer, ikke i WHERE eller HAVING (grupperingslysarket s. 13). PostgreSQL sier bare at kolonnen ikke finnes. Den sier ikke at det er et alias, så meldingen er lett å misforstå."
       },
       rettet: S("SELECT tittel, sider / 100 AS hundre", "FROM bok", "WHERE sider / 100 > 2;")
     },
@@ -129,10 +129,10 @@
       hvorfor: {
         eli5: "Du har lagt bøkene i én haug per forfatter og vil skrive én lapp per haug. På lappen skal det stå én tittel. Men Ibsen-haugen har to bøker. Hvilken skal du skrive? Det vet ingen, så databasen nekter.",
         normal: "Etter GROUP BY blir hver gruppe til én rad. Hver kolonne i SELECT må derfor ha <em>én</em> verdi per gruppe. <span class=\"mono\">f.navn</span> har det, for det er det vi grupperer på. <span class=\"mono\">count(*)</span> har det, for det regnes ut per gruppe. Men gruppen Ibsen har to titler, og databasen kan ikke velge. Regelen sjekkes før kjøring, så den gjelder selv om alle gruppene tilfeldigvis hadde én tittel. Rettingen grupperer også på <span class=\"mono\">f.fid</span>: to forfattere med samme navn blir ellers slått sammen til én gruppe.",
-        teknisk: "GROUP BY-regelen sjekkes ut fra spørringen, ikke ut fra dataene: hver kolonne utenfor aggregat må være gruppert. PostgreSQL har ett unntak. Grupperer du på primærnøkkelen, kan du bruke de andre kolonnene i samme tabell, fordi de da er bestemt av nøkkelen. Sensor gir ikke trekk for det (H23, H25). Velg <span class=\"mono\">GROUP BY f.navn, b.tittel</span>, et aggregat som <span class=\"mono\">max(b.tittel)</span> eller ta kolonnen ut."
+        teknisk: "GROUP BY-regelen sjekkes ut fra spørringen, ikke ut fra dataene: hver kolonne utenfor aggregat må være gruppert. PostgreSQL har ett unntak. Grupperer du på primærnøkkelen, kan du bruke de andre kolonnene i samme tabell, fordi de da er bestemt av nøkkelen. Sensor gir ikke trekk for det (H2023, H2025). Velg <span class=\"mono\">GROUP BY f.navn, b.tittel</span>, et aggregat som <span class=\"mono\">max(b.tittel)</span> eller ta kolonnen ut."
       },
       rettet: S("SELECT f.navn, count(*)", "FROM forfatter AS f", "  INNER JOIN bok AS b ON (f.fid = b.fid)", "GROUP BY f.fid, f.navn;"),
-      sensor: "−2 for manglende GROUP BY (H20, H25). Ingen trekk for å gruppere på primærnøkkelen."
+      sensor: "−2 for manglende GROUP BY (H2020, H2025). Ingen trekk for å gruppere på primærnøkkelen."
     },
     {
       id: "likenull", tittel: "= NULL i stedet for IS NULL", nivaa: "eksamen", tema: "Kjøring",
@@ -150,10 +150,10 @@
       hvorfor: {
         eli5: "NULL betyr «vet ikke». Spør du «er Dinas sted lik vet-ikke?», er svaret også «vet ikke». Det gjelder Ada og Oslo også. Dørvakten slipper bare inn dem som får et klart ja, så ingen kommer inn.",
         normal: "Spørringen er helt lovlig, så alle fasene før kjøring er grønne. Feilen viser seg først når radene regnes ut: en sammenligning med NULL blir NULL («ukjent») for hver eneste rad, også for Dina. WHERE beholder bare rader der betingelsen er TRUE, så svaret blir tomt. Databasen sier ingenting. Bruk <span class=\"mono\">sted IS NULL</span>.",
-        teknisk: "<span class=\"mono\">x = NULL</span> er et gyldig uttrykk med typen boolean, så verken grammatikken eller regelsjekken har noe å klage på. Sannhetsverdien NULL oppstår i kjøringen (F03-02 lysark 12–15), og WHERE behandler NULL som «ikke med». <span class=\"mono\">IS NULL</span> er et eget predikat som alltid gir TRUE eller FALSE."
+        teknisk: "<span class=\"mono\">x = NULL</span> er et gyldig uttrykk med typen boolean, så verken grammatikken eller regelsjekken har noe å klage på. Sannhetsverdien NULL oppstår i kjøringen (lysarket om WHERE s. 12–15), og WHERE behandler NULL som «ikke med». <span class=\"mono\">IS NULL</span> er et eget predikat som alltid gir TRUE eller FALSE."
       },
       rettet: S("SELECT navn", "FROM låner", "WHERE sted IS NULL;"),
-      sensor: "−1 for != NULL i stedet for IS NOT NULL (H20 S5)."
+      sensor: "−1 for != NULL i stedet for IS NOT NULL (H2020 S5)."
     },
     {
       id: "countstjerne", tittel: "count(*) etter LEFT JOIN", nivaa: "eksamen", tema: "Kjøring",
@@ -172,10 +172,10 @@
       hvorfor: {
         eli5: "Ferrante har ingen bøker, men LEFT JOIN gir henne likevel en tom lapp så hun ikke blir glemt. <span class=\"mono\">count(*)</span> teller lapper, og da får hun 1. Teller du bøker i stedet, får hun 0.",
         normal: "Alt er lovlig, så fasene før kjøring er grønne. LEFT JOIN beholder Ferrante med NULL i alle bok-kolonnene. <span class=\"mono\">count(*)</span> teller rader, og den raden finnes. <span class=\"mono\">count(b.bid)</span> hopper over NULL og gir 0, som er det oppgaven nesten alltid vil ha.",
-        teknisk: "Aggregatene hopper over NULL, unntatt <span class=\"mono\">count(*)</span>, som teller rader (F10-01 lysark 2). Etter en ytre join er NULL-raden en ekte rad i mellomtabellen. Kurset legger vekt på å telle en kolonne fra den andre tabellen (F10-01 lysark 10)."
+        teknisk: "Aggregatene hopper over NULL, unntatt <span class=\"mono\">count(*)</span>, som teller rader (lysarket om ytre join s. 2). Etter en ytre join er NULL-raden en ekte rad i mellomtabellen. Kurset legger vekt på å telle en kolonne fra den andre tabellen (lysarket om ytre join s. 10)."
       },
       rettet: S("SELECT f.navn, count(b.bid) AS antall", "FROM forfatter AS f", "  LEFT JOIN bok AS b ON (f.fid = b.fid)", "GROUP BY f.fid, f.navn;"),
-      sensor: "−1 for count(*) i stedet for count(kolonne) med ytre join (H19 2.5)."
+      sensor: "−1 for count(*) i stedet for count(kolonne) med ytre join (H2019 2.5)."
     },
     {
       id: "notin", tittel: "NOT IN når delspørringen har NULL", nivaa: "dypere", tema: "Kjøring", tillegg: true,

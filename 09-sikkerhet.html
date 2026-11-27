@@ -7,9 +7,9 @@
   <title>Blokk 9 · Sikkerhet · IN2090</title>
   <meta name="description" content="Sikkerhet i IN2090: konfidensialitet, integritet og tilgjengelighet, brukere og roller, GRANT og REVOKE, SQL-injection og parametriserte spørringer (PreparedStatement og %s), med en demo og eksamensoppgaven fra H2023.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
   <style>
     .sik-demo { border: 1px solid var(--color-outline-variant); border-radius: 10px; padding: .8rem; background: var(--color-surface-container-low); margin: .8rem 0 1.2rem; min-width: 0; }
     .sik-demo .btn-row { margin: .35rem 0; }
@@ -62,6 +62,10 @@
     <!-- ===================== 1 · MÅL OG TILGANG ===================== -->
     <section data-panel="mal">
       <h3>Hva skal sikres?</h3>
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Sikkerhet har ikke hatt egne oppgaver. Det nærmeste er H2023 2.7 (5 p): en funksjon i Python eller Java som kjører en UPDATE
+        uten å være sårbar for SQL-injection, altså med en parametrisert spørring. Den er gjennomgått i fanen «Eksamensoppgave».
+        CIA, roller og GRANT/REVOKE er pensum, men har ikke vært spurt om.</div>
       <div class="sik-cia">
         <div><h4>Konfidensialitet</h4><p>Uvedkommende skal ikke kunne <b>se</b> data de ikke har tilgang til.</p><p class="small muted">Brudd: noen leser passordene i brukertabellen.</p></div>
         <div><h4>Integritet</h4><p>Dataene skal være korrekte. Uautoriserte brukere skal ikke kunne <b>endre</b> dem.</p><p class="small muted">Brudd: noen setter sine egne bestillinger til betalt.</p></div>
@@ -99,7 +103,7 @@
       <div class="callout begrep"><span class="lbl">Form</span>
         <p class="sik-pre">GRANT &lt;rettigheter&gt; ON &lt;objekt&gt; TO &lt;rolle&gt;;
 REVOKE &lt;rettigheter&gt; ON &lt;objekt&gt; FROM &lt;rolle&gt;;</p>
-        Rettigheter er for eksempel <span class="mono">SELECT</span>, <span class="mono">INSERT</span>, <span class="mono">UPDATE</span>, <span class="mono">DELETE</span>, <span class="mono">CREATE</span>, <span class="mono">CONNECT</span>, <span class="mono">USAGE</span> og <span class="mono">ALL</span>. Objektet kan være en tabell, et view, et skjema eller en database. <span class="mono">USAGE</span> gjelder skjemaer, ikke tabeller: <span class="mono">GRANT ALL ON SCHEMA s</span> gir bare CREATE og USAGE på selve skjemaet, ingen rettigheter på tabellene i det. Lysarket (F12-01 s14) forenkler dette: der står det at <span class="mono">GRANT ALL ON SCHEMA ws</span> gir alle rettigheter innenfor skjemaet, og <span class="mono">REVOKE USAGE ON ws.categories</span> brukes på en tabell. I ekte PostgreSQL trengs <span class="mono">GRANT ALL ON ALL TABLES IN SCHEMA ws</span> for tabellene. GRANT har ikke vært spurt om på eksamenene vi har. Kommer det, er det kursets intensjon som teller: skriv gjerne PostgreSQL-formen, eller lysarkets form, og si i én setning hva du mener rollen skal få. Får en rolle en rettighet, får alle medlemmene den.</div>
+        Rettigheter er for eksempel <span class="mono">SELECT</span>, <span class="mono">INSERT</span>, <span class="mono">UPDATE</span>, <span class="mono">DELETE</span>, <span class="mono">CREATE</span>, <span class="mono">CONNECT</span>, <span class="mono">USAGE</span> og <span class="mono">ALL</span>. Objektet kan være en tabell, et view, et skjema eller en database. <span class="mono">USAGE</span> gjelder skjemaer, ikke tabeller: <span class="mono">GRANT ALL ON SCHEMA s</span> gir bare CREATE og USAGE på selve skjemaet, ingen rettigheter på tabellene i det. Lysarket om sikkerhet i databaser (s. 14) forenkler dette: der står det at <span class="mono">GRANT ALL ON SCHEMA ws</span> gir alle rettigheter innenfor skjemaet, og <span class="mono">REVOKE USAGE ON ws.categories</span> brukes på en tabell. I ekte PostgreSQL trengs <span class="mono">GRANT ALL ON ALL TABLES IN SCHEMA ws</span> for tabellene. GRANT har ikke vært spurt om på eksamenene vi har. Kommer det, er det kursets intensjon som teller: skriv gjerne PostgreSQL-formen, eller lysarkets form, og si i én setning hva du mener rollen skal få. Får en rolle en rettighet, får alle medlemmene den.</div>
       <div id="ex-grant"></div>
 
       <h4>Eksempel: et lite bibliotek</h4>
@@ -177,7 +181,7 @@ stmt.execute();</pre>
       </div>
 
       <h4>Steng tilkoblingene</h4>
-      <p class="small">Tilkoblinger, cursorer, statements og resultatsett holder på ressurser. Steng dem med <span class="mono">close()</span> når du er ferdig, særlig i programmer som kjører lenge. Når en tilkobling stenges, stenges alt som er laget fra den. I Java kan en try-with-resources-blokk gjøre det automatisk. I Python ser <span class="mono">with psycopg2.connect(dsn) as conn:</span> lik ut, men den stenger <b>ikke</b> tilkoblingen. Den avslutter bare transaksjonen (commit, eller rollback ved feil), så du må fortsatt kalle <span class="mono">conn.close()</span> (F12-02 lysark 4).</p>
+      <p class="small">Tilkoblinger, cursorer, statements og resultatsett holder på ressurser. Steng dem med <span class="mono">close()</span> når du er ferdig, særlig i programmer som kjører lenge. Når en tilkobling stenges, stenges alt som er laget fra den. I Java kan en try-with-resources-blokk gjøre det automatisk. I Python ser <span class="mono">with psycopg2.connect(dsn) as conn:</span> lik ut, men den stenger <b>ikke</b> tilkoblingen. Den avslutter bare transaksjonen (commit, eller rollback ved feil), så du må fortsatt kalle <span class="mono">conn.close()</span> (lysarket om SQL-injection s. 4).</p>
 
       <h4>Test deg selv</h4>
       <div id="quiz-injection"></div>
@@ -200,27 +204,27 @@ stmt.execute();</pre>
 
   <footer class="footer">IN2090-guide · Blokk 9 · Sikkerhet · <a href="10-indekser.html">Neste: blokk 10, indekser</a></footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
-  <script src="assets/js/sql-lang.js?v=20261127d"></script>
-  <script src="assets/js/pseudocode.js?v=20261127d"></script>
-  <script src="assets/js/stepplayer.js?v=20261127d"></script>
-  <script src="assets/js/varline.js?v=20261127d"></script>
-  <script src="assets/js/viz-relation.js?v=20261127d"></script>
-  <script src="assets/js/viz-er.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261127d"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261127d"></script>
-  <script src="assets/js/bank.js?v=20261127d"></script>
-  <script src="assets/js/blokkvekt.js?v=20261127d"></script>
-  <script src="assets/js/sql-motor.js?v=20261127d"></script>
-  <script src="assets/js/side-sikkerhet.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
+  <script src="assets/js/sql-lang.js?v=20261127e"></script>
+  <script src="assets/js/pseudocode.js?v=20261127e"></script>
+  <script src="assets/js/stepplayer.js?v=20261127e"></script>
+  <script src="assets/js/varline.js?v=20261127e"></script>
+  <script src="assets/js/viz-relation.js?v=20261127e"></script>
+  <script src="assets/js/viz-er.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127e"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127e"></script>
+  <script src="assets/js/bank.js?v=20261127e"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127e"></script>
+  <script src="assets/js/sql-motor.js?v=20261127e"></script>
+  <script src="assets/js/side-sikkerhet.js?v=20261127e"></script>
   <script>
   (function () {
     "use strict";

@@ -237,7 +237,7 @@
      ================================================================ */
   var RANK = { BCNF: 4, "3NF": 3, "2NF": 2, "1NF": 1 };
   F.RANK = RANK;
-  /* opts.kn = oppgitte KN (H24-formatet «FD-en alene»): SN betyr da at X inneholder en KN. */
+  /* opts.kn = oppgitte KN (H2024-formatet «FD-en alene»): SN betyr da at X inneholder en KN. */
   F.nf = function (attrs, fdl, opts) {
     opts = opts || {};
     var s = F.split(fdl), gitt = !!(opts.kn && opts.kn.length);

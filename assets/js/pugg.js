@@ -8,7 +8,7 @@
      deck = { id, tittel, intro?, vend?: true|false,   vend: kortene kan øves begge veier
               retning?: ["Figur → betydning", "Betydning → figur"],
               spm?: spm,                                     standardspørsmål når kortet ikke har eget
-              kort: [{ id, a: side, b: side, spm?: spm, kilde?: "F05-01 lysark 7" }] }
+              kort: [{ id, a: side, b: side, spm?: spm, kilde?: "lysarket om ER-entiteter s. 7" }] }
      spm  = "tekst" (bare retning 0) | ["retning 0", "retning 1"]
             Kort spørsmålslinje under forsiden, så det er tydelig hva som skal svares. Et kort med
             spm for en retning bruker sitt eget (også "" = ingen linje); ellers brukes deck.spm.

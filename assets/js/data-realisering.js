@@ -637,7 +637,7 @@
                   "Kolonnene Passkode, År og Løpenr, KN {Passkode}."],
         answer: 1,
         explain: "Bare bladnodene blir kolonner. Siden det er kombinasjonen som er unik, blir de én KN sammen.",
-        kilde: K("Realiseringsnotat, F06-02") }
+        kilde: K("Realiseringsnotat, realiseringslysarket") }
     ],
     svake: [
       { q: "KONSERT er svak med svak nøkkel Start, og den identifiserende entiteten SCENE har PN {Navn}. Hva er PN i Konsert?",
@@ -647,7 +647,7 @@
                   "{Scene, Start} pluss en egen tabell PÅ(Scene, Start)"],
         answer: 1,
         explain: "PN = PN-en til den identifiserende entiteten + den svake nøkkelen. D realiserer den identifiserende relasjonen to ganger, og det ga trekk (−2 i H2019, −0,5 i H2020).",
-        kilde: K("Realiseringsnotat, F06-02") }
+        kilde: K("Realiseringsnotat, realiseringslysarket") }
     ],
     "en-til-en": [
       { q: "I SJEF har SCENE 1 og dobbel strek, og FRIVILLIG har 1 og enkel strek. Hva er det beste valget?",
@@ -657,31 +657,31 @@
                   "Egen tabell Sjef med PN {Scene, Frivillig}."],
         answer: 1,
         explain: "SCENE er total, så FN-en i Scene blir aldri NULL. Relasjonen er 1:1, så verdien er unik og dermed en KN. A er ikke lov når bare én side er total. C gir NULL, og da kan kolonnen ikke være en KN. D har feil PN: hver av FN-ene skal være en KN for seg.",
-        kilde: K("Realiseringsnotat, F06-02 lysark 8–9") },
+        kilde: K("Realiseringsnotat, realiseringslysarket s. 8–9") },
       { q: "FESTIVALPASS og ARMBÅND er 1:1 med total deltakelse på begge sider, og slås sammen til Festivalpass(År, Løpenr, Type, Chipid, Farge). Hva er KN-ene?",
         options: ["Bare {År, Løpenr}.", "{År, Løpenr} og {Chipid}.", "{År, Løpenr, Chipid}.", "{Chipid} og {Farge}."],
         answer: 1,
         explain: "Ved sammensmelting blir begge entitetenes nøkler KN-er. Hver av dem identifiserer raden alene, så {År, Løpenr, Chipid} er ikke minimal.",
-        kilde: K("F06-02 lysark 7") }
+        kilde: K("realiseringslysarket s. 7") }
     ],
     "en-til-mange": [
       { q: "KONTRAKT (N ved ARTIST, 1 ved PLATESELSKAP) realiseres som egen tabell Kontrakt(Artist, Plateselskap, Signert). Hva er PN?",
         options: ["{Artist, Plateselskap}", "{Artist}", "{Plateselskap}", "{Artist, Plateselskap, Signert}"],
         answer: 1,
         explain: "PN er N-sidens PN alene. Det er nettopp det som sikrer at hver artist har høyst ett plateselskap. Med {Artist, Plateselskap} kunne samme artist fått to plateselskaper, og Signert er et relasjonsattributt som aldri er med i nøkkelen.",
-        kilde: K("Realiseringsnotat, F06-02") },
+        kilde: K("Realiseringsnotat, realiseringslysarket") },
       { q: "Med FN-en i Artist (valg 1): hvor havner relasjonsattributtet Signert?",
         options: ["I Artist, sammen med FN-en.", "I Plateselskap.", "I en egen tabell Signert.", "Det droppes."],
         answer: 0,
         explain: "Et relasjonsattributt følger med dit relasjonen realiseres. Signert avhenger av paret, og paret er bestemt av artisten, så det står i Artist.",
-        kilde: K("Realiseringsnotat, ukesoppgaver uke 6") }
+        kilde: K("Realiseringsnotat, ukesoppgavene om realisering") }
     ],
     "mange-til-mange": [
       { q: "Konsert har PN {Scene, Start}. Hva er PN i Spiller(Artist, Scene, Start, Honorar)?",
         options: ["{Artist}", "{Artist, Start}", "{Artist, Scene, Start}", "{Artist, Scene, Start, Honorar}"],
         answer: 2,
         explain: "M:N gir PN = alle FN-attributtene. FN-en til Konsert er hele (Scene, Start). Honorar er et relasjonsattributt og er aldri med i nøkkelen.",
-        kilde: K("Realiseringsnotat, F06-02") },
+        kilde: K("Realiseringsnotat, realiseringslysarket") },
       { q: "Hvordan realiseres den rekursive M:N-relasjonen OPPVARMING på ARTIST?",
         options: ["Oppvarming(Artist, Artist) med PN {Artist, Artist}.",
                   "Oppvarming(Hovedartist, Oppvarmer) med PN {Hovedartist, Oppvarmer} og to FN-er til Artist(Artistnr).",
@@ -699,7 +699,7 @@
                   "Sjanger(Artist, Sjanger) med PN {Artist} og FN til Artist."],
         answer: 2,
         explain: "Flerverdi gir en egen tabell der alle attributtene er KN. A bryter 1NF, B gir NULL og et fast tak, og D tillater bare én sjanger per artist.",
-        kilde: K("Realiseringsnotat, F06-02") }
+        kilde: K("Realiseringsnotat, realiseringslysarket") }
     ],
     naere: [
       { q: "I VAKT står 1 ved OPPGAVE og mange ved FRIVILLIG og SCENE. Hva er KN i Vakt(Frivillig, Scene, Oppgave, Timer)?",
@@ -723,40 +723,40 @@
         options: ["1NF", "2NF", "3NF", "BCNF"],
         answer: 0,
         explain: "Bare 1NF er garantert. ER kan ikke uttrykke alle funksjonelle avhengigheter, så for eksempel Postnr → Poststed i Frivillig gir brudd på BCNF uten at noe i diagrammet viser det.",
-        kilde: K("F08-03 lysark 3") }
+        kilde: K("lysarket «Design i praksis» s. 3") }
     ],
     subklasser: [
       { q: "Vip(Gid, Bord) har PN {Gid} og FN (Gid) -> Gjest(Gid). Hvilket krav håndhever dette?",
         options: ["At ingen gjest er både VIP og presse.", "At hver gjest er i minst én subklasse.", "At hver VIP også er en gjest.", "Alle tre."],
         answer: 2,
         explain: "FN-en håndhever bare delmengde. Disjunkthet og totalitet må uttrykkes som egne krav.",
-        kilde: K("F13-uttrykkskraft s. 8–11") },
+        kilde: K("lysarket om uttrykkskraft s. 8–11") },
       { q: "Hvor hører attributtet Bord, som bare VIP-gjester har, hjemme?",
         options: ["I Gjest, som en kolonne som er NULL for de andre.", "I Vip, sammen med Gid.", "I en egen tabell Bord(Bord).", "I både Gjest og Vip."],
         answer: 1,
         explain: "Subklassens egne attributter står i subklassens tabell. I Gjest ville Bord vært NULL for alle som ikke er VIP.",
-        kilde: K("F13-uttrykkskraft s. 8–11") }
+        kilde: K("lysarket om uttrykkskraft s. 8–11") }
     ]
   };
 
   /* ---------- Sant/usant for hele blokken ---------- */
   var TF = [
     { s: "En 1:1-relasjon kan slås sammen til én tabell når én av sidene er total.", answer: false, blokk: "en-til-en",
-      explain: "Begge sidene må være totale. Ellers mister entitetene på den partielle siden som ikke har partner, raden sin, eller de får NULL i nøkkelen til den totale siden.", kilde: K("Realiseringsnotat, F06-02 lysark 8–9") },
+      explain: "Begge sidene må være totale. Ellers mister entitetene på den partielle siden som ikke har partner, raden sin, eller de får NULL i nøkkelen til den totale siden.", kilde: K("Realiseringsnotat, realiseringslysarket s. 8–9") },
     { s: "I en 1:N-relasjon legges FN-en i tabellen til entiteten som har N på sin strek.", answer: true, blokk: "en-til-mange",
-      explain: "Den entiteten har høyst én partner, så partnerens PN får plass i én kolonne.", kilde: K("Realiseringsnotat, F06-02") },
+      explain: "Den entiteten har høyst én partner, så partnerens PN får plass i én kolonne.", kilde: K("Realiseringsnotat, realiseringslysarket") },
     { s: "En M:N-relasjon kan realiseres med en FN i en av entitetstabellene.", answer: false, blokk: "mange-til-mange",
-      explain: "Begge sider kan ha mange partnere, så det krever alltid en egen tabell.", kilde: K("Realiseringsnotat, F06-02") },
+      explain: "Begge sider kan ha mange partnere, så det krever alltid en egen tabell.", kilde: K("Realiseringsnotat, realiseringslysarket") },
     { s: "Et relasjonsattributt blir en del av PN i tabellen for relasjonen.", answer: false, blokk: "mange-til-mange",
       explain: "Relasjonsattributter er aldri en del av KN eller PN.", kilde: K("Realiseringsnotat") },
     { s: "Utledbare attributter blir vanlige kolonner.", answer: false, blokk: "entiteter",
-      explain: "De droppes, fordi de kan regnes ut.", kilde: K("Realiseringsnotat, F06-02") },
+      explain: "De droppes, fordi de kan regnes ut.", kilde: K("Realiseringsnotat, realiseringslysarket") },
     { s: "Et sammensatt attributt gir bare bladnodene som kolonner.", answer: true, blokk: "entiteter",
       explain: "Forelderen forsvinner, og delene nederst i treet blir kolonner.", kilde: K("Realiseringsnotat") },
     { s: "Et flerverdiattributt blir en egen tabell der alle attributtene sammen er KN.", answer: true, blokk: "flerverdi",
-      explain: "Hvert par (entitet, verdi) forekommer én gang.", kilde: K("Realiseringsnotat, F06-02") },
+      explain: "Hvert par (entitet, verdi) forekommer én gang.", kilde: K("Realiseringsnotat, realiseringslysarket") },
     { s: "Den identifiserende relasjonen får en egen tabell.", answer: false, blokk: "svake",
-      explain: "Den er realisert gjennom FN-en i den svake tabellen. En egen tabell lagrer det samme to ganger.", kilde: K("Realiseringsnotat, F06-02") },
+      explain: "Den er realisert gjennom FN-en i den svake tabellen. En egen tabell lagrer det samme to ganger.", kilde: K("Realiseringsnotat, realiseringslysarket") },
     { s: "Er den identifiserende entiteten selv svak, arver den svake tabellen hele dens sammensatte PN.", answer: true, blokk: "svake",
       explain: "PN-en vokser nedover nivåene, og FN-en peker på hele PN-en til den identifiserende entiteten.", kilde: K("Realiseringsnotat") },
     { s: "En ternær relasjon blir alltid en egen tabell.", answer: true, blokk: "naere",
@@ -764,23 +764,23 @@
     { s: "Står det 1 på to sider av en ternær relasjon, får tabellen to KN-er.", answer: true, blokk: "naere",
       explain: "Hver 1-side gir en KN bestående av de to andre FN-ene.", kilde: K("Realiseringsnotat s. 11–12") },
     { s: "Et skjema laget med realiseringsalgoritmen er alltid på BCNF.", answer: false, blokk: "hele",
-      explain: "Bare 1NF er garantert. ER kan ikke uttrykke alle funksjonelle avhengigheter.", kilde: K("F08-03 lysark 3") },
+      explain: "Bare 1NF er garantert. ER kan ikke uttrykke alle funksjonelle avhengigheter.", kilde: K("lysarket «Design i praksis» s. 3") },
     { s: "Skjemaet for festivalen håndhever at hvert plateselskap har minst én artist.", answer: false, blokk: "hele",
       explain: "Total deltakelse på den refererte siden kan ikke uttrykkes med KN og FN. Ingenting hindrer et plateselskap uten artister.", kilde: false },
     { s: "I en 1:1 er FN-en en KN når den står på en side med total deltakelse.", answer: true, blokk: "en-til-en",
-      explain: "Den er unik (1:1) og aldri NULL (total).", kilde: K("Realiseringsnotat, F06-02 lysark 8–9") },
+      explain: "Den er unik (1:1) og aldri NULL (total).", kilde: K("Realiseringsnotat, realiseringslysarket s. 8–9") },
     { s: "I en 1:1 er FN-en en KN også når den står på en partiell side.", answer: false, blokk: "en-til-en",
-      explain: "Den kan være NULL, og en KN kan aldri være NULL. Den er bare unik blant verdiene som ikke er NULL.", kilde: K("F06-02 lysark 8–9") },
+      explain: "Den kan være NULL, og en KN kan aldri være NULL. Den er bare unik blant verdiene som ikke er NULL.", kilde: K("realiseringslysarket s. 8–9") },
     { s: "I en egen tabell for en 1:N-relasjon er PN begge FN-ene sammen.", answer: false, blokk: "en-til-mange",
       explain: "PN er N-sidens PN alene. Med begge kunne samme N-entitet fått flere partnere.", kilde: K("Realiseringsnotat") },
     { s: "I en rekursiv M:N-relasjon får kolonnene navn etter rollene.", answer: true, blokk: "mange-til-mange",
       explain: "Begge FN-ene peker på samme tabell, og to kolonner kan ikke hete det samme.", kilde: K("Eksamen H2023 1.3, løsningsforslag (Relatert)") },
     { s: "En FN kan peke på et attributt som ikke er en KN i måltabellen.", answer: false, blokk: "algoritmen",
-      explain: "En FN skal alltid peke på en KN i måltabellen, som regel PN-en.", kilde: K("F06-02 (alle FN peker på PN)") },
+      explain: "En FN skal alltid peke på en KN i måltabellen, som regel PN-en.", kilde: K("realiseringslysarket (alle FN peker på PN)") },
     { s: "PN og FN håndhever at spesialiseringen er total.", answer: false, blokk: "subklasser",
-      explain: "De håndhever bare delmengde (Vip ⊆ Gjest).", kilde: K("F13-uttrykkskraft s. 8–11") },
+      explain: "De håndhever bare delmengde (Vip ⊆ Gjest).", kilde: K("lysarket om uttrykkskraft s. 8–11") },
     { s: "Tabellen for en subklasse bruker superklassens PN som sin PN.", answer: true, blokk: "subklasser",
-      explain: "PN-en er samtidig en FN til superklassen. Subklassen får ingen egen nøkkel.", kilde: K("F13-uttrykkskraft s. 8–11") }
+      explain: "PN-en er samtidig en FN til superklassen. Subklassen får ingen egen nøkkel.", kilde: K("lysarket om uttrykkskraft s. 8–11") }
   ];
 
   IN.dataReal = {

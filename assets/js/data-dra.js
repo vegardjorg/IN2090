@@ -54,7 +54,7 @@
     answer: { artist: "ent", plateselskap: "ent", konsert: "ent", artistnr: "attr", sjanger: "attr", honorar: "attr", varighet: "attr",
       kontrakt: "rel", spiller: "rel", festival: "ikke", ledelse: "ikke" },
     oppsummering: "<p>Kursets fremgangsmåte: finn entitetene først, så attributtene (med nøkler, flerverdi, sammensatte og utledbare), så relasjonene og relasjonsattributtene. Hvert valg skal kunne begrunnes med en formulering i teksten.</p>",
-    kilde: [K("ER-notatet s. 4 (fremgangsmåten)"), K("F05-01 lysark 4–9 (attributtyper)")]
+    kilde: [K("ER-notatet s. 4 (fremgangsmåten)"), K("lysarket om ER-entiteter s. 4–9 (attributtyper)")]
   };
 
   /* ================================================================
@@ -97,7 +97,7 @@
     answer: { kontrakt: "artist", pa: "konsert", sjef: "scene", spiller: "ny", sjanger: "ny", vakt: "ny" },
     godta: { kontrakt: ["ny"] },
     oppsummering: "<p>Huskeregel: FN havner der det står N (1:N) eller på den totale siden (1:1). M:N, flerverdiattributter og ternære relasjoner gir alltid ny tabell. Skriv én setning om hvorfor for hvert valg, for eksamen gir poeng for begrunnelsen.</p>",
-    kilde: [K("Realiseringsnotatet (realiseringh26), algoritmen"), K("F06-02 (realisering)")]
+    kilde: [K("Realiseringsnotatet, algoritmen"), K("realiseringslysarket")]
   };
 
   var REAL_KONSTR = {
@@ -135,7 +135,7 @@
     ],
     answer: { "r-ent": "ent", "r-svak": "svak", "r-en-n": "en-n", "r-m-n": "m-n", "r-fler": "fler", "r-tern": "tern", "r-utl": "utl", "r-sam": "sam" },
     oppsummering: "<p>Rekkefølgen i algoritmen er: entiteter, svake entiteter, 1:1, 1:N, M:N, flerverdiattributter og til slutt ternære og n-ære relasjoner. Svake entiteter kommer etter den identifiserende entiteten, fordi de trenger dens PN.</p>",
-    kilde: [K("Realiseringsnotatet (realiseringh26), algoritmen"), K("F06-02 (realisering)")]
+    kilde: [K("Realiseringsnotatet, algoritmen"), K("realiseringslysarket")]
   };
 
   /* ================================================================
@@ -165,7 +165,7 @@
     ],
     answer: ["from", "where", "group", "having", "select", "distinct", "order", "limit"],
     oppsummering: "<p>Logisk: " + m("FROM → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT") + ". Skriverekkefølgen er en annen: " + m("WITH, SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET") + ". Lysarkene gir skriverekkefølgen og navnereglene. Den logiske lista er vår oppsummering av dem.</p>",
-    kilde: [K("F09-02 lysark 12–13 (rekkefølge og navneregler)")]
+    kilde: [K("grupperingslysarket s. 12–13 (rekkefølge og navneregler)")]
   };
 
   var SQL_RADER = {
@@ -191,7 +191,7 @@
     ],
     answer: { b10: "med", b11: "med", b12: "ikke", b13: "ikke", b14: "ikke", b15: "ikke" },
     oppsummering: "<p>Svaret har 2 rader. Med " + m("OR") + " i stedet for " + m("AND") + " hadde Folkeeventyr vært med, fordi " + m("TRUE OR NULL") + " er TRUE.</p>",
-    kilde: [K("F03-02 lysark 12–15 (NULL i betingelser)"), K("F03-04 lysark 25")]
+    kilde: [K("lysarket om WHERE s. 12–15 (NULL i betingelser)"), K("lysarket om FROM og joins s. 25")]
   };
 
   /* ================================================================
@@ -224,7 +224,7 @@
     answer: { "h-cnt": "having", "h-aar": "where", "h-avg": "having", "h-like": "where", "h-land": "where", "h-span": "having", "h-sider": "where", "h-sum": "having" },
     godta: { "h-land": ["having"] },
     oppsummering: "<p>Står det en aggregatfunksjon i betingelsen, hører den hjemme i HAVING. Ellers er WHERE riktig. Bruk ikke SELECT-navnet " + m("antall") + " i HAVING. Skriv " + m("count(*)") + " på nytt.</p>",
-    kilde: [K("F09-02 lysark 11–13 (GROUP BY og HAVING)"), K("Sensorveiledning H2020, H2023 og H2025 (aggregat i WHERE)")]
+    kilde: [K("grupperingslysarket s. 11–13 (GROUP BY og HAVING)"), K("Sensorveiledning H2020, H2023 og H2025 (aggregat i WHERE)")]
   };
 
   var SQL_ALLE = {
@@ -248,7 +248,7 @@
     ],
     answer: { "a-levert": "alle", "a-ulevert": "finnes", "a-tort": "finnes", "a-ingen": "alle", "a-ibsen1": "finnes", "a-regn": "alle", "a-ibsen": "alle", "a-1900": "finnes", "a-bare": "alle" },
     oppsummering: "<p>SQL har ingen «for alle». Skriv den som «det finnes ingen som ikke …»: " + m("NOT EXISTS (SELECT … WHERE <korrelert> AND NOT <betingelse>)") + ", eller sammenlign antall med " + m("HAVING") + ".</p>",
-    kilde: [K("F10-02 lysark 9–11 («for alle» og «uten»)"), K("Sensorveiledning H2020 oppgave S4")]
+    kilde: [K("lysarket om mengdeoperatorer s. 9–11 («for alle» og «uten»)"), K("Sensorveiledning H2020 S4")]
   };
 
   /* ================================================================
@@ -287,7 +287,7 @@
         return out;
       }),
     oppsummering: "<p>Alltid med: A og G. Start med " + m("(AG)⁺ = {A, E, F, G}") + ", som ikke er hele R. Utvid med ett attributt fra «kanskje med»: ABG, ACG og ADG gir alt, mens AEG ikke gjør det. KN = " + m("{A, B, G}") + ", " + m("{A, C, G}") + " og " + m("{A, D, G}") + ".</p>",
-    kilde: [K("F07-02 lysark 11–16 (finn alle KN)"), K("Eksamen H2019 oppgave 3.1 (attributter som er med i alle KN)")]
+    kilde: [K("FD-lysarket s. 11–16 (finn alle KN)"), K("Eksamen H2019 3.1 (attributter som er med i alle KN)")]
   };
 
   var BILLETT_ATTR = ["billettnr", "konsert", "sete", "kjøper", "epost", "artist", "scene", "dato"];
@@ -322,7 +322,7 @@
         return out;
       }),
     oppsummering: "<p>Nøkkelattributter: billettnr, konsert, sete, scene, dato. Ikke-nøkkelattributter: kjøper, epost, artist. Du trenger <i>alle</i> KN-ene for å svare, ikke bare PN.</p>",
-    kilde: [K("Waaler 08-notat lysark 9 (nøkkelattributt)"), K("Eksamen H2023 oppgave 3.1 og H2024 oppgave 3.1 (samme oppgavetype)")]
+    kilde: [K("normaliseringsnotatet s. 9 (nøkkelattributt)"), K("Eksamen H2023 3.1 og H2024 3.1 (samme oppgavetype)")]
   };
 
   /* ================================================================
@@ -359,7 +359,7 @@
         return out;
       }),
     oppsummering: "<p>Relasjonen er på den laveste normalformen blant FD-ene: <b>1NF</b>, på grunn av " + m("Q → T") + ". Husk å splitte høyresidene og finne alle KN-ene før du starter.</p>",
-    kilde: [K("F08-01 lysark 2–5 (normalform per FD)"), K("Eksamen H2019 oppgave 3.2 og H2024 oppgave 3.2 (samme oppgavetype)")]
+    kilde: [K("lysarket om å bestemme normalform s. 2–5 (normalform per FD)"), K("Eksamen H2019 3.2 og H2024 3.2 (samme oppgavetype)")]
   };
 
   var OV = (IN.DRA_OVINGER = {

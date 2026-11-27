@@ -542,7 +542,7 @@
     function dPlan(fd, sc) {
       var kl = klausuler(sc.sql), liste = kl.liste.slice();
       fd.appendChild(h("p", { class: "pd-intro", html: "Spørringen skrives i én rekkefølge, men svaret er definert av en annen. Fargene viser samme klausul i begge listene." +
-        forenkling("Den logiske rekkefølgen sier <em>hva</em> svaret skal være. PostgreSQL lager en plan og kan regne ut ting i en annen rekkefølge, så lenge svaret blir det samme. Hvordan planen lages, er ikke pensum (F13-02).") }));
+        forenkling("Den logiske rekkefølgen sier <em>hva</em> svaret skal være. PostgreSQL lager en plan og kan regne ut ting i en annen rekkefølge, så lenge svaret blir det samme. Hvordan planen lages, er ikke pensum (lysarket om spørreprosessering).") }));
       var skrevet = [], logisk = [];
       liste.forEach(function (c) {
         skrevet.push({ k: c.k, tekst: c.tekst });

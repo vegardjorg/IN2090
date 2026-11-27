@@ -16,10 +16,10 @@
   function A(navn, o) { var a = { navn: navn }; if (o) for (var k in o) a[k] = o[k]; return a; }
   function fig(ent, rel) { return { entiteter: ent, relasjoner: rel || [] }; }
 
-  var K_ER = "F05-01 (attributter), F05-02 s2–5 (relasjoner, kardinalitet), Waaler ER-notat s8";
-  var K_SVAK = "F05-03 s3–5, F06-02 s5";
-  var K_TER = "F06-01 s3–7, F06-02 s18";
-  var K_REAL = "F06-02 s3–18 og realiseringsnotatet (realiseringh26) s2–11";
+  var K_ER = "lysarket om ER-entiteter (attributter), lysarket om ER-relasjoner s. 2–5 (relasjoner, kardinalitet), ER-notatet s. 8";
+  var K_SVAK = "lysarket om svake entiteter s. 3–5, realiseringslysarket s. 5";
+  var K_TER = "lysarket om ternære relasjoner s. 3–7, realiseringslysarket s. 18";
+  var K_REAL = "realiseringslysarket s. 3–18 og realiseringsnotatet s. 2–11";
 
   /* ---------- Grunnsymboler: små frittstående SVG-er med samme klasser som viz-er.js ---------- */
   function mini(w, h, indre, navn) {
@@ -34,7 +34,7 @@
   function strek(x1, y1, x2, y2) { return "<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" class=\"er-line\"/>"; }
   function tekst(x, y, t, kl) { return "<text x=\"" + x + "\" y=\"" + y + "\" text-anchor=\"middle\" class=\"" + kl + "\">" + t + "</text>"; }
   function G(id, figur, svar, spm) { var k = { id: id, kilde: K_GRUNN, a: "<div class=\"pg-mini-h\">" + figur + "</div>", b: svar }; if (spm) k.spm = spm; return k; }
-  var K_GRUNN = "F05-01 s4–9, F05-02 s2–5, F05-03 s3–5";
+  var K_GRUNN = "lysarket om ER-entiteter s. 4–9, lysarket om ER-relasjoner s. 2–5, lysarket om svake entiteter s. 3–5";
   var grunnsymboler = [
     G("g-rekt", mini(160, 60, rekt(20, 10, 120, 40, "er-ent"), "rektangel"),
       "<b>Rektangel</b> = entitetstype (f.eks. ANSATT). Navnet skrives med STORE bokstaver."),
@@ -282,7 +282,7 @@
   /* ============================================================
      4. Relasjonsalgebra-tegn
      ============================================================ */
-  function ra(id, tegn, navn, svar) { return { id: id, kilde: "F02-03 s4–14", a: "<span class=\"pg-tegn\">" + tegn + "</span>", b: "<b>" + navn + "</b>. " + svar }; }
+  function ra(id, tegn, navn, svar) { return { id: id, kilde: "lysarket om relasjonsalgebra s. 4–14", a: "<span class=\"pg-tegn\">" + tegn + "</span>", b: "<b>" + navn + "</b>. " + svar }; }
   var ratype = {
     id: "ra-tegn",
     tittel: "Relasjonsalgebra",
@@ -296,7 +296,7 @@
       ra("rho", "ρ<sub>A→B</sub>(R)", "Omdøping", "Gir attributtet A nytt navn B. Tilsvarer <code>AS</code>."),
       ra("kryss", "R × S", "Kartesisk produkt", "Alle kombinasjoner av rader fra R og S. Tilsvarer <code>FROM R, S</code> uten betingelse (eller <code>CROSS JOIN</code>)."),
       ra("theta", "R ⋈<sub>betingelse</sub> S", "Join (theta-join)", "Kartesisk produkt fulgt av seleksjon: σ<sub>betingelse</sub>(R × S). Tilsvarer <code>R JOIN S ON betingelse</code>."),
-      ra("naturlig", "R ⋈ S", "Naturlig join", "Joiner på alle attributter med samme navn og beholder dem bare én gang. Tilsvarer <code>NATURAL JOIN</code>. Uten senket betingelse er det naturlig join (F08-02 skriver det slik). Relasjonsalgebra-forelesningen F02-03 skriver ⋆ for det samme."),
+      ra("naturlig", "R ⋈ S", "Naturlig join", "Joiner på alle attributter med samme navn og beholder dem bare én gang. Tilsvarer <code>NATURAL JOIN</code>. Uten senket betingelse er det naturlig join (dekomponeringslysarket skriver det slik). Relasjonsalgebra-forelesningen lysarket om relasjonsalgebra skriver ⋆ for det samme."),
       ra("union", "R ∪ S", "Union", "Rader som er i R eller S (eller begge). R og S må ha samme attributter. Tilsvarer <code>UNION</code>."),
       ra("snitt", "R ∩ S", "Snitt", "Rader som er i både R og S. Tilsvarer <code>INTERSECT</code>."),
       ra("diff", "R ∖ S", "Differanse", "Rader i R som ikke er i S. Tilsvarer <code>EXCEPT</code>."),
@@ -307,7 +307,7 @@
   /* ============================================================
      5. FD og normalformer
      ============================================================ */
-  var K_FD = "F07-02 s2–11, Waaler FD-notat (07) s2–16", K_NF = "F07-03 s5–9, F08-01 s5, F08-02 s6–7, Waaler NF-notat (08) s9–24";
+  var K_FD = "FD-lysarket s. 2–11, FD-notatet s. 2–16", K_NF = "lysarket om normalformer s. 5–9, lysarket om å bestemme normalform s. 5, dekomponeringslysarket s. 6–7, normaliseringsnotatet s. 9–24";
   function q(id, k, a, b, spm) { var o = { id: id, kilde: k, a: a, b: b }; if (spm) o.spm = spm; return o; }
   var fd = {
     id: "fd",
@@ -334,7 +334,7 @@
   /* ============================================================
      6. SQL-regler
      ============================================================ */
-  var K_SQL = "F03-02, F04-01/02, F09-02, F10-01/02 (SQL)";
+  var K_SQL = "lysarket om WHERE, lysarkene om datamanipulering og skranker, grupperingslysarket, lysarkene om ytre join og mengdeoperatorer (SQL)";
   var sql = {
     id: "sql-regler",
     tittel: "SQL-regler",
@@ -368,37 +368,37 @@
     spm: ["Hva betyr begrepet?", "Hvilket begrep forklares her?"],
     intro: "<p>Ordene kurset bruker. Forklar begrepet med egne ord før du snur, eller snu retningen og finn ordet ut fra forklaringen.</p>",
     kort: [
-      q("database", "F01-01", "Database", "En samling data som er organisert slik at den er lett å lagre, finne og endre."),
-      q("dbms", "F01-01", "DBMS (databasehåndteringssystem)", "Et system som lar brukerne definere, opprette, vedlikeholde og kontrollere tilgangen til databasen, f.eks. PostgreSQL. Det passer på integritet og sikkerhet."),
-      q("relasjon", "F02-01", "Relasjon (i relasjonsmodellen)", "En tabell: en mengde tupler som alle har de samme attributtene."),
-      q("tuppel", "F02-01", "Tuppel", "En rad i en relasjon: én verdi for hvert attributt."),
-      q("attributt", "F02-01", "Attributt", "En kolonne i en relasjon. Har et navn og et domene (en type)."),
-      q("domene", "F02-01", "Domene", "Mengden lovlige verdier et attributt kan ha, f.eks. heltall eller tekst."),
-      q("skjema-instans", "F02-01 s6, F08-02 s3", "Signatur, skjema og instans", "<b>Signaturen</b> er navnet og attributtene, f.eks. Ansatt(Anr, Navn). Et <b>relasjonsskjema</b> er en mengde signaturer. <b>Instansen</b> er tuplene som ligger i relasjonen på et gitt tidspunkt.", ["Hva betyr hvert av de tre begrepene?", "Hvilke tre begreper forklares her?"]),
+      q("database", "lysarket om databaser", "Database", "En samling data som er organisert slik at den er lett å lagre, finne og endre."),
+      q("dbms", "lysarket om databaser", "DBMS (databasehåndteringssystem)", "Et system som lar brukerne definere, opprette, vedlikeholde og kontrollere tilgangen til databasen, f.eks. PostgreSQL. Det passer på integritet og sikkerhet."),
+      q("relasjon", "lysarket om relasjonsmodellen", "Relasjon (i relasjonsmodellen)", "En tabell: en mengde tupler som alle har de samme attributtene."),
+      q("tuppel", "lysarket om relasjonsmodellen", "Tuppel", "En rad i en relasjon: én verdi for hvert attributt."),
+      q("attributt", "lysarket om relasjonsmodellen", "Attributt", "En kolonne i en relasjon. Har et navn og et domene (en type)."),
+      q("domene", "lysarket om relasjonsmodellen", "Domene", "Mengden lovlige verdier et attributt kan ha, f.eks. heltall eller tekst."),
+      q("skjema-instans", "lysarket om relasjonsmodellen s. 6, dekomponeringslysarket s. 3", "Signatur, skjema og instans", "<b>Signaturen</b> er navnet og attributtene, f.eks. Ansatt(Anr, Navn). Et <b>relasjonsskjema</b> er en mengde signaturer. <b>Instansen</b> er tuplene som ligger i relasjonen på et gitt tidspunkt.", ["Hva betyr hvert av de tre begrepene?", "Hvilke tre begreper forklares her?"]),
       q("sn", K_FD, "Supernøkkel (SN)", "En mengde attributter som identifiserer hvert tuppel: to ulike tupler kan aldri være like på alle attributtene i den."),
       q("kn", K_FD, "Kandidatnøkkel (KN)", "En minimal supernøkkel: fjerner du ett attributt, er den ikke lenger supernøkkel."),
-      q("pn", "F06-02 s4", "Primærnøkkel (PN)", "Den kandidatnøkkelen du velger å bruke til å identifisere tuplene."),
-      q("fn", "F04-01, F06-02", "Fremmednøkkel (FN)", "Attributter som må ha en verdi som finnes i en kandidatnøkkel (oftest PN) i en annen (eller samme) relasjon. I SQL: REFERENCES."),
+      q("pn", "realiseringslysarket s. 4", "Primærnøkkel (PN)", "Den kandidatnøkkelen du velger å bruke til å identifisere tuplene."),
+      q("fn", "lysarket om datamanipulering, realiseringslysarket", "Fremmednøkkel (FN)", "Attributter som må ha en verdi som finnes i en kandidatnøkkel (oftest PN) i en annen (eller samme) relasjon. I SQL: REFERENCES."),
       q("nokkelattributt", K_NF, "Nøkkelattributt", "Et attributt som er med i minst én kandidatnøkkel."),
-      q("entitet", "F05-01", "Entitet vs. entitetstype", "En <b>entitet</b> er én konkret ting (en bestemt ansatt). <b>Entitetstypen</b> er klassen av like ting (ANSATT), tegnet som rektangel.", ["Hva er forskjellen på de to?", "Hvilke to begreper skilles her?"]),
-      q("relasjonstype", "F05-02", "Relasjonstype (i ER)", "En sammenheng mellom entitetstyper, f.eks. JOBBER_I mellom ANSATT og AVDELING. Tegnes som rombe. Ikke det samme som en relasjon (tabell) i relasjonsmodellen."),
-      q("kardinalitet", "F05-02 s3–4", "Kardinalitet", "Høyeste antall en entitet kan kobles til gjennom en relasjon: 1 eller mange (N/M)."),
-      q("deltakelse", "F05-02 s4", "Deltakelse (total/partiell)", "Laveste antall: <b>total</b> (dobbel strek) betyr at hver entitet må være med minst én gang; <b>partiell</b> (enkel strek) betyr at den kan stå utenfor.", ["Hva betyr total og partiell deltakelse, og hvordan tegnes de?", "Hvilket begrep forklares her, med begge variantene?"]),
+      q("entitet", "lysarket om ER-entiteter", "Entitet vs. entitetstype", "En <b>entitet</b> er én konkret ting (en bestemt ansatt). <b>Entitetstypen</b> er klassen av like ting (ANSATT), tegnet som rektangel.", ["Hva er forskjellen på de to?", "Hvilke to begreper skilles her?"]),
+      q("relasjonstype", "lysarket om ER-relasjoner", "Relasjonstype (i ER)", "En sammenheng mellom entitetstyper, f.eks. JOBBER_I mellom ANSATT og AVDELING. Tegnes som rombe. Ikke det samme som en relasjon (tabell) i relasjonsmodellen."),
+      q("kardinalitet", "lysarket om ER-relasjoner s. 3–4", "Kardinalitet", "Høyeste antall en entitet kan kobles til gjennom en relasjon: 1 eller mange (N/M)."),
+      q("deltakelse", "lysarket om ER-relasjoner s. 4", "Deltakelse (total/partiell)", "Laveste antall: <b>total</b> (dobbel strek) betyr at hver entitet må være med minst én gang; <b>partiell</b> (enkel strek) betyr at den kan stå utenfor.", ["Hva betyr total og partiell deltakelse, og hvordan tegnes de?", "Hvilket begrep forklares her, med begge variantene?"]),
       q("svak-entitet", K_SVAK, "Svak entitet", "En entitetstype med en nøkkel (svak nøkkel) som bare er unik sammen med nøkkelen til den identifiserende entiteten, via en identifiserende relasjon."),
-      q("skranke", "F04-01 s6–10, F04-02", "Skranke", "En regel dataene må følge, f.eks. NOT NULL, UNIQUE, PRIMARY KEY, REFERENCES eller CHECK. DBMS-et avviser endringer som bryter den."),
-      q("null", "F03-02 s13–15", "NULL", "Markør for en ukjent eller manglende verdi. Sammenligning med NULL gir ukjent (NULL), ikke sann eller usann."),
-      q("mengde-multimengde", "F02-03, F10-02", "Mengde vs. multimengde", "En <b>mengde</b> har ingen duplikater (relasjonsalgebra). En <b>multimengde</b> kan ha duplikater (SQL, så lenge du ikke bruker DISTINCT eller UNION/INTERSECT/EXCEPT uten ALL).", ["Hva er forskjellen på de to?", "Hvilke to begreper skilles her?"]),
+      q("skranke", "lysarket om datamanipulering s. 6–10, lysarket om typer og skranker", "Skranke", "En regel dataene må følge, f.eks. NOT NULL, UNIQUE, PRIMARY KEY, REFERENCES eller CHECK. DBMS-et avviser endringer som bryter den."),
+      q("null", "lysarket om WHERE s. 13–15", "NULL", "Markør for en ukjent eller manglende verdi. Sammenligning med NULL gir ukjent (NULL), ikke sann eller usann."),
+      q("mengde-multimengde", "lysarket om relasjonsalgebra, lysarket om mengdeoperatorer", "Mengde vs. multimengde", "En <b>mengde</b> har ingen duplikater (relasjonsalgebra). En <b>multimengde</b> kan ha duplikater (SQL, så lenge du ikke bruker DISTINCT eller UNION/INTERSECT/EXCEPT uten ALL).", ["Hva er forskjellen på de to?", "Hvilke to begreper skilles her?"]),
       q("fd-begrep", K_FD, "Funksjonell avhengighet (FD)", "X → Y: to tupler som er like på X, er også like på Y."),
       q("tapsfri", K_NF, "Tapsfri dekomponering", "En oppdeling av R i mindre relasjoner der en naturlig join av delene gir tilbake nøyaktig R, uten ekstra (falske) tupler."),
-      q("view", "F04-03 s3, s7", "View", "En lagret spørring med navn som kan brukes som en tabell. Dataene lagres ikke på nytt (med mindre det er et materialisert view)."),
-      q("indeks", "F13-01 s3, s6–9", "Indeks", "En indeksstruktur (B-tre eller hash) som lar databasen raskt finne rader ut fra verdiene i én eller flere kolonner. PRIMARY KEY gir automatisk en B-tre-indeks.")
+      q("view", "lysarket om views s. 3, s. 7", "View", "En lagret spørring med navn som kan brukes som en tabell. Dataene lagres ikke på nytt (med mindre det er et materialisert view)."),
+      q("indeks", "indekslysarket s. 3 og 6–9", "Indeks", "En indeksstruktur (B-tre eller hash) som lar databasen raskt finne rader ut fra verdiene i én eller flere kolonner. PRIMARY KEY gir automatisk en B-tre-indeks.")
     ]
   };
 
   /* ============================================================
      8. FD-oppgaver: finn nøkler og normalform
      ============================================================ */
-  var K_FDO = "F07-02 s7–11, F08-01 s3–5, F08-02 s6–7";
+  var K_FDO = "FD-lysarket s. 7–11, lysarket om å bestemme normalform s. 3–5, dekomponeringslysarket s. 6–7";
   function fo(id, oppg, svar, merk) { return { id: id, kilde: K_FDO, a: { pre: oppg, etter: merk || "Finn kandidatnøklene og høyeste normalform relasjonen er på." }, b: svar }; }
   var fdOppg = {
     id: "fd-oppgaver",
@@ -432,7 +432,7 @@
   /* ============================================================
      9. SQL-mønstre
      ============================================================ */
-  var K_SQLM = "F09-01 s5, F09-02, F09-03, F10-01, F10-02 og repetisjon_sql";
+  var K_SQLM = "sorteringslysarket s. 5, grupperingslysarket, lysarket med avanserte SQL-eksempler, lysarket om ytre join, lysarket om mengdeoperatorer og SQL-repetisjonen";
   var SKJEMA = "kunde(kid, navn, sted)\nordre(oid, kid → kunde, dato, belop)";
   function sm(id, oppg, sqlTekst, merk, skjema) { return { id: id, kilde: K_SQLM, a: { html: oppg, pre: skjema || SKJEMA }, b: { pre: sqlTekst, etter: merk } }; }
   var sqlMonstre = {

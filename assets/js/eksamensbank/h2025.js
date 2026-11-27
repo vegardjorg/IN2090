@@ -702,7 +702,7 @@
       tips: [
         "Med ±1 per svar bør du la være å svare hvis du er usikker.",
         "En instans kan bare motbevise en FD, aldri bevise den.",
-        "NULL i instansoppgaver er en eksamenskonvensjon fra H25-sensoren. Lysarkene definerer det ikke. Skriv antakelsen din."
+        "NULL i instansoppgaver er en eksamenskonvensjon fra H2025-sensoren. Lysarkene definerer det ikke. Skriv antakelsen din."
       ],
       del1: {
         type: "janei",

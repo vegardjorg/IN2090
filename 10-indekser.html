@@ -7,9 +7,9 @@
   <title>Blokk 10 · Indekser · IN2090</title>
   <meta name="description" content="Indekser i IN2090 på oversiktsnivå: hva en indeks er, disk mot RAM, B-tre og hash, når en indeks hjelper, PRIMARY KEY og CREATE INDEX, og hva indekser koster ved skriving – med en demo som teller diskblokker med og uten indeks.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127e">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127e">
   <style>
     .ix-demo { border: 1px solid var(--color-outline-variant); border-radius: var(--radius-lg); padding: var(--d-md); background: var(--color-surface-container-lowest); }
     .ix-lbl { margin-top: .2rem; font-weight: 600; }
@@ -71,6 +71,9 @@
     <!-- ===================== 1 · HVA ER EN INDEKS? ===================== -->
     <section data-panel="indeks">
       <h3>Hva er en indeks?</h3>
+      <div class="callout snarvei"><span class="lbl">Hva eksamen spør om</span>
+        Indekser og spørreprosessering har aldri vært spurt om, verken i H2019, H2020, H2023–H2025 eller på prøveeksamenene.
+        Det holder å kunne på oversiktsnivå hva en indeks er, når den hjelper, forskjellen på B-tre og hash, og CREATE INDEX.</div>
       <div class="callout begrep"><span class="lbl">Begrep</span>
         En <b>indeks</b> (indeksstruktur) er en datastruktur ved siden av tabellen som lar databasen raskt finne radene med bestemte verdier i én eller flere kolonner.
         <ul>
@@ -86,7 +89,7 @@
 
       <div class="callout eksempel"><span class="lbl">Hva skjer med store tabeller?</span>
         Med seks blokker er forskjellen liten. Uten indeks vokser antall blokker som leses med tabellen, mens et B-tre bare får noen få nivåer selv for millioner av rader.
-        I demonstrasjonen på lysarkene (F13-01) ble det samme oppslaget kjørt på to kopier av en tabell med 10 millioner tall: med indeks tok det under ett millisekund, uten indeks rundt 300 millisekunder.</div>
+        I demonstrasjonen på indekslysarket ble det samme oppslaget kjørt på to kopier av en tabell med 10 millioner tall: med indeks tok det under ett millisekund, uten indeks rundt 300 millisekunder.</div>
 
       <h4>Test deg selv</h4>
       <div id="quiz-indeks"></div>
@@ -160,7 +163,7 @@
         <span class="pill">billigste velges, spørreplan</span><span aria-hidden="true">→</span>
         <span class="pill">evaluering</span>
       </div>
-      <p class="small">Kostnaden anslås ut fra statistikk om databasen (antall rader, antall ulike verdier i kolonnene), skrankene og hvilke indekser som finnes. Med <span class="mono">EXPLAIN</span> foran en spørring får du se planen uten at spørringen kjøres, og <span class="mono">EXPLAIN ANALYZE</span> kjører den og måler. <b>Å forstå spørreplaner er ikke pensum</b> (F13-02).</p>
+      <p class="small">Kostnaden anslås ut fra statistikk om databasen (antall rader, antall ulike verdier i kolonnene), skrankene og hvilke indekser som finnes. Med <span class="mono">EXPLAIN</span> foran en spørring får du se planen uten at spørringen kjøres, og <span class="mono">EXPLAIN ANALYZE</span> kjører den og måler. <b>Å forstå spørreplaner er ikke pensum</b> (lysarket om spørreprosessering).</p>
 
       <div class="callout felle"><span class="lbl">Feller</span>
         <details class="grense"><summary>Hvorfor må søket uten indeks lese hele tabellen, også når første rad traff?</summary>
@@ -208,13 +211,13 @@
 
   <footer class="footer">IN2090-guide · Blokk 10 · Indekser · <a href="index.html">Til forsiden</a></footer>
 
-  <script src="assets/js/core.js?v=20261127d"></script>
-  <script src="assets/js/symboler.js?v=20261127d"></script>
-  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
-  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
-  <script src="assets/js/sql-lang.js?v=20261127d"></script>
-  <script src="assets/js/pseudocode.js?v=20261127d"></script>
-  <script src="assets/js/side-indekser.js?v=20261127d"></script>
+  <script src="assets/js/core.js?v=20261127e"></script>
+  <script src="assets/js/symboler.js?v=20261127e"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127e"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127e"></script>
+  <script src="assets/js/sql-lang.js?v=20261127e"></script>
+  <script src="assets/js/pseudocode.js?v=20261127e"></script>
+  <script src="assets/js/side-indekser.js?v=20261127e"></script>
   <script>
   (function () {
     "use strict";
