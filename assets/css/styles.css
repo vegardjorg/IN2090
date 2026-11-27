@@ -2489,15 +2489,15 @@ body[data-page="crash"] .cr-step { scroll-margin-top: 0; }
 }
 
 /* Fanerader som kan dras vannrett: uttoning på siden der det finnes flere faner */
-.tabs.fade-r {
+.tabs.fade-r, .er-wrap.fade-r {
   -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 24px), transparent 100%);
           mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 24px), transparent 100%);
 }
-.tabs.fade-l {
+.tabs.fade-l, .er-wrap.fade-l {
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 100%);
 }
-.tabs.fade-l.fade-r {
+.tabs.fade-l.fade-r, .er-wrap.fade-l.fade-r {
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
 }
@@ -2625,3 +2625,22 @@ input:focus-visible, textarea:focus-visible, select:focus-visible { outline: var
     box-shadow: 0 -6px 10px -8px rgb(0 0 0 / .25);
   }
 }
+
+/* Eksamensvekt per blokk (blokkvekt.js), hentet fra IN2120 2026-11-27: tekst med snitt og stolper per eksamen. */
+.pagehead .lead + .blokk-vekt { font-size: var(--text-sm, .9rem); color: var(--color-on-surface-variant); margin: -.4rem 0 .8rem;
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: .3rem .9rem; }
+.bv-spark { display: inline-flex; gap: 2px; align-items: flex-end; height: 2.4rem; padding-top: 2px; flex: none; }
+.bv-sparkc { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 1.05rem; }
+.bv-sparkc i { display: block; width: .75rem; background: var(--color-primary); border-radius: 1px 1px 0 0; }
+.bv-sparkc b { font-size: 9.5px; font-weight: 500; color: var(--color-on-surface-variant); line-height: 1.1; margin-top: 1px; font-variant-numeric: tabular-nums; }
+
+/* Stegspiller med knappene over scenen (fra IN2120, 27.11.2026): standard i 2090, navTopp: false slår av.
+   Knappene står da stille uansett hvor høy scenen eller forklaringen blir. */
+.stepplayer.sp-navtopp { display: flex; flex-direction: column; }
+.stepplayer.sp-navtopp > * { order: 6; }
+.stepplayer.sp-navtopp > .sp-presets { order: 0; }
+.stepplayer.sp-navtopp > .sp-controls { order: 1; margin: .3rem 0 .4rem; }
+.stepplayer.sp-navtopp > .sp-frame { order: 4; display: flex; flex-direction: column; }
+.stepplayer.sp-navtopp > .sp-frame > .sp-foot { order: -1; padding-top: .3rem; }
+.stepplayer.sp-navtopp > .sp-frame > .sp-stage { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.stepplayer.sp-navtopp > .sp-explain { margin-top: .6rem; }

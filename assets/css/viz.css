@@ -137,7 +137,7 @@
 .exam-fig.et-er, .et-pf-fig.et-er { display: block; width: 100%; max-width: 100%; }
 .exam-fig.et-er figcaption { text-align: left; font-weight: 400; }
 .er-svg { display: block; height: auto; font-family: var(--font); }
-.er-wrap.er-fit { width: 100%; align-self: stretch; overflow: visible; }
+.er-wrap.er-fit { width: 100%; align-self: stretch; overflow-x: auto; overflow-y: hidden; }
 .er-fit .er-svg { width: 100%; margin: 0 auto; }
 /* Stegspiller med ER-figur: scenen vokser med figuren i stedet for fast høyde */
 .sp-stage:has(> .er-wrap) { height: auto; min-height: 240px; display: block; padding: var(--d-sm); overflow: visible; }
@@ -176,3 +176,8 @@
 .examtask pre, .schema-intro pre { overflow-x: auto; max-width: 100%; }   /* kode/fasit i <pre> på mobil */
 .examtask .et-pane table.tbl { display: block; max-width: 100%; overflow-x: auto; }
 .bank-oppg .exam-fig { margin: .6rem 0; }
+/* Nytt siden forrige steg (IN.vizEr.markNy) */
+.er-svg .er-ny { stroke: var(--color-primary); stroke-width: 3; }
+.er-svg ellipse.er-ny:not(.er-inner), .er-svg rect.er-ny:not(.er-inner), .er-svg polygon.er-ny:not(.er-inner) { fill: var(--color-tone-warn); }
+.er-svg text.er-ny-t { font-weight: 800; }
+.er-svg text.er-kard.er-ny-t { paint-order: stroke; stroke: var(--color-tone-warn); stroke-width: 7px; stroke-linejoin: round; font-size: 15px; }

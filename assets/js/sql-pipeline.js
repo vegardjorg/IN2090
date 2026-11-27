@@ -821,9 +821,8 @@
   }
 
   /* ================= Komponenten ================= */
-  var GJETT_KEY = "in2090:sqlpipe-gjett";
-  function store(k, d) { try { return IN.store ? IN.store.get(k, d) : d; } catch (e) { return d; } }
-  function storeSet(k, v) { try { if (IN.store) IN.store.set(k, v); } catch (e) {} }
+  /* «Gjett først» er av som standard og gjelder bare demoen der den slås på (erfaring fra IN2120:
+     flyt først, testmodus som tilvalg). opts.gjettPa: true slår den på fra start. */
   var uidN = 0;
 
   IN.sqlPipeline = function (host, demo, opts) {
@@ -836,7 +835,7 @@
     if (opts.gjett === false) M.kort.forEach(function (c) { c.gjett = null; });
     var uid = "spl" + (++uidN);
     var st = { cur: Math.max(0, Math.min(opts.start || 0, M.trinn.length - 1)), modus: "kjor", skjul: false,
-      gjett: opts.gjett !== false && store(GJETT_KEY, "1") !== "0", sett: {} };
+      gjett: opts.gjett !== false && opts.gjettPa === true, sett: {} };
     if (M.trinn.length) st.sett[M.trinn[st.cur].c] = true;
     else { host.appendChild(el("p", { class: "small muted", text: "(Ingen trinn å vise.)" })); return null; }
     var ui = { M: M, liste: {}, paint: paint, goto: goto, idx: function (c, s) { for (var i = 0; i < M.trinn.length; i++) if (M.trinn[i].c === c && M.trinn[i].s === s) return i; return 0; } };
@@ -854,7 +853,7 @@
     var cbG = el("input", { type: "checkbox" }), cbH = el("input", { type: "checkbox" });
     cbG.checked = st.gjett;
     function nyHoyde() { cards.forEach(function (x) { x.body.style.minHeight = ""; }); }
-    cbG.addEventListener("change", function () { st.gjett = cbG.checked; storeSet(GJETT_KEY, st.gjett ? "1" : "0"); nyHoyde(); paint(); });
+    cbG.addEventListener("change", function () { st.gjett = cbG.checked; nyHoyde(); paint(); });
     cbH.addEventListener("change", function () { st.skjul = cbH.checked; root.classList.toggle("spl-skjul", st.skjul); nyHoyde(); paint(); });
     var lbG = el("label", { class: "spl-cb small" }, [cbG, " Gjett først"]);
     var lbH = el("label", { class: "spl-cb small" }, [cbH, " Skjul fjernede"]);

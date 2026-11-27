@@ -7,15 +7,15 @@
   <title>Blokk 4 · SQL · IN2090</title>
   <meta name="description" content="SQL grunnleggende i IN2090: spørringens anatomi, join (kryssprodukt, indre, selvjoin, NATURAL JOIN-fellen), DISTINCT, ORDER BY og LIMIT, CREATE TABLE og skranker, INSERT, UPDATE og DELETE, med stegvise demoer på en liten biblioteksdatabase og eksamensoppgavene.">
   <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('in-theme');if(t!=='dark'&&t!=='system')t='light';if(t!=='system')d.setAttribute('data-theme',t);var l=localStorage.getItem('in-level');if(l!=='eli5'&&l!=='teknisk')l='normal';d.setAttribute('data-level',l);}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.setAttribute('data-level','normal');}})();</script>
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/viz.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/dra.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261126r">
-  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261126r">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/begrep-tips.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/viz.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/blokk-sql.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/sql-oppgave.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/dra.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/sql-pipeline.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/sql-panser.css?v=20261127d">
+  <link rel="stylesheet" href="assets/css/sql-bygger.css?v=20261127d">
 </head>
 <body data-page="sql">
   <a class="skip-link" href="#main">Hopp til innhold</a>
@@ -24,6 +24,7 @@
     <div class="pagehead">
       <h1>Blokk 4 · SQL</h1>
       <p class="lead">SQL-delen gir mest poeng på eksamen, og alt bygger på det som står her: hvordan en spørring leses steg for steg, hvordan tabeller kobles, hvordan svaret sorteres og kuttes, og hvilke regler databasen håndhever når du endrer data. Alle eksemplene bruker den samme lille biblioteksdatabasen. Når grunnlaget sitter, går du videre til <a href="05-sql-videre.html">blokk 5 · SQL videregående</a> (aggregering, ytre join, NULL og «for alle»).</p>
+      <p class="blokk-vekt"><span class="bv-tekst"><b>Eksamensvekt H2019, H2020 og H2023–H2025:</b> i snitt 14 % av poengene per eksamen. Stolpene viser poeng per år.</span></p>
       <p class="pugg-lenke small muted">Puggekort: <a href="pugg.html#fane=sql-regler">SQL-regler</a> · <a href="pugg.html#fane=sql-monstre">SQL-mønstre</a></p>
       <div class="badges" id="badges-sql"></div>
     </div>
@@ -362,35 +363,36 @@
 
   <footer class="footer">IN2090-guide · Blokk 4 · SQL</footer>
 
-  <script src="assets/js/core.js?v=20261126r"></script>
-  <script src="assets/js/symboler.js?v=20261126r"></script>
-  <script src="assets/js/data-ordliste.js?v=20261126r"></script>
-  <script src="assets/js/begrep-tips.js?v=20261126r"></script>
-  <script src="assets/js/sql-lang.js?v=20261126r"></script>
-  <script src="assets/js/pseudocode.js?v=20261126r"></script>
-  <script src="assets/js/stepplayer.js?v=20261126r"></script>
-  <script src="assets/js/varline.js?v=20261126r"></script>
-  <script src="assets/js/viz-relation.js?v=20261126r"></script>
-  <script src="assets/js/viz-er.js?v=20261126r"></script>
-  <script src="assets/js/data-sql.js?v=20261126r"></script>
-  <script src="assets/js/dra.js?v=20261126r"></script>
-  <script src="assets/js/data-dra.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/h2019.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/h2020.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/h2023.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/h2024.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/h2025.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/p2020.js?v=20261126r"></script>
-  <script src="assets/js/eksamensbank/p2019.js?v=20261126r"></script>
-  <script src="assets/js/bank.js?v=20261126r"></script>
-  <script src="assets/js/sql-motor.js?v=20261126r"></script>
-  <script src="assets/js/sql-oppgave.js?v=20261126r"></script>
-  <script src="assets/js/data-sql-ovelser.js?v=20261126r"></script>
-  <script src="assets/js/data-sql-panser.js?v=20261126r"></script>
-  <script src="assets/js/sql-panser.js?v=20261126r"></script>
-  <script src="assets/js/sql-pipeline.js?v=20261126r"></script>
-  <script src="assets/js/data-sql-bygger.js?v=20261126r"></script>
-  <script src="assets/js/sql-bygger.js?v=20261126r"></script>
+  <script src="assets/js/core.js?v=20261127d"></script>
+  <script src="assets/js/symboler.js?v=20261127d"></script>
+  <script src="assets/js/data-ordliste.js?v=20261127d"></script>
+  <script src="assets/js/begrep-tips.js?v=20261127d"></script>
+  <script src="assets/js/sql-lang.js?v=20261127d"></script>
+  <script src="assets/js/pseudocode.js?v=20261127d"></script>
+  <script src="assets/js/stepplayer.js?v=20261127d"></script>
+  <script src="assets/js/varline.js?v=20261127d"></script>
+  <script src="assets/js/viz-relation.js?v=20261127d"></script>
+  <script src="assets/js/viz-er.js?v=20261127d"></script>
+  <script src="assets/js/data-sql.js?v=20261127d"></script>
+  <script src="assets/js/dra.js?v=20261127d"></script>
+  <script src="assets/js/data-dra.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/h2019.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/h2020.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/h2023.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/h2024.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/h2025.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/p2020.js?v=20261127d"></script>
+  <script src="assets/js/eksamensbank/p2019.js?v=20261127d"></script>
+  <script src="assets/js/bank.js?v=20261127d"></script>
+  <script src="assets/js/blokkvekt.js?v=20261127d"></script>
+  <script src="assets/js/sql-motor.js?v=20261127d"></script>
+  <script src="assets/js/sql-oppgave.js?v=20261127d"></script>
+  <script src="assets/js/data-sql-ovelser.js?v=20261127d"></script>
+  <script src="assets/js/data-sql-panser.js?v=20261127d"></script>
+  <script src="assets/js/sql-panser.js?v=20261127d"></script>
+  <script src="assets/js/sql-pipeline.js?v=20261127d"></script>
+  <script src="assets/js/data-sql-bygger.js?v=20261127d"></script>
+  <script src="assets/js/sql-bygger.js?v=20261127d"></script>
   <script>
   (function () {
     "use strict";

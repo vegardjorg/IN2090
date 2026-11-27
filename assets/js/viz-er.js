@@ -16,7 +16,7 @@
    største ledige vinkelen rundt noden. attr.ang (grader, 0 = høyre, 90 = ned) overstyrer.
    opts: { cell: [bredde, høyde] (standard [230, 160]), title: "tilgjengelig navn",
            bounds: [x, y, b, h] (fast viewBox, f.eks. fra IN.vizEr.bounds(ferdigFigur)),
-           fit: true (skaleres til bredden av forelderen i stedet for vannrett skroll) }
+           fit: true (skaleres til bredden av forelderen, men ikke under fitMin, standard 0.7; da ruller figuren) }
    Farger fra temaet (viz.css: .er-*). Klassisk script, lastes etter core.js.
    ============================================================ */
 (function () {
@@ -213,15 +213,49 @@
     if (opts.fit) svg.setAttribute("width", "100%");   // skaleres ned til bredden av forelderen
     else svg.setAttribute("width", vb[2]);
     svg.style.maxWidth = vb[2] + "px";
+    // fit krymper aldri under fitMin (standard 0.7, ca. 8 px tekst): smalere enn det ruller figuren
+    // inni rammen i stedet for at teksten blir uleselig (erfaring fra IN2120, 27.11.2026).
+    if (opts.fit) svg.style.minWidth = Math.round(vb[2] * (+opts.fitMin || 0.7)) + "px";
     var wrap = IN.el("div", { class: "er-wrap" + (opts.fit ? " er-fit" : "") });
     wrap.appendChild(svg);
     host.appendChild(wrap);
+    if (opts.fit && IN.scrollFade) IN.scrollFade(wrap);
     return svg;
   };
 
   /* Fast ramme for steg-for-steg-visning: tegn den ferdige figuren én gang og bruk rammen på alle steg.
      var b = IN.vizEr.bounds(figFerdig);  …  IN.vizEr(host, figSteg, { bounds: b, fit: true }) */
   IN.vizEr.bounds = function (fig, opts) { return IN.vizEr(null, fig, opts)._bounds; };
+
+  /* Marker det som er nytt siden forrige steg (stegspillere): forrige = nøklene fra kallet før
+     (null på første steg, da markeres ingenting). Returnerer nøklene for dette steget.
+     Nøkkel = tekst + løpenummer, så to attributter som heter «Navn» skilles. */
+  IN.vizEr.markNy = function (svg, forrige) {
+    if (!svg) return [];
+    var tall = {}, keys = [];
+    function num(n, a) { return parseFloat(n.getAttribute(a)) || 0; }
+    function inni(sh, x, y) {
+      var t = sh.tagName.toLowerCase();
+      if (t === "rect") return x >= num(sh, "x") && x <= num(sh, "x") + num(sh, "width") && y >= num(sh, "y") && y <= num(sh, "y") + num(sh, "height");
+      if (t === "ellipse") { var dx = (x - num(sh, "cx")) / (num(sh, "rx") || 1), dy = (y - num(sh, "cy")) / (num(sh, "ry") || 1); return dx * dx + dy * dy <= 1; }
+      var p = (sh.getAttribute("points") || "").trim().split(/\s+/).map(function (q) { return q.split(",").map(Number); });
+      var xs = p.map(function (q) { return q[0]; }), ys = p.map(function (q) { return q[1]; });
+      return x >= Math.min.apply(null, xs) && x <= Math.max.apply(null, xs) && y >= Math.min.apply(null, ys) && y <= Math.max.apply(null, ys);
+    }
+    var shapes = Array.prototype.slice.call(svg.querySelectorAll("rect.er-ent, polygon.er-rel, ellipse.er-attr"));
+    Array.prototype.forEach.call(svg.querySelectorAll("text.er-ent-t, text.er-rel-t, text.er-attr-t, text.er-kard"), function (t) {
+      var k = t.textContent;
+      // kardinaliteter («1», «N») skilles på plassen, siden nodene står fast mellom stegene
+      if (t.classList.contains("er-kard")) k += "@" + Math.round(num(t, "x") / 6) + "," + Math.round(num(t, "y") / 6);
+      else { tall[k] = (tall[k] || 0) + 1; k += "#" + tall[k]; }
+      keys.push(k);
+      if (!forrige || forrige.indexOf(k) >= 0) return;
+      t.classList.add("er-ny-t");
+      var x = num(t, "x"), y = num(t, "y") - 4;
+      shapes.forEach(function (sh) { if (inni(sh, x, y)) sh.classList.add("er-ny"); });
+    });
+    return keys;
+  };
 
   if (IN.registerEngine) IN.registerEngine("er", { viz: "vizEr", file: "assets/js/viz-er.js", host: "er-host", customInput: false });
 })();

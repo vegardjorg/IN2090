@@ -23,7 +23,8 @@
               .filter(function (x) { return !isNaN(x); }).slice(0, 10);
     };
 
-    var wrap = el("div", { class: "stepplayer" });
+    // Knappene over scenen (fra IN2120): de står stille uansett hvor høy scenen blir. navTopp: false gir gammel rekkefølge.
+    var wrap = el("div", { class: "stepplayer" + (opts.navTopp === false ? "" : " sp-navtopp") });
 
     // Presets + egen input
     var presetRow = null;
